@@ -5,20 +5,18 @@ export default defineNuxtConfig({
     shim: false
   },
   build: {
-    transpile: ["vuetify"],
+    transpile: ['vuetify']
   },
   vite: {
     define: {
-      "process.env.DEBUG": false,
+      'process.env.DEBUG': false
     }
   },
   nitro: {
-    serveStatic: true,
+    serveStatic: true
   },
   devServerHandlers: [],
   hooks: {
   }
 
 })
-
-
