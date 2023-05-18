@@ -50,6 +50,7 @@ const YellowTheme: ThemeTypes = {
     error: '#ff4c51',
     muted: '#5a6a85',
     lightprimary: '#ECF2FF',
+    darkprimary: '#F39F3A',
     lightsecondary: '#E8F7FF',
     lightsuccess: '#E6FFFA',
     lighterror: '#FDEDE8',

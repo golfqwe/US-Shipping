@@ -64,7 +64,7 @@
         <v-row justify="center">
           <v-col cols="10">
             <v-sheet class="" color="white" rounded border>
-              <VContainer>
+              <v-container>
                 <v-row
                   justify="center"
                 >
@@ -86,14 +86,17 @@
                     </v-sheet>
                   </div>
                 </v-row>
-              </VContainer>
+              </v-container>
             </v-sheet>
           </v-col>
         </v-row>
         <v-row justify="center">
           <v-col cols="10">
             <v-sheet class="" color="white" rounded border>
-              <VContainer>
+              <v-container>
+                <h4 class="text-h5 font-weight-bold mb-4 text-darkprimary">
+                  ระบบบริการลูกค้า
+                </h4>
                 <v-row
                   justify="center"
                 >
@@ -115,7 +118,7 @@
                     </v-sheet>
                   </div>
                 </v-row>
-              </VContainer>
+              </v-container>
             </v-sheet>
           </v-col>
         </v-row>
