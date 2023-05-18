@@ -17,25 +17,19 @@ const listInvoices = reactive([
       <thead>
         <tr>
           <th class="text-subtitle-1 font-weight-bold">
-            Ship
+            ::
           </th>
           <th class="text-subtitle-1 font-weight-bold">
-            Add On
+            Name
           </th>
           <th class="text-subtitle-1 font-weight-bold">
-            Receive Info
+            Phone
           </th>
           <th class="text-subtitle-1 font-weight-bold">
-            Carrier
+            Address
           </th>
-          <th class="text-subtitle-1 font-weight-bold text-right">
-            Packages
-          </th>
-          <th class="text-subtitle-1 font-weight-bold text-right">
-            Invoice No
-          </th>
-          <th class="text-subtitle-1 font-weight-bold text-right">
-            Amount
+          <th class="text-subtitle-1 font-weight-bold text-center">
+            Active
           </th>
           <th class="text-subtitle-1 font-weight-bold text-right">
             Action
@@ -71,24 +65,16 @@ const listInvoices = reactive([
               }}
             </v-chip>
           </td>
-          <td>
-            <h6 class="text-h6 text-right">
-              {{ item.test }}
-            </h6>
-          </td>
-          <td>
-            <h6 class="text-h6 text-right">
-              {{ item.test }}
-            </h6>
-          </td>
-          <td>
-            <h6 class="text-h6 text-right">
-              {{ item.test }}
-            </h6>
+          <td class="text-center">
+            <v-icon size="large" color="success">
+              mdi-check-bold
+            </v-icon>
           </td>
           <td class="text-right">
-            <v-btn size="small" rounded="lg" color="success">
-              Pay now
+            <v-btn size="small" rounded="lg" color="info">
+              <v-icon start dark>
+                mdi-pencil
+              </v-icon> edit
             </v-btn>
           </td>
         </tr>

@@ -17,25 +17,19 @@ const listInvoices = reactive([
       <thead>
         <tr>
           <th class="text-subtitle-1 font-weight-bold">
-            Ship
+            Tracking No
           </th>
           <th class="text-subtitle-1 font-weight-bold">
-            Add On
+            จำนวนกล่อง
           </th>
           <th class="text-subtitle-1 font-weight-bold">
-            Receive Info
+            วันที่แจ้งส่ง
           </th>
           <th class="text-subtitle-1 font-weight-bold">
-            Carrier
+            วันที่สินค้าถึงโกดัง
           </th>
           <th class="text-subtitle-1 font-weight-bold text-right">
-            Packages
-          </th>
-          <th class="text-subtitle-1 font-weight-bold text-right">
-            Invoice No
-          </th>
-          <th class="text-subtitle-1 font-weight-bold text-right">
-            Amount
+            ประเภทจัดส่ง
           </th>
           <th class="text-subtitle-1 font-weight-bold text-right">
             Action
@@ -71,25 +65,14 @@ const listInvoices = reactive([
               }}
             </v-chip>
           </td>
-          <td>
-            <h6 class="text-h6 text-right">
-              {{ item.test }}
-            </h6>
-          </td>
-          <td>
-            <h6 class="text-h6 text-right">
-              {{ item.test }}
-            </h6>
-          </td>
+
           <td>
             <h6 class="text-h6 text-right">
               {{ item.test }}
             </h6>
           </td>
           <td class="text-right">
-            <v-btn size="small" rounded="lg" color="success">
-              Pay now
-            </v-btn>
+            <v-btn variant="text" color="success" icon="mdi-pencil-box-outline" />
           </td>
         </tr>
       </tbody>
