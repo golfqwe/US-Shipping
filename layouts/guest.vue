@@ -12,7 +12,7 @@ const menuMain = reactive([
     link: '/warehouse'
   },
   {
-    text: 'REGISTER TRACKING',
+    text: 'Register Tracking',
     icon: 'icon1.png',
     link: '/register-tracking'
   },
@@ -37,22 +37,22 @@ const menuSub = reactive([
   {
     text: 'ที่อยู่ของฉัน',
     icon: 'icon1.png',
-    link: '/warehouse'
+    link: '/myAddress'
   },
   {
     text: 'บริการรับกดสั่งสินค้า ประมูลสินค้า',
     icon: 'icon1.png',
-    link: '/register-tracking'
+    link: '/'
   },
   {
     text: 'คำถามที่พบบ่อย สินค้าต้องห้าม',
     icon: 'icon1.png',
-    link: '/trackings'
+    link: '/'
   },
   {
     text: 'ติดต่อเจ้าหน้าที่',
     icon: 'icon1.png',
-    link: '/payment'
+    link: '/'
   }
 ])
 
@@ -60,11 +60,11 @@ const menuSub = reactive([
 
 <template>
   <v-app>
-    <v-app-bar height="80" :elevation="0" color="white">
+    <v-app-bar height="90" :elevation="0" color="white">
       <!-- <span>Vuetify &nbsp;</span>
         <span class="font-weight-light">MATERIAL DESIGN</span> -->
-      <v-row align="center">
-        <v-col class="pa-2 ">
+      <v-row align="center" no-gutters>
+        <v-col class="pa-2  hidden-sm-and-down">
           <div class="d-flex flex-row ">
             <div class="d-inline-flex align-center  mx-4">
               <img
@@ -86,10 +86,15 @@ const menuSub = reactive([
           </div>
         </v-col>
 
-        <v-col class="ma-2">
+        <v-col cols="auto" class="ma-2 hidden-sm-and-down">
           <div class="d-flex flex-column text-right">
-            <NuxtLink> เข้าสู่ระบบ | สมัครสมาชิก</NuxtLink>
-
+            <div>
+              <NuxtLink to="login" class="text-decoration-none text-darkprimary font-weight-bold">
+                เข้าสู่ระบบ
+              </NuxtLink>|<NuxtLink to="register" class="text-decoration-none text-darkprimary font-weight-bold">
+                สมัครสมาชิก
+              </NuxtLink>
+            </div>
             <p>
               ฝ่ายบริการลูกค้า : 088-888-8888
             </p>
@@ -97,6 +102,28 @@ const menuSub = reactive([
               LINE @ USAUKJPANTOTHAI
             </p>
           </div>
+        </v-col>
+
+        <v-col class=" hidden-md-and-up">
+          <v-row no-gutters justify="center" align="center">
+            <v-sheet
+              class="d-flex flex-column  align-center "
+            >
+              <div class="d-inline-flex align-center  mx-4">
+                <img
+                  src="/images/main/logo.png"
+                  style="height: 65px; object-fit: contain"
+                >
+              </div>
+              <div>
+                <NuxtLink to="login" class="text-decoration-none text-darkprimary font-weight-bold">
+                  เข้าสู่ระบบ
+                </NuxtLink>|<NuxtLink to="register" class="text-decoration-none text-darkprimary font-weight-bold">
+                  สมัครสมาชิก
+                </NuxtLink>
+              </div>
+            </v-sheet>
+          </v-row>
         </v-col>
       </v-row>
     </v-app-bar>
@@ -128,21 +155,22 @@ const menuSub = reactive([
                 <v-row
                   justify="center"
                 >
-                  <v-col
+                  <div
                     v-for="(it, id) in menuMain"
                     :key="id"
-                    class="d-flex justify-center  "
+                    class="d-flex pa-2 justify-center"
+                    style="min-width: 50px; max-width: 150px;"
                   >
                     <NuxtLink :to="it.link" class="text-decoration-none text-darkprimary">
                       <div class="d-flex flex-column">
-                        <img
+                        <v-img
                           :src="`/images/icons/${it.icon}`"
-                          style="height: 55px; object-fit: contain"
-                        >
+                          height="50"
+                        />
                         <span class="pt-2 text-center font-weight-bold">{{ it.text }}</span>
                       </div>
                     </NuxtLink>
-                  </v-col>
+                  </div>
                 </v-row>
               </v-container>
             </v-sheet>
@@ -158,21 +186,22 @@ const menuSub = reactive([
                 <v-row
                   justify="center"
                 >
-                  <v-col
+                  <div
                     v-for="(it, id) in menuSub"
                     :key="id"
-                    class="d-flex justify-center  "
+                    class="d-flex pa-2 justify-center"
+                    style="min-width: 50px; max-width: 150px;"
                   >
                     <NuxtLink :to="it.link" class="text-decoration-none text-darkprimary">
                       <div class="d-flex flex-column">
-                        <img
+                        <v-img
                           :src="`/images/icons/${it.icon}`"
-                          style="height: 55px; object-fit: contain"
-                        >
+                          height="50"
+                        />
                         <span class="pt-2 text-center font-weight-bold">{{ it.text }}</span>
                       </div>
                     </NuxtLink>
-                  </v-col>
+                  </div>
                 </v-row>
               </v-container>
             </v-sheet>

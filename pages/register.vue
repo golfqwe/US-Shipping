@@ -8,6 +8,9 @@ definePageMeta({
   <v-sheet class="pa-6" color="white" rounded>
     <v-row justify="center">
       <v-col sm="6" md="6" lg="4">
+        <h3 class="text-h3 text-center font-weight-bold mb-4 text-darkprimary ">
+          สมัครสมาชิก
+        </h3>
         <v-row class="d-flex mb-3">
           <v-col cols="12">
             <v-label class="font-weight-bold mb-1">
