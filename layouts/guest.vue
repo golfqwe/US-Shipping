@@ -1,3 +1,63 @@
+
+<script setup lang="ts">
+const menuMain = reactive([
+  {
+    text: 'ค่านำเข้าสินค้า',
+    icon: 'icon1.png',
+    link: '/'
+  },
+  {
+    text: 'ที่อยู่โกดังสินค้า',
+    icon: 'icon1.png',
+    link: '/warehouse'
+  },
+  {
+    text: 'REGISTER TRACKING',
+    icon: 'icon1.png',
+    link: '/register-tracking'
+  },
+  {
+    text: 'เช็ครูปสินค้า',
+    icon: 'icon1.png',
+    link: '/trackings'
+  },
+  {
+    text: 'บิลค่าขนส่ง',
+    icon: 'icon1.png',
+    link: '/payment'
+  }
+])
+
+const menuSub = reactive([
+  {
+    text: 'รอบนำเข้าสินค้า',
+    icon: 'icon1.png',
+    link: '/'
+  },
+  {
+    text: 'ที่อยู่ของฉัน',
+    icon: 'icon1.png',
+    link: '/warehouse'
+  },
+  {
+    text: 'บริการรับกดสั่งสินค้า ประมูลสินค้า',
+    icon: 'icon1.png',
+    link: '/register-tracking'
+  },
+  {
+    text: 'คำถามที่พบบ่อย สินค้าต้องห้าม',
+    icon: 'icon1.png',
+    link: '/trackings'
+  },
+  {
+    text: 'ติดต่อเจ้าหน้าที่',
+    icon: 'icon1.png',
+    link: '/payment'
+  }
+])
+
+</script>
+
 <template>
   <v-app>
     <v-app-bar height="80" :elevation="0" color="white">
@@ -8,7 +68,7 @@
           <div class="d-flex flex-row ">
             <div class="d-inline-flex align-center  mx-4">
               <img
-                src="~/assets/images/logo.png"
+                src="/images/main/logo.png"
                 style="height: 65px; object-fit: contain"
               >
             </div>
@@ -68,23 +128,21 @@
                 <v-row
                   justify="center"
                 >
-                  <div class="d-flex justify-center ">
-                    <v-sheet
-                      v-for="n in 3"
-                      :key="n"
-                      class="ma-2 pa-2"
-                    >
-                      <NuxtLink>
-                        <div class="d-flex flex-column">
-                          <img
-                            src="~/assets/icons/icon1.png"
-                            style="height: 55px; object-fit: contain"
-                          >
-                          นำเข้าพัสดุ
-                        </div>
-                      </NuxtLink>
-                    </v-sheet>
-                  </div>
+                  <v-col
+                    v-for="(it, id) in menuMain"
+                    :key="id"
+                    class="d-flex justify-center  "
+                  >
+                    <NuxtLink :to="it.link" class="text-decoration-none text-darkprimary">
+                      <div class="d-flex flex-column">
+                        <img
+                          :src="`/images/icons/${it.icon}`"
+                          style="height: 55px; object-fit: contain"
+                        >
+                        <span class="pt-2 text-center font-weight-bold">{{ it.text }}</span>
+                      </div>
+                    </NuxtLink>
+                  </v-col>
                 </v-row>
               </v-container>
             </v-sheet>
@@ -100,23 +158,21 @@
                 <v-row
                   justify="center"
                 >
-                  <div class="d-flex justify-center ">
-                    <v-sheet
-                      v-for="n in 3"
-                      :key="n"
-                      class="ma-2 pa-2"
-                    >
-                      <NuxtLink>
-                        <div class="d-flex flex-column">
-                          <img
-                            src="~/assets/icons/icon1.png"
-                            style="height: 55px; object-fit: contain"
-                          >
-                          นำเข้าพัสดุ
-                        </div>
-                      </NuxtLink>
-                    </v-sheet>
-                  </div>
+                  <v-col
+                    v-for="(it, id) in menuSub"
+                    :key="id"
+                    class="d-flex justify-center  "
+                  >
+                    <NuxtLink :to="it.link" class="text-decoration-none text-darkprimary">
+                      <div class="d-flex flex-column">
+                        <img
+                          :src="`/images/icons/${it.icon}`"
+                          style="height: 55px; object-fit: contain"
+                        >
+                        <span class="pt-2 text-center font-weight-bold">{{ it.text }}</span>
+                      </div>
+                    </NuxtLink>
+                  </v-col>
                 </v-row>
               </v-container>
             </v-sheet>
@@ -130,10 +186,6 @@
     </v-main>
   </v-app>
 </template>
-
-<script setup lang="ts">
-
-</script>
 
 <style scoped>
 
