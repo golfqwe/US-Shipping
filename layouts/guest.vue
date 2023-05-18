@@ -59,10 +59,10 @@
           />
         </v-carousel>
       </div>
-      <section>
+      <v-container>
         <!-- <v-sheet rounded color="accent" height="60" /> -->
         <v-row justify="center">
-          <v-col cols="10">
+          <v-col>
             <v-sheet class="" color="white" rounded border>
               <v-container>
                 <v-row
@@ -91,12 +91,12 @@
           </v-col>
         </v-row>
         <v-row justify="center">
-          <v-col cols="10">
+          <v-col>
             <v-sheet class="" color="white" rounded border>
               <v-container>
-                <h4 class="text-h5 font-weight-bold mb-4 text-darkprimary">
+                <h5 class="text-h5 font-weight-bold mb-4 text-darkprimary">
                   ระบบบริการลูกค้า
-                </h4>
+                </h5>
                 <v-row
                   justify="center"
                 >
@@ -122,8 +122,9 @@
             </v-sheet>
           </v-col>
         </v-row>
-      </section>
-      <v-container class="page-wrapper">
+      </v-container>
+
+      <v-container>
         <NuxtPage />
       </v-container>
     </v-main>
