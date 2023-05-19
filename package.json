@@ -6,7 +6,7 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "deploy": "npm run generate && gh-pages --dotfiles -d .output/public"
+    "deploy": "npx nuxi generate --dotenv .env.production && gh-pages --dotfiles -d .output/public"
   },
   "dependencies": {
     "@mdi/font": "^6.5.95",
