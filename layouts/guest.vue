@@ -163,10 +163,10 @@ const menuSub = reactive([
                   >
                     <NuxtLink :to="it.link" class="text-decoration-none text-darkprimary">
                       <div class="d-flex flex-column">
-                        <v-img
+                        <img
                           :src="`/images/icons/${it.icon}`"
-                          height="50"
-                        />
+                          style="height: 50px; object-fit: contain"
+                        >
                         <span class="pt-2 text-center font-weight-bold">{{ it.text }}</span>
                       </div>
                     </NuxtLink>
@@ -194,10 +194,10 @@ const menuSub = reactive([
                   >
                     <NuxtLink :to="it.link" class="text-decoration-none text-darkprimary">
                       <div class="d-flex flex-column">
-                        <v-img
+                        <img
                           :src="`/images/icons/${it.icon}`"
-                          height="50"
-                        />
+                          style="height: 50px; object-fit: contain"
+                        >
                         <span class="pt-2 text-center font-weight-bold">{{ it.text }}</span>
                       </div>
                     </NuxtLink>
