@@ -56,9 +56,11 @@ const menuSub = reactive([
   }
 ])
 
+const config = useRuntimeConfig()
+
 function useAsset (path: string): string {
   // @ts-expect-error: wrong type info
-  return new URL(path, import.meta.url)
+  return new URL(`${config.BASE_URL}` + path, import.meta.url)
 }
 
 </script>
@@ -169,7 +171,7 @@ function useAsset (path: string): string {
                     <NuxtLink :to="it.link" class="text-decoration-none text-darkprimary">
                       <div class="d-flex flex-column">
                         <img
-                          :src="useAsset(`/images/icons/${it.icon}`)"
+                          :src="useAsset(`images/icons/${it.icon}`)"
                           style="height: 50px; object-fit: contain"
                         >
                         <span class="pt-2 text-center font-weight-bold">{{ it.text }}</span>
@@ -200,7 +202,7 @@ function useAsset (path: string): string {
                     <NuxtLink :to="it.link" class="text-decoration-none text-darkprimary">
                       <div class="d-flex flex-column">
                         <img
-                          :src="`/images/icons/${it.icon}`"
+                          :src="useAsset(`images/icons/${it.icon}`)"
                           style="height: 50px; object-fit: contain"
                         >
                         <span class="pt-2 text-center font-weight-bold">{{ it.text }}</span>
