@@ -139,16 +139,16 @@ function useAsset (path: string): string {
       <div>
         <v-carousel hide-delimiter-background height="350">
           <v-carousel-item
+            src="https://ali-static-asset-internal.flashexpress.com/commonFile/1679657859-ccdb1c4d55a2425baeb63ad5c01bc1a2.jpg"
+            cover
+          />
+          <v-carousel-item
             src="http://www.shopandshipus.com/images/banner/home_banner_thai_3.jpg"
             cover
           />
 
           <v-carousel-item
             src="http://www.shopandshipus.com/images/banner/home_banner_thai_2n.jpg"
-            cover
-          />
-          <v-carousel-item
-            src="https://ali-static-asset-internal.flashexpress.com/commonFile/1679657859-ccdb1c4d55a2425baeb63ad5c01bc1a2.jpg"
             cover
           />
         </v-carousel>
