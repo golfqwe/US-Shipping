@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import UiParentCard from '@/components/shared/UiParentCard.vue';
+// import { ref } from 'vue'
 </script>
 <template>
   <v-row>
@@ -8,7 +7,7 @@ import UiParentCard from '@/components/shared/UiParentCard.vue';
       cols="12"
       md="12"
     >
-      <UiParentCard title="Sample Page"> 
+      <UiParentCard title="Sample Page">
         <div class="pa-7 pt-1">
           <p class="text-body-1">
             This is a sample page
