@@ -81,9 +81,12 @@ const save = async () => {
   close()
 }
 
+const { data: message } = await useFetch('/api/users')
+
 </script>
 <template>
   <div>
+    {{ message }}
     <v-card elevation="10" class="">
       <v-card-item class="pa-6">
         <v-card-title class="text-h5 pt-sm-2 pb-7">
