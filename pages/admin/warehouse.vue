@@ -4,28 +4,28 @@ const search = ref(null)
 const loading = ref(false)
 const formWarehouse = ref()
 const itemsCountry = reactive([])
-const items = reactive([
-  {
-    id: 1,
-    country: 'test',
-    carrier: 'Air',
-    address: 1,
-    status: 1
-  }
-])
+const items = reactive([])
 
 const defaultItem = reactive({
   country: '',
   carrier: 'Air',
   address: '',
-  status: 1
+  status: true
 })
 const editedIndex = ref(-1)
 const editedItem = reactive({
   country: '',
   carrier: '',
   address: '',
-  status: 1
+  status: true
+})
+
+const { data: listWarehouse, refresh } = await useFetch('/api/warehouse/', {
+  method: 'GET'
+})
+Object.assign(items, listWarehouse.value)
+watch(listWarehouse, () => {
+  Object.assign(items, listWarehouse.value)
 })
 
 watch(search, (val) => {
@@ -50,7 +50,7 @@ const querySelections = async (v: string) => {
 
 const editItem = (item: any) => {
   editedIndex.value = item.id
-  Object.assign(editedItem, item)
+  Object.assign(editedItem, { ...item, status: item.status === 'active' })
   dialog.value = true
 }
 const close = async () => {
@@ -64,34 +64,40 @@ const close = async () => {
 const save = async () => {
   const { valid } = await formWarehouse.value.validate()
 
-  if (!valid) { return }
+  if (!valid) {
+    return
+  }
   if (editedIndex.value > -1) {
-    await useFetch('/api/auth/login', {
-      onResponse ({ request, response, options }) {
-        // Process the response data
-        localStorage.setItem('token', response._data.token)
-      },
-      onResponseError ({ request, response, options }) {
-        // Handle the response errors
+    await useFetch('/api/warehouse/' + editedIndex.value, {
+      method: 'put',
+      body: {
+        ...editedItem,
+        status: editedItem.status ? 'active' : 'inactive'
       }
     })
   } else {
-    // this.desserts.push(this.editedItem)
+    await useFetch('/api/warehouse/', {
+      method: 'post',
+      body: {
+        country: editedItem.country,
+        carrier: editedItem.carrier,
+        address: editedItem.address,
+        status: editedItem.status
+      }
+    })
   }
   close()
+  refresh()
 }
-
-const { data: message } = await useFetch('/api/users')
 
 </script>
 <template>
   <div>
-    {{ message }}
     <v-card elevation="10" class="">
       <v-card-item class="pa-6">
         <v-card-title class="text-h5 pt-sm-2 pb-7">
           <v-row justify="space-between">
-            <v-col> Recent Transactions </v-col>
+            <v-col> ที่อยู่โกดัง </v-col>
             <v-col cols="auto">
               <v-btn color="info" @click="dialog = true">
                 <v-icon start>
@@ -146,14 +152,9 @@ const { data: message } = await useFetch('/api/users')
                   {{ item.address }}
                 </h6>
               </td>
-              <td>
-                <h6 class="text-h6 ">
-                  {{ item.status }}
-                </h6>
-              </td>
               <td class="text-center">
                 <v-chip
-                  class="text-body-1 bg-success"
+                  :class="{'text-body-1':true, 'bg-success':item.status === 'active','bg-error':item.status === 'inactive' }"
                   color="white"
                   size="small"
                 >
@@ -161,7 +162,12 @@ const { data: message } = await useFetch('/api/users')
                 </v-chip>
               </td>
               <td class="text-right">
-                <v-btn size="small" rounded="lg" color="info" @click="editItem(item)">
+                <v-btn
+                  size="small"
+                  rounded="lg"
+                  color="info"
+                  @click="editItem(item)"
+                >
                   <v-icon start dark>
                     mdi-pencil
                   </v-icon> edit
@@ -176,7 +182,7 @@ const { data: message } = await useFetch('/api/users')
     <v-dialog v-model="dialog" persistent width="800">
       <v-card>
         <v-card-title>
-          <span class="text-h5">User Profile</span>
+          <span class="text-h5">{{ editedIndex.value > -1? 'เพิ่ม':'แก้ไข' }}ที่อยู่โกดัง</span>
         </v-card-title>
         <v-card-text>
           <v-container>
@@ -245,6 +251,18 @@ const { data: message } = await useFetch('/api/users')
                     hide-details
                     variant="outlined"
                     color="primary"
+                  />
+                </v-col>
+                <v-col v-show="editedIndex.value > -1" cols="4">
+                  <v-label class="font-weight-bold mb-1">
+                    Status
+                  </v-label>
+                  <v-switch
+                    v-model="editedItem.status"
+                    color="success"
+                    hide-details
+                    inset
+                    :label="`${editedItem.status ? 'active' : 'inactive'}`"
                   />
                 </v-col>
               </v-row>
