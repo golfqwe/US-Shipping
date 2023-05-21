@@ -1,4 +1,4 @@
-/*Recent Transaction*/
+/* Recent Transaction */
 type recentTrans = {
     title: string;
     subtitle: string;
@@ -9,7 +9,7 @@ type recentTrans = {
     url: string;
 };
 
-/*product performance*/
+/* product performance */
 type productPerformanceType = {
     id: number;
     name: string;
@@ -20,7 +20,7 @@ type productPerformanceType = {
     budget: string;
 };
 
-/*Products card types*/
+/* Products card types */
 type productsCards = {
     title: string;
     link: string;

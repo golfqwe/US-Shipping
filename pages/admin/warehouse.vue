@@ -1,10 +1,12 @@
 <script setup lang="ts">
+import type { wareHouse } from '@/types/wareHouse/index'
+
 const dialog = ref(false)
 const search = ref(null)
 const loading = ref(false)
 const formWarehouse = ref()
 const itemsCountry = reactive([])
-const items = reactive([])
+const items: wareHouse[] = reactive([])
 
 const defaultItem = reactive({
   country: '',
@@ -89,7 +91,6 @@ const save = async () => {
   close()
   refresh()
 }
-
 </script>
 <template>
   <div>
@@ -144,6 +145,17 @@ const save = async () => {
               </td>
               <td>
                 <h6 class="text-body-1 text-muted">
+                  <v-icon
+                    start
+                    size="x-large"
+                    :color="item.carrier === 'Air' ? 'success' : 'blue'"
+                  >
+                    {{
+                      item.carrier === "Air"
+                        ? "  mdi-airplane"
+                        : "   mdi-sail-boat"
+                    }}
+                  </v-icon>
                   {{ item.carrier }}
                 </h6>
               </td>
@@ -154,7 +166,11 @@ const save = async () => {
               </td>
               <td class="text-center">
                 <v-chip
-                  :class="{'text-body-1':true, 'bg-success':item.status === 'active','bg-error':item.status === 'inactive' }"
+                  :class="{
+                    'text-body-1': true,
+                    'bg-success': item.status === 'active',
+                    'bg-error': item.status === 'inactive',
+                  }"
                   color="white"
                   size="small"
                 >
@@ -182,7 +198,7 @@ const save = async () => {
     <v-dialog v-model="dialog" persistent width="800">
       <v-card>
         <v-card-title>
-          <span class="text-h5">{{ editedIndex.value > -1? 'เพิ่ม':'แก้ไข' }}ที่อยู่โกดัง</span>
+          <span class="text-h5">{{ editedIndex > -1 ? "แก้ไข": "เพิ่ม" }}ที่อยู่โกดัง</span>
         </v-card-title>
         <v-card-text>
           <v-container>
@@ -253,7 +269,7 @@ const save = async () => {
                     color="primary"
                   />
                 </v-col>
-                <v-col v-show="editedIndex.value > -1" cols="4">
+                <v-col v-show="editedIndex > -1" cols="4">
                   <v-label class="font-weight-bold mb-1">
                     Status
                   </v-label>
