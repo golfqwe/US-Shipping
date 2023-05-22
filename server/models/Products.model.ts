@@ -6,8 +6,7 @@ import { WareHouseModel } from './Warehouse.model'
 export class ProductsModel extends Model { }
 
 ProductsModel.init({
-
-  carriesId: {
+  carrierId: {
     type: DataTypes.INTEGER,
     references: {
       model: LocalCarriersModel,

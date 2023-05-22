@@ -18,7 +18,8 @@ useHead({
         <v-main>
           <v-container fluid class="page-wrapper">
             <div class="maxWidth">
-              <NuxtPage />
+              <!-- <NuxtPage /> -->
+              <slot />
             </div>
           </v-container>
         </v-main>

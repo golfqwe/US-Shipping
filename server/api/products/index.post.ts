@@ -1,4 +1,4 @@
-import { LocalCarriersModel } from '~/server/models/LocalCarriers.model'
+import { ProductsModel } from '~/server/models/Products.model'
 import { ProductSchema } from '~/server/utils/validation.product'
 
 export default defineEventHandler(async (event) => {
@@ -13,7 +13,7 @@ export default defineEventHandler(async (event) => {
       message: error.message
     })
   }
-  const data = await LocalCarriersModel.create(body)
+  const data = await ProductsModel.create(body)
   setResponseStatus(201)
   return data
 })

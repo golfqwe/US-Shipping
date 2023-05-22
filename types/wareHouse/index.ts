@@ -4,7 +4,7 @@ type wareHouse = {
   country?: string;
   carrier?: string;
   address?: string;
-  status?: string;
+  status?: string|boolean;
 };
 
 export type { wareHouse }

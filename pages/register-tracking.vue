@@ -1,7 +1,75 @@
 <script setup lang="ts">
+import type { wareHouse } from '@/types/wareHouse/index'
+import type { localCarrier } from '@/types/localCarrier/index'
+import type { Product } from '@/types/product/index'
 definePageMeta({
   layout: 'guest'
 })
+
+const formRegisterTracking = ref()
+const editedItem: Product = reactive({
+  carrierId: null,
+  wareHouseId: null,
+  trackingNumber: '',
+  website: '',
+  description: '',
+  carrier: 'Air',
+  status: true
+})
+
+const snackbar = reactive({
+  status: false,
+  text: '',
+  color: 'success'
+})
+
+const itemsWareHouse: wareHouse[] = reactive([])
+const itemsLocalCarrier: localCarrier[] = reactive([])
+
+watch(() => editedItem.carrier, (carrier) => {
+  fetchListWareHouse(carrier as string)
+})
+
+const fetchListWareHouse = async (carrier: string) => {
+  const { data: listWarehouse } = await useFetch('/api/warehouse/', {
+    method: 'GET',
+    params: { carrier }
+  })
+  Object.assign(itemsWareHouse, listWarehouse.value)
+}
+const save = async () => {
+  const { valid } = await formRegisterTracking.value.validate()
+
+  if (!valid) {
+    return
+  }
+
+  const { error } = await useFetch('/api/products/', {
+    method: 'post',
+    body: {
+      ...editedItem,
+      status: editedItem.status ? 'active' : 'inactive'
+    }
+  })
+
+  if (error.value) {
+    snackbar.text = 'Save data failed'
+    snackbar.color = 'error'
+  } else {
+    snackbar.text = 'Save data successfully'
+    snackbar.color = 'success'
+    formRegisterTracking.value.reset()
+  }
+  snackbar.status = true
+}
+
+// on mounted
+const { data: listItems } = await useFetch('/api/localcarriers/', {
+  method: 'GET'
+})
+Object.assign(itemsLocalCarrier, listItems.value)
+fetchListWareHouse(editedItem.carrier || 'Air')
+
 </script>
 
 <template>
@@ -14,120 +82,144 @@ definePageMeta({
         </v-alert>
       </v-col>
     </v-row>
+    <v-form ref="formRegisterTracking">
+      <v-row align="center">
+        <v-col cols="3">
+          <v-label class="font-weight-bold mb-1">
+            Local Carrier
+          </v-label>
+        </v-col>
+        <v-col cols="4">
+          <v-select
+            v-model="editedItem.carrierId"
+            :items="itemsLocalCarrier"
+            :rules="[(v) => !!v || 'Local Carrier is required']"
+            item-title="name"
+            item-value="id"
+            variant="outlined"
+            hide-details="auto"
+            color="primary"
+          />
+        </v-col>
+      </v-row>
+      <v-row align="center">
+        <v-col cols="3">
+          <v-label class="font-weight-bold mb-1">
+            Traking Number #
+          </v-label>
+        </v-col>
+        <v-col cols="4">
+          <v-text-field
+            v-model="editedItem.trackingNumber"
+            :rules="[(v) => !!v || 'Traking Number is required']"
+            hide-details="auto"
+            variant="outlined"
+            color="primary"
+          />
+        </v-col>
+      </v-row>
+      <v-row align="center">
+        <v-col cols="3">
+          <v-label class="font-weight-bold mb-1">
+            Website
+          </v-label>
+        </v-col>
+        <v-col>
+          <v-text-field
+            v-model="editedItem.website"
+            :rules="[(v) => !!v || 'Website is required']"
+            variant="outlined"
+            hide-details="auto"
+            color="primary"
+          />
+        </v-col>
+      </v-row>
+      <v-row align="center">
+        <v-col cols="3">
+          <v-label class="font-weight-bold mb-1">
+            Description
+          </v-label>
+        </v-col>
+        <v-col cols="6">
+          <v-textarea
+            v-model="editedItem.description"
+            hide-details="auto"
+            variant="outlined"
+            color="primary"
+          />
+        </v-col>
+      </v-row>
+      <v-row align="center">
+        <v-col cols="3">
+          <v-label class="font-weight-bold mb-1">
+            Carrier
+          </v-label>
+        </v-col>
+        <v-col cols="6">
+          <v-radio-group
+            v-model="editedItem.carrier"
+            inline
+            :rules="[(v) => !!v || 'Carrier is required']"
+          >
+            <v-radio label="Air Freight" value="Air">
+              <template #label>
+                <div>
+                  <v-icon start size="x-large" color="success">
+                    mdi-airplane
+                  </v-icon>
+                  <span>Air Freight</span>
+                </div>
+              </template>
+            </v-radio>
+            <v-radio value="Ocean">
+              <template #label>
+                <div>
+                  <v-icon start size="x-large" color="blue">
+                    mdi-sail-boat
+                  </v-icon>
+                  <span>Ocean Freight</span>
+                </div>
+              </template>
+            </v-radio>
+          </v-radio-group>
+        </v-col>
+      </v-row>
+      <v-row align="center">
+        <v-col cols="3">
+          <v-label class="font-weight-bold mb-1">
+            Warehouse
+          </v-label>
+        </v-col>
+        <v-col cols="4">
+          <v-select
+            v-model="editedItem.wareHouseId"
+            :rules="[(v) => !!v || 'Warehouse is required']"
+            :items="itemsWareHouse"
+            item-title="country"
+            item-value="id"
+            variant="outlined"
+            hide-details="auto"
+            color="primary"
+          />
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="12">
+          <v-btn color="primary" size="large" block @click="save">
+            Register Tracking
+          </v-btn>
+        </v-col>
+      </v-row>
+    </v-form>
 
-    <v-row align="center">
-      <v-col cols="3">
-        <v-label class="font-weight-bold mb-1">
-          Local Carrier
-        </v-label>
-      </v-col>
-      <v-col cols="4">
-        <v-select
-          :items="['California', 'Colorado', 'Florida', 'Georgia', 'Texas', 'Wyoming']"
-          variant="outlined"
-          hide-details
-          color="primary"
-        />
-      </v-col>
-    </v-row>
-    <v-row align="center">
-      <v-col cols="3">
-        <v-label class="font-weight-bold mb-1">
-          Traking Number #
-        </v-label>
-      </v-col>
-      <v-col cols="4">
-        <v-text-field
-          variant="outlined"
-          hide-details
-          color="primary"
-        />
-      </v-col>
-    </v-row>
-    <v-row align="center">
-      <v-col cols="3">
-        <v-label class="font-weight-bold mb-1">
-          Website
-        </v-label>
-      </v-col>
-      <v-col>
-        <v-text-field
-          variant="outlined"
-          hide-details
-          color="primary"
-        />
-      </v-col>
-    </v-row>
-    <v-row align="center">
-      <v-col cols="3">
-        <v-label class="font-weight-bold mb-1">
-          Description
-        </v-label>
-      </v-col>
-      <v-col cols="6">
-        <v-textarea hide-details variant="outlined" color="primary" />
-      </v-col>
-    </v-row>
-    <v-row align="center">
-      <v-col cols="3">
-        <v-label class="font-weight-bold mb-1">
-          Carrier
-        </v-label>
-      </v-col>
-      <v-col cols="6">
-        <v-radio-group
-          inline
-        >
-          <v-radio
-            label="Air Freight"
-            value="Air"
-          >
-            <template #label>
-              <div>
-                <v-icon start size="x-large" color="success">
-                  mdi-airplane
-                </v-icon>
-                <span>Air Freight</span>
-              </div>
-            </template>
-          </v-radio>
-          <v-radio
-            value="Ocean"
-          >
-            <template #label>
-              <div>
-                <v-icon start size="x-large" color="blue">
-                  mdi-sail-boat
-                </v-icon>
-                <span>Ocean Freight</span>
-              </div>
-            </template>
-          </v-radio>
-        </v-radio-group>
-      </v-col>
-    </v-row>
-    <v-row align="center">
-      <v-col cols="3">
-        <v-label class="font-weight-bold mb-1">
-          Warehouse
-        </v-label>
-      </v-col>
-      <v-col cols="4">
-        <v-select
-          :items="['USPS', 'UPS', 'FedEx', 'DHL', 'Drop', 'On Trac', 'TNT', 'Amazon','GLS','Other']"
-          variant="outlined"
-          hide-details
-          color="primary"
-        />
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col cols="12">
-        <v-btn to="/" color="primary" size="large" block flat>
-          Register Tracking
-        </v-btn>
-      </v-col>
-    </v-row>
+    <v-snackbar
+      v-model="snackbar.status"
+      :timeout="2000"
+      :color="snackbar.color"
+      location="top right"
+    >
+      {{ snackbar.text }}
+    </v-snackbar>
   </v-sheet>
 </template>
 

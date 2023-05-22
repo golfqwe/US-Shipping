@@ -218,7 +218,8 @@ function useAsset (path: string): string {
         </v-container>
 
         <v-container>
-          <NuxtPage />
+          <!-- <NuxtPage /> -->
+          <slot />
         </v-container>
       </v-main>
     </v-app>

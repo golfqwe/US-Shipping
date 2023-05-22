@@ -8,6 +8,11 @@ const formWarehouse = ref()
 const itemsCountry = reactive([])
 const items: wareHouse[] = reactive([])
 
+const snackbar = reactive({
+  status: false,
+  text: '',
+  color: 'success'
+})
 const defaultItem = reactive({
   country: '',
   carrier: 'Air',
@@ -15,7 +20,7 @@ const defaultItem = reactive({
   status: true
 })
 const editedIndex = ref(-1)
-const editedItem = reactive({
+const editedItem: wareHouse = reactive({
   country: '',
   carrier: '',
   address: '',
@@ -70,15 +75,24 @@ const save = async () => {
     return
   }
   if (editedIndex.value > -1) {
-    await useFetch('/api/warehouse/' + editedIndex.value, {
+    const { error } = await useFetch('/api/warehouse/' + editedIndex.value, {
       method: 'put',
       body: {
         ...editedItem,
         status: editedItem.status ? 'active' : 'inactive'
       }
     })
+
+    if (error.value) {
+      snackbar.text = 'Save data failed'
+      snackbar.color = 'error'
+    } else {
+      snackbar.text = 'Save data successfully'
+      snackbar.color = 'success'
+    }
+    snackbar.status = true
   } else {
-    await useFetch('/api/warehouse/', {
+    const { error } = await useFetch('/api/warehouse/', {
       method: 'post',
       body: {
         country: editedItem.country,
@@ -87,11 +101,19 @@ const save = async () => {
         status: editedItem.status ? 'active' : 'inactive'
       }
     })
+
+    if (error.value) {
+      snackbar.text = 'Save data failed'
+      snackbar.color = 'error'
+    } else {
+      snackbar.text = 'Save data successfully'
+      snackbar.color = 'success'
+    }
+    snackbar.status = true
   }
   close()
   refresh()
 }
-
 </script>
 <template>
   <div>
@@ -199,7 +221,7 @@ const save = async () => {
     <v-dialog v-model="dialog" persistent width="800">
       <v-card>
         <v-card-title>
-          <span class="text-h5">{{ editedIndex > -1 ? "แก้ไข": "เพิ่ม" }}ที่อยู่โกดัง</span>
+          <span class="text-h5">{{ editedIndex > -1 ? "แก้ไข" : "เพิ่ม" }}ที่อยู่โกดัง</span>
         </v-card-title>
         <v-card-text>
           <v-container>
@@ -298,5 +320,14 @@ const save = async () => {
         </v-card-actions>
       </v-card>
     </v-dialog>
+
+    <v-snackbar
+      v-model="snackbar.status"
+      :timeout="2000"
+      :color="snackbar.color"
+      location="top right"
+    >
+      {{ snackbar.text }}
+    </v-snackbar>
   </div>
 </template>

@@ -62,11 +62,9 @@ const save = async () => {
       }
     )
     if (error.value) {
-      console.log('🚀 ~ file: localCarriers.vue:59 ~ save ~ error:', error)
       snackbar.text = 'Save data failed'
       snackbar.color = 'error'
     } else {
-      console.log('🚀 ~ file: localCarriers.vue:59 ~ save ~ error:', error)
       snackbar.text = 'Save data successfully'
       snackbar.color = 'success'
     }
@@ -80,11 +78,9 @@ const save = async () => {
       }
     })
     if (error.value) {
-      console.log('🚀 ~ file: localCarriers.vue:59 ~ save ~ error:', error)
       snackbar.text = 'Save data failed'
       snackbar.color = 'error'
     } else {
-      console.log('🚀 ~ file: localCarriers.vue:59 ~ save ~ error:', error)
       snackbar.text = 'Save data successfully'
       snackbar.color = 'success'
     }
@@ -188,7 +184,7 @@ const save = async () => {
                   <v-text-field
                     v-model="editedItem.name"
                     :rules="[(v: string) => !!v || 'Name is required']"
-                    hide-details
+                    hide-details="auto"
                     variant="outlined"
                     color="primary"
                   />
@@ -200,7 +196,7 @@ const save = async () => {
                   <v-switch
                     v-model="editedItem.status"
                     color="success"
-                    hide-details
+                    hide-details="auto"
                     inset
                     :label="`${editedItem.status ? 'active' : 'inactive'}`"
                   />
