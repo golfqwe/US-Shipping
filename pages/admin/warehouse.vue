@@ -84,7 +84,7 @@ const save = async () => {
         country: editedItem.country,
         carrier: editedItem.carrier,
         address: editedItem.address,
-        status: editedItem.status
+        status: editedItem.status ? 'active' : 'inactive'
       }
     })
   }

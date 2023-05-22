@@ -51,7 +51,7 @@ const sidebarItem: menu[] = [
   {
     title: 'ประเภทขนส่ง',
     icon: TruckIcon,
-    to: '/admin/ui/typography'
+    to: '/admin/localCarriers'
   },
   { header: 'Payment' },
   {
