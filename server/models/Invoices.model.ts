@@ -1,7 +1,7 @@
 import { DataTypes, Model } from 'sequelize'
 import { sequelize } from '../utils/db.instance'
 import { MembersModel } from './Members.model'
-import { ReceivesModel } from './Receiver.model'
+import { MyAddressModel } from './MyAddress.model'
 import { InvoiceItemsModel } from './InvoiceItems.model'
 
 export class InvoicesModel extends Model { }
@@ -27,4 +27,4 @@ InvoicesModel.init({
 
 InvoicesModel.hasMany(InvoiceItemsModel)
 InvoicesModel.belongsTo(MembersModel, { as: 'member' })
-InvoicesModel.belongsTo(ReceivesModel, { as: 'receiver' })
+InvoicesModel.belongsTo(MyAddressModel, { as: 'myAddress' })

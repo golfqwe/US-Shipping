@@ -2,9 +2,9 @@ import { DataTypes, Model } from 'sequelize'
 import { sequelize } from '../utils/db.instance'
 import { MembersModel } from './Members.model'
 
-export class ReceivesModel extends Model { }
+export class MyAddressModel extends Model { }
 
-ReceivesModel.init({
+MyAddressModel.init({
   contact: {
     type: DataTypes.STRING(50),
     allowNull: false
@@ -30,5 +30,9 @@ ReceivesModel.init({
       model: MembersModel,
       key: 'id'
     }
+  },
+  status: {
+    type: DataTypes.ENUM,
+    values: ['active', 'inactive']
   }
 }, { sequelize, tableName: 'members' })
