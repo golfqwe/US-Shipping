@@ -105,7 +105,7 @@ const save = async () => {
               <v-btn color="info" @click="dialog = true">
                 <v-icon start>
                   mdi-plus
-                </v-icon>เพิ่ม
+                </v-icon>Add
               </v-btn>
             </v-col>
           </v-row>

@@ -57,7 +57,7 @@ const sidebarItem: menu[] = [
   {
     title: 'ข้อมูลบัญชีที่รับชำระ',
     icon: BuildingBankIcon,
-    to: '/admin/ui/typography'
+    to: '/admin/bookBank'
   },
   { header: 'utilities' },
   {

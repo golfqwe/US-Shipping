@@ -1,9 +1,9 @@
-import { WareHouseModel } from '~/server/models/Warehouse.model'
-import { WareHouseSchema } from '~/server/utils/validation.warehouse'
+import { BookBankModel } from '~/server/models/BookBank.model'
+import { BookBankSchema } from '~/server/utils/validation.bookBank'
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
-  const { error } = WareHouseSchema.validate(body, {
+  const { error } = BookBankSchema.validate(body, {
     abortEarly: true,
     allowUnknown: true
   })
@@ -13,7 +13,7 @@ export default defineEventHandler(async (event) => {
       message: error.message
     })
   }
-  const data = await WareHouseModel.create(body)
+  const data = await BookBankModel.create(body)
   setResponseStatus(201)
   return data
 })

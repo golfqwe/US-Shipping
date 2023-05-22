@@ -1,54 +1,44 @@
 <script setup lang="ts">
-import type { wareHouse } from '@/types/wareHouse/index'
+import type { BookBank } from '@/types/bookbank/index'
 
 const dialog = ref(false)
-const search = ref(null)
-const loading = ref(false)
-const formWarehouse = ref()
-const itemsCountry = reactive([])
-const items: wareHouse[] = reactive([])
-
-const defaultItem = reactive({
-  country: '',
-  carrier: 'Air',
-  address: '',
-  status: true
+const snackbar = reactive({
+  status: false,
+  text: '',
+  color: 'success'
 })
+const formInput = ref()
+const items: BookBank[] = reactive([])
+
 const editedIndex = ref(-1)
-const editedItem = reactive({
-  country: '',
-  carrier: '',
-  address: '',
+const defaultItem: BookBank = reactive({
+  accountName: '',
+  bankName: '',
+  branch: '',
+  accountType: '',
+  accountNumber: '',
+  status: true
+})
+const editedItem: BookBank = reactive({
+  accountName: '',
+  bankName: '',
+  branch: '',
+  accountType: '',
+  accountNumber: '',
   status: true
 })
 
-const { data: listWarehouse, refresh } = await useFetch('/api/warehouse/', {
+const { data: listItems, refresh } = await useFetch('/api/bookBank/', {
   method: 'GET'
 })
-Object.assign(items, listWarehouse.value)
-watch(listWarehouse, () => {
-  Object.assign(items, listWarehouse.value)
+Object.assign(items, listItems.value)
+watch(listItems, () => {
+  Object.assign(items, listItems.value)
 })
 
-watch(search, (val) => {
-  val && val !== editedItem.country && querySelections(val)
-})
 watch(dialog, (val) => {
   val || close()
 })
-
-const querySelections = async (v: string) => {
-  loading.value = true
-  // Simulated ajax query
-  const { data: countries } = await useLazyFetch(
-    `https://restcountries.com/v3.1/name/${v}`,
-    {
-      transform: cty => cty
-    }
-  )
-  Object.assign(itemsCountry, toRaw(countries.value))
-  loading.value = false
-}
 
 const editItem = (item: any) => {
   editedIndex.value = item.id
@@ -62,36 +52,52 @@ const close = async () => {
     editedIndex.value = -1
   })
 }
-
 const save = async () => {
-  const { valid } = await formWarehouse.value.validate()
+  const { valid } = await formInput.value.validate()
 
   if (!valid) {
     return
   }
   if (editedIndex.value > -1) {
-    await useFetch('/api/warehouse/' + editedIndex.value, {
+    const { error } = await useFetch('/api/bookBank/' + editedIndex.value, {
       method: 'put',
       body: {
         ...editedItem,
         status: editedItem.status ? 'active' : 'inactive'
       }
     })
+    if (error.value) {
+      snackbar.text = 'Save data failed'
+      snackbar.color = 'error'
+    } else {
+      snackbar.text = 'Save data successfully'
+      snackbar.color = 'success'
+    }
+    snackbar.status = true
   } else {
-    await useFetch('/api/warehouse/', {
+    const { error } = await useFetch('/api/bookBank/', {
       method: 'post',
       body: {
-        country: editedItem.country,
-        carrier: editedItem.carrier,
-        address: editedItem.address,
+        accountName: editedItem.accountName,
+        bankName: editedItem.bankName,
+        branch: editedItem.branch,
+        accountType: editedItem.accountType,
+        accountNumber: editedItem.accountNumber,
         status: editedItem.status ? 'active' : 'inactive'
       }
     })
+    if (error.value) {
+      snackbar.text = 'Save data failed'
+      snackbar.color = 'error'
+    } else {
+      snackbar.text = 'Save data successfully'
+      snackbar.color = 'success'
+    }
+    snackbar.status = true
   }
   close()
   refresh()
 }
-
 </script>
 <template>
   <div>
@@ -99,7 +105,7 @@ const save = async () => {
       <v-card-item class="pa-6">
         <v-card-title class="text-h5 pt-sm-2 pb-7">
           <v-row justify="space-between">
-            <v-col> ที่อยู่โกดัง </v-col>
+            <v-col> ข้อมูลบัญชีที่รับชำระ </v-col>
             <v-col cols="auto">
               <v-btn color="info" @click="dialog = true">
                 <v-icon start>
@@ -116,14 +122,18 @@ const save = async () => {
                 ::
               </th>
               <th class="text-subtitle-1 font-weight-bold">
-                Country
+                Account Name
               </th>
               <th class="text-subtitle-1 font-weight-bold">
-                Carrier
+                Bank Name
               </th>
               <th class="text-subtitle-1 font-weight-bold">
-                Address
+                Account Type
               </th>
+              <th class="text-subtitle-1 font-weight-bold">
+                Account Number
+              </th>
+
               <th class="text-subtitle-1 font-weight-bold text-center">
                 status
               </th>
@@ -141,30 +151,30 @@ const save = async () => {
               </td>
               <td>
                 <h6 class="text-subtitle-1 font-weight-bold">
-                  {{ item.country }}
+                  {{ item.accountName }}
                 </h6>
               </td>
               <td>
-                <h6 class="text-body-1 text-muted">
-                  <v-icon
-                    start
-                    size="x-large"
-                    :color="item.carrier === 'Air' ? 'success' : 'blue'"
-                  >
-                    {{
-                      item.carrier === "Air"
-                        ? "  mdi-airplane"
-                        : "   mdi-sail-boat"
-                    }}
-                  </v-icon>
-                  {{ item.carrier }}
+                <div class="">
+                  <h6 class="text-subtitle-1 font-weight-bold">
+                    {{ item.bankName }}
+                  </h6>
+                  <div class="text-13 mt-1 text-muted">
+                    {{ item.branch }}
+                  </div>
+                </div>
+              </td>
+              <td>
+                <h6 class="text-subtitle-1 font-weight-bold">
+                  {{ item.accountType }}
                 </h6>
               </td>
               <td>
-                <h6 class="text-body-1 text-muted">
-                  {{ item.address }}
+                <h6 class="text-subtitle-1 font-weight-bold">
+                  {{ item.accountNumber }}
                 </h6>
               </td>
+
               <td class="text-center">
                 <v-chip
                   :class="{
@@ -199,74 +209,73 @@ const save = async () => {
     <v-dialog v-model="dialog" persistent width="800">
       <v-card>
         <v-card-title>
-          <span class="text-h5">{{ editedIndex > -1 ? "แก้ไข": "เพิ่ม" }}ที่อยู่โกดัง</span>
+          <span class="text-h5">{{
+            editedIndex > -1 ? "แก้ไข" : "เพิ่ม"
+          }}ข้อมูลบัญชีที่รับชำระ</span>
         </v-card-title>
         <v-card-text>
           <v-container>
-            <v-form ref="formWarehouse">
+            <v-form ref="formInput">
               <v-row>
                 <v-col cols="12">
                   <v-label class="font-weight-bold mb-1">
-                    Country <span class="text-red">*</span>
+                    Account Name<span class="text-red">*</span>
                   </v-label>
-                  <v-autocomplete
-                    v-model="editedItem.country"
-                    v-model:search="search"
-                    :loading="loading"
-                    :rules="[(v) => !!v || 'Country is required']"
-                    :items="itemsCountry"
-                    density="comfortable"
-                    hide-no-data
-                    item-title="name.common"
-                    item-value="name.common"
-                    color="primary"
-                    hide-details="auto"
-                    clearable
+                  <v-text-field
+                    v-model="editedItem.accountName"
+                    :rules="[(v: string) => !!v || 'Account Name is required']"
+                    hide-details
                     variant="outlined"
+                    color="primary"
+                  />
+                </v-col>
+                <v-col cols="6">
+                  <v-label class="font-weight-bold mb-1">
+                    Bank Name<span class="text-red">*</span>
+                  </v-label>
+                  <v-text-field
+                    v-model="editedItem.bankName"
+                    :rules="[(v: string) => !!v || ' Bank Name is required']"
+                    hide-details
+                    variant="outlined"
+                    color="primary"
+                  />
+                </v-col>
+                <v-col cols="6">
+                  <v-label class="font-weight-bold mb-1">
+                    Branch<span class="text-red">*</span>
+                  </v-label>
+                  <v-text-field
+                    v-model="editedItem.branch"
+                    :rules="[(v: string) => !!v || 'Branch is required']"
+                    hide-details
+                    variant="outlined"
+                    color="primary"
                   />
                 </v-col>
 
-                <v-col cols="12">
+                <v-col cols="6">
                   <v-label class="font-weight-bold mb-1">
-                    Carrier<span class="text-red">*</span>
+                    Account Number<span class="text-red">*</span>
                   </v-label>
-                  <v-radio-group
-                    v-model="editedItem.carrier"
-                    inline
-                    hide-details="auto"
-                    :rules="[(v) => !!v || 'Carrier is required']"
-                  >
-                    <v-radio label="Air Freight" value="Air">
-                      <template #label>
-                        <div>
-                          <v-icon start size="x-large" color="success">
-                            mdi-airplane
-                          </v-icon>
-                          <span>Air Freight</span>
-                        </div>
-                      </template>
-                    </v-radio>
-                    <v-radio value="Ocean">
-                      <template #label>
-                        <div>
-                          <v-icon start size="x-large" color="blue">
-                            mdi-sail-boat
-                          </v-icon>
-                          <span>Ocean Freight</span>
-                        </div>
-                      </template>
-                    </v-radio>
-                  </v-radio-group>
-                </v-col>
-                <v-col cols="12">
-                  <v-label class="font-weight-bold mb-1">
-                    Address<span class="text-red">*</span>
-                  </v-label>
-                  <v-textarea
-                    v-model="editedItem.address"
-                    :rules="[(v) => !!v || 'Address is required']"
+                  <v-text-field
+                    v-model="editedItem.accountNumber"
+                    :rules="[(v: string) => !!v || 'Account Number is required']"
                     hide-details
                     variant="outlined"
+                    color="primary"
+                  />
+                </v-col>
+                <v-col cols="6">
+                  <v-label class="font-weight-bold mb-1">
+                    Account Type<span class="text-red">*</span>
+                  </v-label>
+                  <v-select
+                    v-model="editedItem.accountType"
+                    :rules="[(v: string) => !!v || 'Account Type is required']"
+                    hide-details
+                    variant="outlined"
+                    :items="['ออมทรัพย์','ออมทรัพย์พิเศษ','ฝากประจำ']"
                     color="primary"
                   />
                 </v-col>
@@ -298,5 +307,14 @@ const save = async () => {
         </v-card-actions>
       </v-card>
     </v-dialog>
+
+    <v-snackbar
+      v-model="snackbar.status"
+      :timeout="2000"
+      :color="snackbar.color"
+      location="top right"
+    >
+      {{ snackbar.text }}
+    </v-snackbar>
   </div>
 </template>

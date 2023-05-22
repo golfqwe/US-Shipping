@@ -1,14 +1,14 @@
-import { WareHouseModel } from '~/server/models/Warehouse.model'
+import { BookBankModel } from '~/server/models/BookBank.model'
 
 export default defineEventHandler(async (event) => {
   const id = event.context.params?.id
   const body = await readBody(event)
-  await WareHouseModel.update(body, {
+  await BookBankModel.update(body, {
     where: {
       id
     }
   })
 
-  setResponseStatus(202)
+  setResponseStatus(event, 202)
   return null
 })
