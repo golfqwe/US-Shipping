@@ -2,10 +2,18 @@ import { DataTypes, Model } from 'sequelize'
 import { sequelize } from '../utils/db.instance'
 import { LocalCarriersModel } from './LocalCarriers.model'
 import { WareHouseModel } from './Warehouse.model'
+import { UsersModel } from './Users.model'
 
 export class ProductsModel extends Model { }
 
 ProductsModel.init({
+  userId: {
+    type: DataTypes.INTEGER,
+    references: {
+      model: UsersModel,
+      key: 'id'
+    }
+  },
   carrierId: {
     type: DataTypes.INTEGER,
     references: {
@@ -41,9 +49,6 @@ ProductsModel.init({
     values: ['active', 'inactive']
   }
 }, { sequelize, tableName: 'products' })
-
-LocalCarriersModel.hasOne(ProductsModel)
-WareHouseModel.hasOne(ProductsModel)
 
 ProductsModel.belongsTo(LocalCarriersModel, { as: 'localCarrier' })
 ProductsModel.belongsTo(WareHouseModel, { as: 'wareHouse' })

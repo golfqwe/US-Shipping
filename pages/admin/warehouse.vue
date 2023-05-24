@@ -13,7 +13,7 @@ const snackbar = reactive({
   text: '',
   color: 'success'
 })
-const defaultItem = reactive({
+const defaultItem: wareHouse = reactive({
   country: '',
   carrier: 'Air',
   address: '',

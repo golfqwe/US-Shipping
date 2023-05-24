@@ -1,6 +1,6 @@
 import { DataTypes, Model } from 'sequelize'
 import { sequelize } from '../utils/db.instance'
-import { MembersModel } from './Members.model'
+import { UsersModel } from './Users.model'
 
 export class MyAddressModel extends Model { }
 
@@ -27,12 +27,14 @@ MyAddressModel.init({
   createBy: {
     type: DataTypes.INTEGER,
     references: {
-      model: MembersModel,
+      model: UsersModel,
       key: 'id'
     }
   },
   status: {
     type: DataTypes.ENUM,
-    values: ['active', 'inactive']
+    values: ['active', 'pending', 'inactive']
   }
-}, { sequelize, tableName: 'members' })
+}, { sequelize, tableName: 'myAddress' })
+
+// MyAddressModel.belongsTo(UsersModel, { as: 'userInfo' })

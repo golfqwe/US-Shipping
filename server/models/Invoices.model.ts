@@ -1,15 +1,18 @@
 import { DataTypes, Model } from 'sequelize'
 import { sequelize } from '../utils/db.instance'
-import { MembersModel } from './Members.model'
+import { UsersModel } from './Users.model'
 import { MyAddressModel } from './MyAddress.model'
 import { InvoiceItemsModel } from './InvoiceItems.model'
 
 export class InvoicesModel extends Model { }
 
 InvoicesModel.init({
-  memberId: {
+  userId: {
     type: DataTypes.INTEGER,
-    allowNull: false
+    references: {
+      model: UsersModel,
+      key: 'id'
+    }
   },
   receiverId: {
     type: DataTypes.INTEGER,
@@ -26,5 +29,5 @@ InvoicesModel.init({
 }, { sequelize, tableName: 'invoices' })
 
 InvoicesModel.hasMany(InvoiceItemsModel)
-InvoicesModel.belongsTo(MembersModel, { as: 'member' })
+InvoicesModel.belongsTo(UsersModel, { as: 'userInfo' })
 InvoicesModel.belongsTo(MyAddressModel, { as: 'myAddress' })

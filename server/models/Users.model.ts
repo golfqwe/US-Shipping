@@ -1,10 +1,10 @@
 import { DataTypes, Model } from 'sequelize'
 import { sequelize } from '../utils/db.instance'
 
-export class MembersModel extends Model { }
+export class UsersModel extends Model { }
 
-MembersModel.init({
-  contact: {
+UsersModel.init({
+  name: {
     type: DataTypes.STRING(50),
     allowNull: false
   },
@@ -18,5 +18,17 @@ MembersModel.init({
   phone: {
     type: DataTypes.STRING(50),
     allowNull: false
+  },
+  password: {
+    type: DataTypes.STRING(150),
+    allowNull: false
+  },
+  role: {
+    type: DataTypes.ENUM,
+    values: ['admin', 'user']
+  },
+  status: {
+    type: DataTypes.ENUM,
+    values: ['active', 'inactive']
   }
-}, { sequelize, tableName: 'members' })
+}, { sequelize, tableName: 'users' })
