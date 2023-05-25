@@ -1,7 +1,8 @@
 <script lang="ts" setup>
 // import type { wareHouse } from '@/types/wareHouse/index'
 definePageMeta({
-  layout: 'guest'
+  layout: 'guest',
+  middleware: 'checkauth'
 })
 
 const items = reactive({})

@@ -37,10 +37,10 @@ const save = async () => {
   if (error.value) {
     snackbar.text = 'Save data failed'
     snackbar.color = 'error'
-    await navigateTo('/login')
   } else {
     snackbar.text = 'Save data successfully'
     snackbar.color = 'success'
+    await navigateTo('/login')
   }
   snackbar.status = true
 }

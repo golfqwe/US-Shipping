@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import type { BookBank } from '@/types/bookbank/index'
+definePageMeta({
+  middleware: 'checkauth'
+})
 
 const dialog = ref(false)
 const snackbar = reactive({

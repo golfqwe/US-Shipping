@@ -7,6 +7,10 @@ import { comparePassword } from '~/server/utils/encype'
 export default NuxtAuthHandler({
   // secret needed to run nuxt-auth in production mode (used to encrypt data)
   // secret: process.env.NUXT_SECRET,
+  pages: {
+    // Change the default behavior to use `/login` as the path for the sign-in page
+    // signIn: '/login'
+  },
   providers: [
     // @ts-ignore Import is exported on .default during SSR, so we need to call it this way. May be fixed via Vite at some point
 

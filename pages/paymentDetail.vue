@@ -2,7 +2,8 @@
 import { useDisplay } from 'vuetify'
 
 definePageMeta({
-  layout: 'guest'
+  layout: 'guest',
+  middleware: 'checkauth'
 })
 
 const { smAndDown } = useDisplay()

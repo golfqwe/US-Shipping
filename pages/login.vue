@@ -1,11 +1,7 @@
 <script lang="ts" setup>
-// import { signIn } from 'next-auth/react'
+const { signIn } = useSession()
 definePageMeta({
-  layout: 'guest',
-  auth: {
-    unauthenticatedOnly: true,
-    navigateAuthenticatedTo: '/'
-  }
+  layout: 'guest'
 })
 const snackbar = reactive({
   status: false,
@@ -17,7 +13,6 @@ const formData = reactive({
   email: '',
   password: ''
 })
-const { signIn, data } = useSession()
 
 const mySignInHandler = async () => {
   const { valid } = await formLogin.value.validate()
@@ -34,7 +29,6 @@ const mySignInHandler = async () => {
 
     snackbar.status = true
   } else {
-    console.log('🚀 ~ file: login.vue:47 ~ mySignInHandler ~ url:', data.value)
     // No error, continue with the sign in, e.g., by following the returned redirect:
     return navigateTo('/')
   }

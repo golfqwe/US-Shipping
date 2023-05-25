@@ -1,7 +1,8 @@
 <script lang="ts" setup>
 import type { MyAddress } from '@/types/myAddress/index'
 definePageMeta({
-  layout: 'guest'
+  layout: 'guest',
+  middleware: 'checkauth'
 })
 const dialog = ref(false)
 const snackbar = reactive({

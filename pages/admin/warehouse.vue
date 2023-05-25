@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import type { wareHouse } from '@/types/wareHouse/index'
 
+definePageMeta({
+  middleware: 'checkauth'
+})
+
 const dialog = ref(false)
 const search = ref(null)
 const loading = ref(false)

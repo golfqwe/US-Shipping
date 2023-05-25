@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { UserIcon, MailIcon, ListCheckIcon } from 'vue-tabler-icons'
+// import { UserIcon, MailIcon, ListCheckIcon } from 'vue-tabler-icons'
+const { signOut } = useSession()
 </script>
 
 <template>
@@ -15,7 +16,7 @@ import { UserIcon, MailIcon, ListCheckIcon } from 'vue-tabler-icons'
       </v-btn>
     </template>
     <v-sheet rounded="md" width="200" elevation="10" class="mt-2">
-      <v-list class="py-0" lines="one" density="compact">
+      <!-- <v-list class="py-0" lines="one" density="compact">
         <v-list-item value="item1" active-color="primary">
           <template #prepend>
             <UserIcon stroke-width="1.5" size="20" />
@@ -40,9 +41,9 @@ import { UserIcon, MailIcon, ListCheckIcon } from 'vue-tabler-icons'
             My Task
           </v-list-item-title>
         </v-list-item>
-      </v-list>
+      </v-list> -->
       <div class="pt-4 pb-4 px-5 text-center">
-        <v-btn to="/auth/login" color="primary" variant="outlined" block>
+        <v-btn color="primary" variant="outlined" block @click="signOut({ callbackUrl: '/login' })">
           Logout
         </v-btn>
       </div>

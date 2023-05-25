@@ -8,6 +8,7 @@ useHead({
       : 'Modernize - Nuxt3 Typescript based Free Admin Dashboard Template'
   }
 })
+
 </script>
 
 <template>

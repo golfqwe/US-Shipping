@@ -3,7 +3,8 @@ import type { wareHouse } from '@/types/wareHouse/index'
 import type { localCarrier } from '@/types/localCarrier/index'
 import type { Product } from '@/types/product/index'
 definePageMeta({
-  layout: 'guest'
+  layout: 'guest',
+  middleware: 'checkauth'
 })
 
 const formRegisterTracking = ref()
