@@ -11,6 +11,7 @@ export default defineNuxtConfig({
   app: {
     baseURL: process.env.BASE_URL
   },
+  modules: ['@sidebase/nuxt-auth'],
   runtimeConfig: {
     public: {
       BASE_URL: process.env.BASE_URL

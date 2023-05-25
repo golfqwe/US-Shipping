@@ -1,5 +1,6 @@
 
 <script setup lang="ts">
+const { status, data, signOut } = useSession()
 const menuMain = reactive([
   {
     text: 'ค่านำเข้าสินค้า',
@@ -96,7 +97,27 @@ function useAsset (path: string): string {
 
           <v-col cols="auto" class="ma-2 hidden-sm-and-down">
             <div class="d-flex flex-column text-right">
-              <div>
+              <div v-if="status === 'authenticated' ">
+                <v-menu
+                  transition="slide-y-transition"
+                >
+                  <template #activator="{ props }">
+                    <v-btn
+                      variant="text"
+                      color="primary"
+                      v-bind="props"
+                    >
+                      {{ data?.user?.name }}
+                    </v-btn>
+                  </template>
+                  <v-list>
+                    <v-list-item link @click="signOut({ callbackUrl: '/login' })">
+                      <v-list-item-title>ออกจากระบบ</v-list-item-title>
+                    </v-list-item>
+                  </v-list>
+                </v-menu>
+              </div>
+              <div v-else>
                 <NuxtLink to="login" class="text-decoration-none text-darkprimary font-weight-bold">
                   เข้าสู่ระบบ
                 </NuxtLink>|<NuxtLink to="register" class="text-decoration-none text-darkprimary font-weight-bold">
