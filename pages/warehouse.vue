@@ -55,7 +55,25 @@ Object.assign(items, groupBy(listWarehouse.value as [], 'country'))
           :key="ind"
           :value="ind"
         >
-          {{ it }}
+          <v-list lines="two">
+            <v-list-subheader inset>
+              When you buy online. Please to below he and address for shipping to.
+            </v-list-subheader>
+
+            <v-list-item
+              v-for="(dataWarehouse, inW) in it"
+              :key="inW"
+              :title="dataWarehouse.address"
+            >
+              <template #prepend>
+                <v-avatar size="60" :color="`${dataWarehouse.carrier === 'Air'? 'green' :'blue'}-lighten-1`">
+                  <v-icon color="white" size="x-large">
+                    {{ dataWarehouse.carrier === 'Air'? 'mdi-airplane': 'mdi-sail-boat' }} {{}}
+                  </v-icon>
+                </v-avatar>
+              </template>
+            </v-list-item>
+          </v-list>
         </v-window-item>
       </v-window>
     </v-container>
