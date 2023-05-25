@@ -46,9 +46,29 @@ ProductsModel.init({
   },
   status: {
     type: DataTypes.ENUM,
-    values: ['active', 'inactive']
+    values: ['pending', 'waiting', 'success'],
+    get () {
+      const status = this.getDataValue('status')
+      const result = {
+        code: status,
+        desc: ''
+      }
+      switch (status) {
+        case 'pending':
+          result.desc = 'รอชำละบิลค่าขนส่ง'
+          break
+        case 'waiting':
+          result.desc = 'รอสินค้ามาถึง'
+          break
+        case 'success':
+          result.desc = 'สำเร็จ'
+          break
+      }
+      return result
+    }
   }
 }, { sequelize, tableName: 'products' })
 
-ProductsModel.belongsTo(LocalCarriersModel, { as: 'localCarrier' })
-ProductsModel.belongsTo(WareHouseModel, { as: 'wareHouse' })
+ProductsModel.belongsTo(UsersModel, { foreignKey: 'userId' })
+ProductsModel.belongsTo(LocalCarriersModel, { foreignKey: 'carrierId' })
+ProductsModel.belongsTo(WareHouseModel, { foreignKey: 'wareHouseId' })

@@ -4,6 +4,8 @@ definePageMeta({
   layout: 'guest',
   middleware: 'checkauth'
 })
+const { data } = useSession()
+
 const dialog = ref(false)
 const snackbar = reactive({
   status: false,
@@ -87,7 +89,7 @@ const save = async () => {
         email: editedItem.email,
         phone: editedItem.phone,
         address: editedItem.address,
-        createBy: 1,
+        createBy: data.value?.user?.id,
         status: editedItem.status ? 'active' : 'inactive'
       }
     })

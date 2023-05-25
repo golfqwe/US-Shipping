@@ -1,11 +1,15 @@
 <script lang="ts" setup>
+import type { Product } from '@/types/product/index'
 definePageMeta({
   layout: 'guest',
   middleware: 'checkauth'
 })
-const listInvoices = reactive([
-  { test: 'tst' }
-])
+const items:Product[] = reactive([])
+
+const { data: listProducts } = await useFetch('/api/products/', {
+  method: 'GET'
+})
+Object.assign(items, listProducts.value)
 </script>
 
 <template>
@@ -20,7 +24,7 @@ const listInvoices = reactive([
           <th class="text-subtitle-1 font-weight-bold">
             Tracking No
           </th>
-          <th class="text-subtitle-1 font-weight-bold">
+          <th class="text-subtitle-1 font-weight-bold text-center">
             จำนวนกล่อง
           </th>
           <th class="text-subtitle-1 font-weight-bold">
@@ -32,45 +36,55 @@ const listInvoices = reactive([
           <th class="text-subtitle-1 font-weight-bold text-right">
             ประเภทจัดส่ง
           </th>
+          <th class="text-subtitle-1 font-weight-bold">
+            สถานะ
+          </th>
           <th class="text-subtitle-1 font-weight-bold text-right">
             Action
           </th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(item, index) in listInvoices" :key="index" class="month-item">
+        <tr v-for="(item, index) in items" :key="index" class="month-item">
           <td>
             <p class="text-15 font-weight-medium">
-              {{ item.test }}
+              {{ item.trackingNumber }}
             </p>
           </td>
           <td>
-            <div class="">
-              <h6 class="text-subtitle-1 font-weight-bold">
-                {{ item.test }}
-              </h6>
-              <div class="text-13 mt-1 text-muted">
-                {{ item.test }}
-              </div>
-            </div>
+            <h6 class="text-subtitle-1 font-weight-bold text-center">
+              {{ 1 }}
+            </h6>
           </td>
           <td>
             <h6 class="text-body-1 text-muted">
-              {{ item.test }}
+              {{ new Date(item?.createdAt).toLocaleString('en-US', { timeZone: 'UTC' }) }}
             </h6>
           </td>
           <td>
-            <v-chip :class="'text-body-1 bg-info' " color="white" size="small">
-              {{
-                item.test
-              }}
-            </v-chip>
+            -
           </td>
 
           <td>
-            <h6 class="text-h6 text-right">
-              {{ item.test }}
+            <h6 class="text-body-1 text-muted text-center">
+              <v-icon
+                start
+                size="x-large"
+                :color="item.carrier === 'Air' ? 'success' : 'blue'"
+              >
+                {{
+                  item.carrier === "Air"
+                    ? "  mdi-airplane"
+                    : "   mdi-sail-boat"
+                }}
+              </v-icon>
+              {{ item.carrier }}
             </h6>
+          </td>
+          <td>
+            <v-chip :color="`${item.status?.code === 'payment'? 'info' : item.status?.code === 'waiting'? 'warning' : item.status?.code === 'success'? 'success' : ''}`">
+              {{ item.status.desc }}
+            </v-chip>
           </td>
           <td class="text-right">
             <v-btn variant="text" color="success" icon="mdi-pencil-box-outline" />

@@ -3,6 +3,7 @@ const { signIn } = useSession()
 definePageMeta({
   layout: 'guest'
 })
+
 const snackbar = reactive({
   status: false,
   text: '',

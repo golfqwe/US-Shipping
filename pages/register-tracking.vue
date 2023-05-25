@@ -6,9 +6,11 @@ definePageMeta({
   layout: 'guest',
   middleware: 'checkauth'
 })
+const { data } = useSession()
 
 const formRegisterTracking = ref()
 const editedItem: Product = reactive({
+  userId: data.value?.user?.id,
   carrierId: null,
   wareHouseId: null,
   trackingNumber: '',

@@ -33,7 +33,7 @@ MyAddressModel.init({
   },
   status: {
     type: DataTypes.ENUM,
-    values: ['active', 'pending', 'inactive']
+    values: ['active', 'inactive']
   }
 }, { sequelize, tableName: 'myAddress' })
 
