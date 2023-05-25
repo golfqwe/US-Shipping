@@ -61,7 +61,7 @@ const defaultDescription: description[] = reactive([
 
 const editedIndex = ref(-1)
 
-const { data: listItems, refresh } = await useFetch('/api/products/', {
+const { data: listItems, refresh } = await useFetch('/api/trackings/', {
   method: 'GET'
 })
 Object.assign(items, listItems.value)
@@ -201,22 +201,22 @@ const toggleActive = (item: description) => {
               <td>
                 <v-chip
                   :color="`${
-                    item.status?.code === 'payment'
+                    item?.status?.code === 'payment'
                       ? 'info'
-                      : item.status?.code === 'waiting'
+                      : item?.status?.code === 'waiting'
                         ? 'warning'
-                        : item.status?.code === 'success'
+                        : item?.status?.code === 'success'
                           ? 'success'
                           : ''
                   }`"
                 >
-                  {{ item.status.desc }}
+                  {{ item?.status?.desc }}
                 </v-chip>
               </td>
 
               <td class="text-right">
                 <v-btn
-                  v-show=" item.status?.code === 'pending'"
+                  v-show=" item?.status?.code === 'pending'"
                   size="small"
                   rounded="lg"
                   color="info"

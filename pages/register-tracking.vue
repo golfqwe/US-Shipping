@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { wareHouse } from '@/types/wareHouse/index'
 import type { localCarrier } from '@/types/localCarrier/index'
-import type { Product } from '@/types/product/index'
+import type { tracking } from '@/types/tracking/index'
 definePageMeta({
   layout: 'guest',
   middleware: 'checkauth'
@@ -9,7 +9,7 @@ definePageMeta({
 const { data } = useSession()
 
 const formRegisterTracking = ref()
-const editedItem: Product = reactive({
+const editedItem: tracking = reactive({
   userId: data.value?.user?.id,
   carrierId: null,
   wareHouseId: null,
@@ -17,7 +17,7 @@ const editedItem: Product = reactive({
   website: '',
   description: '',
   carrier: 'Air',
-  status: true
+  status: 'pending'
 })
 
 const snackbar = reactive({
@@ -47,11 +47,10 @@ const save = async () => {
     return
   }
 
-  const { error } = await useFetch('/api/products/', {
+  const { error } = await useFetch('/api/trackings/', {
     method: 'post',
     body: {
-      ...editedItem,
-      status: editedItem.status ? 'active' : 'inactive'
+      ...editedItem
     }
   })
 

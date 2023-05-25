@@ -1,9 +1,9 @@
 import { LocalCarriersModel } from '~/server/models/LocalCarriers.model'
-import { ProductSchema } from '~/server/utils/validation.product'
+import { LocalCarrierSchema } from '~/server/utils/validation.localCarrier'
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
-  const { error } = ProductSchema.validate(body, {
+  const { error } = LocalCarrierSchema.validate(body, {
     abortEarly: true,
     allowUnknown: true
   })

@@ -1,12 +1,12 @@
 <script lang="ts" setup>
-import type { Product } from '@/types/product/index'
+import type { tracking } from '@/types/tracking/index'
 definePageMeta({
   layout: 'guest',
   middleware: 'checkauth'
 })
-const items:Product[] = reactive([])
+const items:tracking[] = reactive([])
 
-const { data: listProducts } = await useFetch('/api/products/', {
+const { data: listProducts } = await useFetch('/api/trackings/', {
   method: 'GET'
 })
 Object.assign(items, listProducts.value)
