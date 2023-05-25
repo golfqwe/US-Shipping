@@ -22,12 +22,12 @@ const menuMain = reactive([
     text: 'เช็ครูปสินค้า',
     icon: 'icon1.png',
     link: '/trackings'
-  },
-  {
-    text: 'บิลค่าขนส่ง',
-    icon: 'icon1.png',
-    link: '/payment'
   }
+  // {
+  //   text: 'บิลค่าขนส่ง',
+  //   icon: 'icon1.png',
+  //   link: '/payment'
+  // }
 ])
 
 const menuSub = reactive([

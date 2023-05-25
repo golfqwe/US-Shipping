@@ -35,7 +35,7 @@ const sidebarItem: menu[] = [
   {
     title: 'Tracking',
     icon: TicketIcon,
-    to: '/admin/ui/typography'
+    to: '/admin/trackings'
   },
   {
     title: 'แจ้งชำระบิล',
