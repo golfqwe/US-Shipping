@@ -9,6 +9,7 @@ const snackbar = reactive({
   color: 'success'
 })
 const formLogin = ref()
+const rmCheck = ref(false)
 const formData = reactive({
   email: '',
   password: ''
@@ -20,6 +21,7 @@ const mySignInHandler = async () => {
   if (!valid) {
     return
   }
+  rememberMe()
   const { error } = await signIn('credentials', { ...formData, redirect: false })
 
   if (error) {
@@ -33,6 +35,22 @@ const mySignInHandler = async () => {
     return navigateTo('/')
   }
 }
+const rememberMe = () => {
+  if (rmCheck.value) {
+    localStorage.setItem('email', formData.email)
+    localStorage.setItem('password', formData.password)
+  } else {
+    localStorage.removeItem('email')
+    localStorage.removeItem('password')
+  }
+}
+
+if (localStorage.getItem('email')) {
+  rmCheck.value = true
+  formData.email = localStorage.getItem('email') as string
+  formData.password = localStorage.getItem('password') as string
+}
+
 </script>
 
 <template>
@@ -80,18 +98,18 @@ const mySignInHandler = async () => {
             </v-col>
             <v-col cols="12" class="pt-0">
               <div class="d-flex flex-wrap align-center ml-n2">
-                <v-checkbox color="primary" hide-details>
+                <v-checkbox v-model="rmCheck" color="primary" hide-details>
                   <template #label>
                     <span class="text-body-1"> Remeber this Device </span>
                   </template>
                 </v-checkbox>
                 <div class="ml-sm-auto">
-                  <NuxtLink
+                  <!-- <NuxtLink
                     to="/"
                     class="text-primary text-decoration-none text-body-1 opacity-1 font-weight-medium"
                   >
                     Forgot Password ?
-                  </NuxtLink>
+                  </NuxtLink> -->
                 </div>
               </div>
             </v-col>

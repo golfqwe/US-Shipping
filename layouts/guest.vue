@@ -4,9 +4,9 @@ const { status, data, signOut } = useSession()
 
 const menuMain = reactive([
   {
-    text: 'ค่านำเข้าสินค้า',
+    text: 'ที่อยู่ของฉัน',
     icon: 'icon1.png',
-    link: '/'
+    link: '/myAddress'
   },
   {
     text: 'ที่อยู่โกดังสินค้า',
@@ -35,11 +35,6 @@ const menuSub = reactive([
     text: 'รอบนำเข้าสินค้า',
     icon: 'icon1.png',
     link: '/'
-  },
-  {
-    text: 'ที่อยู่ของฉัน',
-    icon: 'icon1.png',
-    link: '/myAddress'
   },
   {
     text: 'บริการรับกดสั่งสินค้า ประมูลสินค้า',
@@ -190,7 +185,7 @@ function useAsset (path: string): string {
         </div>
         <v-container>
           <!-- <v-sheet rounded color="accent" height="60" /> -->
-          <v-row justify="center">
+          <v-row v-if="status === 'authenticated' " justify="center">
             <v-col>
               <v-sheet class="" color="white" rounded border>
                 <v-container>
@@ -252,7 +247,6 @@ function useAsset (path: string): string {
         </v-container>
 
         <v-container>
-          <!-- <NuxtPage /> -->
           <slot />
         </v-container>
       </v-main>
