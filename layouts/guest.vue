@@ -1,6 +1,7 @@
 
 <script setup lang="ts">
 const { status, data, signOut } = useSession()
+
 const menuMain = reactive([
   {
     text: 'ค่านำเข้าสินค้า',
@@ -99,7 +100,7 @@ function useAsset (path: string): string {
             <div class="d-flex flex-column text-right">
               <div v-if="status === 'authenticated' ">
                 <v-menu
-                  transition="slide-y-transition"
+                  :close-on-content-click="false"
                 >
                   <template #activator="{ props }">
                     <v-btn
@@ -110,11 +111,23 @@ function useAsset (path: string): string {
                       {{ data?.user?.name }}
                     </v-btn>
                   </template>
-                  <v-list>
-                    <v-list-item link @click="signOut({ callbackUrl: '/login' })">
-                      <v-list-item-title>ออกจากระบบ</v-list-item-title>
-                    </v-list-item>
-                  </v-list>
+                  <v-sheet rounded="md" width="200" elevation="10" class="mt-2">
+                    <v-list class="py-0" lines="one" density="compact">
+                      <v-list-item v-if="data?.user?.role === 'admin'" active-color="primary" link to="/admin">
+                        <template #prepend>
+                          <FolderIcon stroke-width="1.5" size="20" />
+                        </template>
+                        <v-list-item-title class="pl-4 text-body-1">
+                          จัดการข้อมูล
+                        </v-list-item-title>
+                      </v-list-item>
+                    </v-list>
+                    <div class="pt-4 pb-4 px-5 text-center">
+                      <v-btn color="primary" variant="outlined" block @click="signOut({ callbackUrl: '/login' })">
+                        Logout
+                      </v-btn>
+                    </div>
+                  </v-sheet>
                 </v-menu>
               </div>
               <div v-else>
