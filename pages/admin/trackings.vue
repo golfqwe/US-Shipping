@@ -179,9 +179,9 @@ const toggleActive = (item: invoiceItem) => {
               <td>
                 <h6 class="text-body-1 text-muted">
                   {{
-                    new Date(item?.createdAt).toLocaleString("en-US", {
+                    item?.createdAt ? new Date(item?.createdAt).toLocaleString("th-TH", {
                       timeZone: "UTC",
-                    })
+                    }) : '-'
                   }}
                 </h6>
               </td>

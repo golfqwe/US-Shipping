@@ -24,5 +24,5 @@ export default defineEventHandler(async (event) => {
   const newPath = `${path.join(dir, imageName)}.${mimetype.split('/')[1]}`
   fs.copyFileSync(filepath, path.join('public', newPath))
 
-  return { pathFile: newPath }
+  return { pathFile: `\\${newPath}` }
 })

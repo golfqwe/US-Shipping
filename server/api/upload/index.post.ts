@@ -27,7 +27,7 @@ export default defineEventHandler(async (event) => {
     const imageName = String(today) + String(Math.round(Math.random() * 10000000))
     const newPath = `${path.join(dir, imageName)}.${mimetype.split('/')[1]}`
     fs.copyFileSync(filepath, path.join('public', newPath))
-    listImages.push(`${newPath}`)
+    listImages.push(`\\${newPath}`)
   }
 
   TrackingsModel.update({ status: 'success', receiveDate: new Date().toISOString(), images: listImages.toString() }, { where: { id } })

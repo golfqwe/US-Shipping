@@ -13,7 +13,8 @@ const snackbar = reactive({
 })
 const items: tracking[] = reactive([])
 
-const editedIndex = ref(-1)
+const editedItem = reactive({})
+const peyment = reactive({})
 
 const { data: listItems, refresh } = await useLazyFetch('/api/trackings/', {
   method: 'GET',
@@ -29,18 +30,23 @@ watch(dialog, (val) => {
   val || close()
 })
 
-const editItem = (item: any) => {
-  editedIndex.value = item.id
+const editItem = async (item: any) => {
+  const { data } = await useFetch(`/api/payment/${item.id}`, {
+    method: 'get'
+  })
+
+  Object.assign(peyment, data.value)
+  Object.assign(editedItem, item)
   dialog.value = true
 }
 const close = async () => {
   dialog.value = false
   await nextTick(() => {
-    editedIndex.value = -1
+    Object.assign(editedItem, {})
   })
 }
 const save = async () => {
-  const { error } = await useFetch(`/api/trackings/${editedIndex.value}`, {
+  const { error } = await useFetch(`/api/trackings/${editedItem.id}`, {
     method: 'put',
     body: {
       status: 'waiting'
@@ -179,22 +185,71 @@ const save = async () => {
       </v-card-item>
     </v-card>
 
-    <v-dialog v-model="dialog" persistent max-width="450">
+    <v-dialog v-model="dialog" max-width="850">
       <v-card>
         <v-card-title>
           <span class="text-h5">ตรวจสอบสลิป</span>
         </v-card-title>
         <v-card-text>
           <v-row>
+            <v-col>
+              <v-row>
+                <v-col cols="5" class="text-subtitle-1 font-weight-bold">
+                  Inovice No
+                </v-col>
+                <v-col cols="7">
+                  {{ peyment.invoiceId }}
+                </v-col>
+                <v-col cols="5" class="text-subtitle-1 font-weight-bold">
+                  ชำระเงินเข้าบัญชี
+                </v-col>
+                <v-col cols="7">
+                  <v-list lines="three" class="mt-n5">
+                    <v-list-item class="pa-0">
+                      <v-list-item-title>{{ peyment?.BookBankModel?.accountName }}</v-list-item-title>
+
+                      <v-list-item-subtitle>
+                        {{ peyment?.BookBankModel?.bankName }}    {{ peyment?.BookBankModel?.branch }} {{ peyment?.BookBankModel?.accountType }}
+                      </v-list-item-subtitle>
+                      <v-list-item-subtitle>
+                        {{ peyment?.BookBankModel?.accountNumber }}
+                      </v-list-item-subtitle>
+                    </v-list-item>
+                  </v-list>
+                </v-col>
+                <v-col cols="5" class="text-subtitle-1 font-weight-bold">
+                  Amount Paid
+                </v-col>
+                <v-col cols="7">
+                  {{ peyment.amount.toLocaleString('th-TH', {
+                    style: 'currency',
+                    currency: 'THB',
+                  }) }}
+                </v-col>
+                <v-col cols="5" class="text-subtitle-1 font-weight-bold">
+                  วันเวลาที่ชำระเงิน
+                </v-col>
+                <v-col cols="7">
+                  {{
+                    peyment?.payDate ? new Date(peyment?.payDate).toLocaleString("th-TH", {
+                      timeZone: "UTC",
+                    }) : '-'
+                  }}
+                </v-col>
+              </v-row>
+            </v-col>
             <v-col
-              cols="10"
+              cols="6"
             >
-              <div class="ma-4">
+              <div class="mx-4">
+                <div class="text-subtitle-1 pb-2">
+                  หลักฐานการโอนเงิน
+                </div>
                 <v-img
                   class="bg-white"
-                  width="450"
                   :aspect-ratio="1"
-                  src="https://cdn.vuetifyjs.com/images/parallax/material.jpg"
+                  :src="peyment.slipImage"
+                  :lazy-src="peyment.slipImage"
                   cover
                 />
               </div>
@@ -206,7 +261,7 @@ const save = async () => {
           <v-btn color="error" variant="text" @click="dialog = false">
             Close
           </v-btn>
-          <v-btn color="blue-darken-1" variant="text" @click="save">
+          <v-btn color="success" variant="text" @click="save">
             ข้อมูลถูกต้อง
           </v-btn>
         </v-card-actions>

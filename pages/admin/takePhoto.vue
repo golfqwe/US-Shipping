@@ -262,8 +262,8 @@ const save = async () => {
               :key="inx"
             >
               <v-img
-                :src="`/${item}`"
-                :lazy-src="`/${item}`"
+                :src="item"
+                :lazy-src="item"
                 cover
                 width="100%"
                 class="bg-grey-lighten-2"
