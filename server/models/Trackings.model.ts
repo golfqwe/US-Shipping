@@ -58,10 +58,10 @@ TrackingsModel.init({
           result.desc = 'รอแจ้งบิลค่าขนส่ง'
           break
         case 'waitpayment':
-          result.desc = 'รอชำละบิลค่าขนส่ง'
+          result.desc = 'รอชำระบิลค่าขนส่ง'
           break
         case 'paymented':
-          result.desc = 'แจ้งชำละแล้ว รอตรวจสอบ'
+          result.desc = 'แจ้งชำระแล้ว รอตรวจสอบ'
           break
         case 'waiting':
           result.desc = 'รอสินค้ามาถึง'

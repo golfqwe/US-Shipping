@@ -13,12 +13,18 @@ definePageMeta({
   middleware: 'checkauth'
 })
 
+const formPayment = ref()
 const { smAndDown } = useDisplay()
 let invoiceItems: invoiceItem[] = reactive([])
 const invoiceInfo: invoice = reactive({})
 let paymentData: payment = reactive({})
 const addressList: MyAddress[] = reactive([])
 const bookbankList: BookBank[] = reactive([])
+const snackbar = reactive({
+  status: false,
+  text: '',
+  color: 'success'
+})
 
 const { data: invoiceList } = await useFetch(`/api/invoices/${route.params.id}`, {
   method: 'GET'
@@ -50,6 +56,40 @@ const calculateTotal = (it : invoiceItem) => {
 }
 invoiceItems = invoiceList.value.InvoiceItemsModels.map(it => ({ ...it, total: calculateTotal(it) }))
 const sumTotal = (array, key: string) => array.reduce((sum, acc) => sum + Number(acc[key]), 0)
+
+const save = async () => {
+  const { valid } = await formPayment.value.validate()
+
+  if (!valid) {
+    return
+  }
+
+  console.log('22 :>> ', 22)
+
+  const { error } = await useFetch('/api/payment/', {
+    method: 'post',
+    body: {
+      trackingId: invoiceInfo.trackingId,
+      invoiceId: paymentData.invoiceId,
+      bankId: paymentData.bankId?.id,
+      amount: paymentData.amount,
+      payDate: paymentData.payDate,
+      slipImage: paymentData.slipImage.length ? paymentData.slipImage.toString() : null,
+      status: 'pending'
+    }
+  })
+
+  if (error.value) {
+    snackbar.text = 'Save data failed'
+    snackbar.color = 'error'
+  } else {
+    snackbar.text = 'Save data successfully'
+    snackbar.color = 'success'
+    formPayment.value.reset()
+    navigateTo('/trackings')
+  }
+  snackbar.status = true
+}
 
 </script>
 
@@ -108,7 +148,10 @@ const sumTotal = (array, key: string) => array.reduce((sum, acc) => sum + Number
               </td>
               <td>
                 <h6 class="text-subtitle-1 font-weight-bold">
-                  {{ item.total.toFixed(2) }}
+                  {{ item.total.toLocaleString('th-TH', {
+                    style: 'currency',
+                    currency: 'THB',
+                  }) }}
                 </h6>
               </td>
             </tr>
@@ -135,7 +178,10 @@ const sumTotal = (array, key: string) => array.reduce((sum, acc) => sum + Number
               </td>
               <td>
                 <h6 class="text-subtitle-1 font-weight-bold text-center">
-                  {{ sumTotal(invoiceItems,'total').toFixed(2) }}
+                  {{ sumTotal(invoiceItems,'total').toLocaleString('th-TH', {
+                    style: 'currency',
+                    currency: 'THB',
+                  }) }}
                 </h6>
               </td>
             </tr>
@@ -146,132 +192,145 @@ const sumTotal = (array, key: string) => array.reduce((sum, acc) => sum + Number
         :vertical="!smAndDown"
       />
       <v-col>
-        <v-row align="center">
-          <v-col cols="auto">
-            <v-label class="font-weight-bold mb-1">
-              Inovice No
-            </v-label>
-          </v-col>
-          <v-col>
-            <v-text-field
-              v-model="paymentData.invoiceId"
-              disabled
-              variant="outlined"
-              hide-details
-              color="primary"
-            />
-          </v-col>
-        </v-row>
-        <v-row align="center">
-          <v-col cols="auto">
-            <v-label class="font-weight-bold mb-1">
-              ที่อยู่
-            </v-label>
-          </v-col>
-          <v-col>
-            <v-select
-              v-model="paymentData.receiverId"
-              :items="addressList"
-              variant="outlined"
-              hide-details
-              color="primary"
-            >
-              <template #selection="{ item }">
-                <span>{{ item.value?.contact }}</span>
-              </template>
-              <template #item="{ props, item: {value} }">
-                <v-list-item
-                  v-bind="props"
-                  :title="value?.contact"
-                  :subtitle="value?.address"
-                />
-              </template>
-            </v-select>
-          </v-col>
-        </v-row>
-        <v-row align="center">
-          <v-col cols="auto">
-            <v-label class="font-weight-bold mb-1">
-              ชำระเงินเข้าบัญชี
-            </v-label>
-          </v-col>
-          <v-col>
-            <v-select
-              v-model="paymentData.bankId"
-              :items="bookbankList"
-              variant="outlined"
-              hide-details
-              color="primary"
-            >
-              <template #selection="{ item }">
-                <span>{{ item.value?.accountNumber }}</span>
-              </template>
-              <template #item="{ props, item: {value} }">
-                <v-list-item
-                  v-bind="props"
-                  :title="`${value?.bankName} ${value?.accountType}`"
-                  :subtitle="value?.accountName"
-                />
-              </template>
-            </v-select>
-          </v-col>
-        </v-row>
-        <v-row align="center">
-          <v-col cols="auto">
-            <v-label class="font-weight-bold mb-1">
-              Amount Paid <span class="text-red">*</span>
-            </v-label>
-          </v-col>
-          <v-col cols="auto">
-            <v-text-field
-              v-model="paymentData.amount"
-              variant="outlined"
-              type="number"
-              hide-details
-              color="primary"
-            />
-          </v-col>
-        </v-row>
-        <v-row align="center">
-          <v-col cols="auto">
-            <v-label class="font-weight-bold mb-1">
-              วันเวลาที่ชำระเงิน
-            </v-label>
-          </v-col>
-          <v-col>
-            {{ paymentData.payDate }}
-            <v-text-field
-              v-model="paymentData.payDate"
-              variant="outlined"
-              type="datetime-local"
-              hide-details
-              color="primary"
-            />
-          </v-col>
-        </v-row>
-        <v-row align="center">
-          <v-col cols="auto">
-            <v-label class="font-weight-bold mb-1">
-              หลักฐานการโอนเงิน
-            </v-label>
-          </v-col>
-          <v-col>
-            <v-file-input
-              variant="outlined"
-              accept="image/*"
-              label="File input"
-            />
-          </v-col>
-        </v-row>
-        <v-row align="center">
-          <v-col>
-            <v-btn block color="primary">
-              แจ้งชำระเงิน
-            </v-btn>
-          </v-col>
-        </v-row>
+        <v-form ref="formPayment">
+          <v-row align="center">
+            <v-col cols="auto">
+              <v-label class="font-weight-bold mb-1">
+                Inovice No
+              </v-label>
+            </v-col>
+            <v-col>
+              <v-text-field
+                v-model="paymentData.invoiceId"
+                disabled
+                variant="outlined"
+                hide-details="auto"
+                color="primary"
+              />
+            </v-col>
+          </v-row>
+          <v-row align="center">
+            <v-col cols="auto">
+              <v-label class="font-weight-bold mb-1">
+                Receiver
+              </v-label>
+            </v-col>
+            <v-col>
+              <v-select
+                v-model="paymentData.receiverId"
+                :rules="[(v) => !!v || 'Receiver is required']"
+                :items="addressList"
+                variant="outlined"
+                hide-details="auto"
+                color="primary"
+              >
+                <template #selection="{ item }">
+                  <span>{{ item.value?.contact }}</span>
+                </template>
+                <template #item="{ props, item: {value} }">
+                  <v-list-item
+                    v-bind="props"
+                    :title="value?.contact"
+                    :subtitle="value?.address"
+                  />
+                </template>
+              </v-select>
+            </v-col>
+          </v-row>
+          <v-row align="center">
+            <v-col cols="auto">
+              <v-label class="font-weight-bold mb-1">
+                ชำระเงินเข้าบัญชี
+              </v-label>
+            </v-col>
+            <v-col>
+              <v-select
+                v-model="paymentData.bankId"
+                :rules="[(v) => !!v || 'Bank is required']"
+                :items="bookbankList"
+                variant="outlined"
+                hide-details="auto"
+                color="primary"
+              >
+                <template #selection="{ item }">
+                  <span>{{ item.value?.accountNumber }}</span>
+                </template>
+                <template #item="{ props, item: {value} }">
+                  <v-list-item
+                    v-bind="props"
+                    :title="`${value?.bankName} ${value?.accountType}`"
+                    :subtitle="value?.accountName"
+                  />
+                </template>
+              </v-select>
+            </v-col>
+          </v-row>
+          <v-row align="center">
+            <v-col cols="auto">
+              <v-label class="font-weight-bold mb-1">
+                Amount Paid <span class="text-red">*</span>
+              </v-label>
+            </v-col>
+            <v-col cols="auto">
+              <v-text-field
+                v-model="paymentData.amount"
+                :rules="[(v) => !!v || 'Amount Paid is required']"
+                variant="outlined"
+                type="number"
+                hide-details="auto"
+                color="primary"
+              />
+            </v-col>
+          </v-row>
+          <v-row align="center">
+            <v-col cols="auto">
+              <v-label class="font-weight-bold mb-1">
+                วันเวลาที่ชำระเงิน
+              </v-label>
+            </v-col>
+            <v-col>
+              <v-text-field
+                v-model="paymentData.payDate"
+                :rules="[(v) => !!v || 'Date Paid is required']"
+                variant="outlined"
+                type="datetime-local"
+                hide-details="auto"
+                color="primary"
+              />
+            </v-col>
+          </v-row>
+          <v-row align="center">
+            <v-col cols="auto">
+              <v-label class="font-weight-bold mb-1">
+                หลักฐานการโอนเงิน
+              </v-label>
+            </v-col>
+            <v-col>
+              <v-file-input
+                variant="outlined"
+                accept="image/*"
+                label="File input"
+              />
+            </v-col>
+          </v-row>
+          <v-row align="center">
+            <v-col>
+              <v-btn block color="primary" @click="save">
+                แจ้งชำระเงิน
+              </v-btn>
+            </v-col>
+          </v-row>
+        </v-form>
       </v-col>
     </v-row>
+    <v-snackbar
+      v-model="snackbar.status"
+      :timeout="2000"
+      :color="snackbar.color"
+      location="top right"
+    >
+      {{ snackbar.text }}
+    </v-snackbar>
   </v-sheet>
 </template>
 

@@ -19,7 +19,7 @@ const menuMain = reactive([
     link: '/register-tracking'
   },
   {
-    text: 'เช็ครูปสินค้า',
+    text: 'บิลค่าขนส่ง',
     icon: 'icon1.png',
     link: '/trackings'
   }

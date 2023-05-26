@@ -24,7 +24,7 @@ export default defineEventHandler(async (event) => {
   const t = await sequelize.transaction()
 
   try {
-    const inv = await InvoicesModel.create({ ...body, receiverId: address?.dataValues.id })
+    const inv = await InvoicesModel.create({ ...body, receiverId: address?.dataValues.id }, { transaction: t })
 
     await InvoiceItemsModel.bulkCreate(body.items.map(it => ({
       invoiceId: inv.dataValues.id,
@@ -32,14 +32,15 @@ export default defineEventHandler(async (event) => {
       quantity: it.quantity,
       weight: it.weight,
       fee: it.fee
-    })), { fields: ['invoiceId', 'description', 'quantity', 'weight', 'fee'] })
+    })), { fields: ['invoiceId', 'description', 'quantity', 'weight', 'fee'], transaction: t })
 
     await TrackingsModel.update({
       status: 'waitpayment'
     }, {
       where: {
         id: body.trackingId
-      }
+      },
+      transaction: t
     })
 
     await t.commit()

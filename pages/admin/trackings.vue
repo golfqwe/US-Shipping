@@ -205,13 +205,13 @@ const toggleActive = (item: invoiceItem) => {
                 <v-chip
                   :color="`${
                     item?.status?.code === 'waitpayment'
-                      ? 'info'
+                      ? 'secondary'
                       : item?.status?.code === 'paymented'
-                        ? 'secondary'
+                        ? 'info'
                         : item?.status?.code === 'waiting'
                           ? 'warning'
                           : item?.status?.code === 'success'
-                            ? 'secondary'
+                            ? 'success'
                             : ''
                   }`"
                 >

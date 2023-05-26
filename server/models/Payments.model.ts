@@ -29,11 +29,11 @@ PaymentsModel.init({
     allowNull: false
   },
   slipImage: {
-    type: DataTypes.ARRAY(DataTypes.TEXT),
-    allowNull: false
+    type: DataTypes.TEXT,
+    allowNull: true
   },
   status: {
     type: DataTypes.ENUM,
-    values: ['active', 'inactive']
+    values: ['pending', 'success']
   }
 }, { sequelize, tableName: 'payments' })
