@@ -17,7 +17,7 @@ const editedIndex = ref(-1)
 
 const { data: listItems, refresh } = await useLazyFetch('/api/trackings/', {
   method: 'GET',
-  query: { status: 'paymented' }
+  query: { status: 'waitpayment,paymented' }
 })
 
 watch(listItems, (val) => {

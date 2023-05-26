@@ -130,13 +130,21 @@ const save = async () => {
               <td>
                 <h6 class="text-body-1 text-muted">
                   {{
-                    new Date(item?.createdAt).toLocaleString("en-US", {
+                    new Date(item?.createdAt).toLocaleString("th-TH", {
                       timeZone: "UTC",
                     })
                   }}
                 </h6>
               </td>
-              <td>-</td>
+              <td>
+                <h6 class="text-body-1 text-muted">
+                  {{
+                    item?.receiveDate ? new Date(item?.receiveDate).toLocaleString("th-TH", {
+                      timeZone: "UTC",
+                    }) : '-'
+                  }}
+                </h6>
+              </td>
 
               <td>
                 <h6 class="text-body-1 text-muted text-center">
@@ -212,6 +220,7 @@ const save = async () => {
             v-model="files"
             variant="outlined"
             density="compact"
+            accept="image/*"
             color="primary"
             multiple
             prepend-icon="mdi-paperclip"

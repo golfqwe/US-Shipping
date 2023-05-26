@@ -5,11 +5,16 @@ definePageMeta({
   middleware: 'checkauth'
 })
 const items: tracking[] = reactive([])
+const editedTracking = reactive({})
 
-const { data: listProducts } = await useFetch('/api/trackings/', {
+const { data: listTracking } = await useLazyFetch('/api/trackings/', {
   method: 'GET'
 })
-Object.assign(items, listProducts.value)
+
+watch(listTracking, (val) => {
+  items.length = 0
+  Object.assign(items, val)
+})
 </script>
 
 <template>
@@ -65,7 +70,15 @@ Object.assign(items, listProducts.value)
               }}
             </h6>
           </td>
-          <td>-</td>
+          <td>
+            <h6 class="text-body-1 text-muted">
+              {{
+                item?.receiveDate ? new Date(item?.receiveDate).toLocaleString("th-TH", {
+                  timeZone: "UTC",
+                }) : '-'
+              }}
+            </h6>
+          </td>
 
           <td>
             <h6 class="text-body-1 text-muted text-center">

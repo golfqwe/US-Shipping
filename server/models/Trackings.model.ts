@@ -40,6 +40,10 @@ TrackingsModel.init({
     type: DataTypes.STRING(50),
     allowNull: false
   },
+  receiveDate: {
+    type: DataTypes.DATE,
+    allowNull: true
+  },
   carrier: {
     type: DataTypes.ENUM('Air', 'Ocean'),
     allowNull: false

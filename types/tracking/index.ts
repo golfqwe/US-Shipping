@@ -9,6 +9,7 @@ type tracking = {
   description?: string;
   carrier?: string;
   createdAt?: string;
+  receiveDate?: string|Date;
   status?: boolean|string;
 };
 

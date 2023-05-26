@@ -64,31 +64,45 @@ const save = async () => {
     return
   }
 
-  console.log('22 :>> ', 22)
-
-  const { error } = await useFetch('/api/payment/', {
-    method: 'post',
-    body: {
-      trackingId: invoiceInfo.trackingId,
-      invoiceId: paymentData.invoiceId,
-      bankId: paymentData.bankId?.id,
-      amount: paymentData.amount,
-      payDate: paymentData.payDate,
-      slipImage: paymentData.slipImage.length ? paymentData.slipImage.toString() : null,
-      status: 'pending'
-    }
+  const formData = new FormData()
+  formData.append('trackingId', invoiceInfo.trackingId)
+  paymentData.slipImage.forEach((it) => {
+    formData.append('photo', it, it.name)
   })
 
-  if (error.value) {
+  try {
+    const { data } = await useFetch('/api/upload/slip/', {
+      method: 'post',
+      body: formData
+    })
+
+    const { error } = await useFetch('/api/payment/', {
+      method: 'post',
+      body: {
+        trackingId: invoiceInfo.trackingId,
+        invoiceId: paymentData.invoiceId,
+        bankId: paymentData.bankId?.id,
+        amount: paymentData.amount,
+        payDate: paymentData.payDate,
+        slipImage: data?.value?.pathFile,
+        status: 'pending'
+      }
+    })
+    if (error) {
+      snackbar.text = 'Save data failed'
+      snackbar.color = 'error'
+    } else {
+      snackbar.text = 'Save data successfully'
+      snackbar.color = 'success'
+      formPayment.value.reset()
+      navigateTo('/trackings')
+    }
+    snackbar.status = true
+  } catch (error) {
     snackbar.text = 'Save data failed'
     snackbar.color = 'error'
-  } else {
-    snackbar.text = 'Save data successfully'
-    snackbar.color = 'success'
-    formPayment.value.reset()
-    navigateTo('/trackings')
+    snackbar.status = true
   }
-  snackbar.status = true
 }
 
 </script>
@@ -307,9 +321,10 @@ const save = async () => {
             </v-col>
             <v-col>
               <v-file-input
+                v-model="paymentData.slipImage"
                 variant="outlined"
+                :rules="[(v) => !!v.length || 'Slip images is required']"
                 accept="image/*"
-                label="File input"
               />
             </v-col>
           </v-row>

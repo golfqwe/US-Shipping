@@ -30,7 +30,7 @@ export default defineEventHandler(async (event) => {
     listImages.push(`${newPath}`)
   }
 
-  TrackingsModel.update({ status: 'success', images: listImages.toString() }, { where: { id } })
+  TrackingsModel.update({ status: 'success', receiveDate: new Date().toISOString(), images: listImages.toString() }, { where: { id } })
 
   return { success: true }
 })
