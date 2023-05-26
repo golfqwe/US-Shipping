@@ -19,6 +19,8 @@ InvoicesModel.init({
   }
 }, { sequelize, tableName: 'invoices' })
 
-// InvoicesModel.hasMany(InvoiceItemsModel)
+// InvoicesModel.hasMany(InvoiceItemsModel, { sourceKey: 'id', foreignKey: 'invoiceId' })
+// InvoicesModel.belongsToMany(InvoiceItemsModel, { through: 'invoiceId' })
+// InvoicesModel.belongsToMany(InvoiceItemsModel, { through: 'invoiceId' })
 // InvoicesModel.belongsTo(TrackingsModel, { foreignKey: 'trackingId' })
 // InvoicesModel.belongsTo(MyAddressModel, { as: 'receiverId' })

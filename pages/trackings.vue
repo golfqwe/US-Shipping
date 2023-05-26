@@ -99,11 +99,23 @@ Object.assign(items, listProducts.value)
             </v-chip>
           </td>
           <td class="text-right">
-            <v-btn
-              variant="text"
-              color="success"
-              icon="mdi-pencil-box-outline"
-            />
+            <v-tooltip
+              location="bottom"
+            >
+              <template #activator="{ props }">
+                <v-btn
+                  icon
+                  v-bind="props"
+                  variant="text"
+                  :to="`/payment/${item.id}`"
+                >
+                  <v-icon color="info">
+                    mdi-cash
+                  </v-icon>
+                </v-btn>
+              </template>
+              <span>ชำละบิล</span>
+            </v-tooltip>
           </td>
         </tr>
       </tbody>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { tracking } from '@/types/tracking/index'
-import type { description } from '@/types/paymentDescription/index'
+import { invoiceItem } from '@/types/invoiceItem/index'
 definePageMeta({
   middleware: 'checkauth'
 })
@@ -13,8 +13,8 @@ const snackbar = reactive({
 })
 const formDescription = ref()
 const items: tracking[] = reactive([])
-let selectDescription:description[] = reactive([])
-const defaultDescription: description[] = reactive([
+let selectDescription:invoiceItem[] = reactive([])
+const defaultDescription: invoiceItem[] = reactive([
   {
     id: 1,
     description: 'Net Weight',
@@ -113,7 +113,7 @@ const save = async () => {
   close()
   refresh()
 }
-const toggleActive = (item: description) => {
+const toggleActive = (item: invoiceItem) => {
   const pos = selectDescription.findIndex(it => it.id === item.id)
   pos === -1 ? selectDescription.push(item) : selectDescription.splice(pos, 1)
 }

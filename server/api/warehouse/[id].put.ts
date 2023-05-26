@@ -1,7 +1,7 @@
 import { WareHouseModel } from '~/server/models/Warehouse.model'
 
 export default defineEventHandler(async (event) => {
-  const id = event.context.params?.id
+  const { id } = getRouterParams(event)
   const body = await readBody(event)
   await WareHouseModel.update(body, {
     where: {

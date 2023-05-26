@@ -1,7 +1,7 @@
 import { MyAddressModel } from '~/server/models/MyAddress.model'
 
 export default defineEventHandler(async (event) => {
-  const id = event.context.params?.id
+  const { id } = getRouterParams(event)
   const body = await readBody(event)
   if (body.status === 'active') {
     await MyAddressModel.update({ status: 'inactive' }, {

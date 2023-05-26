@@ -1,7 +1,7 @@
 import { BookBankModel } from '~/server/models/BookBank.model'
 
 export default defineEventHandler(async (event) => {
-  const id = event.context.params?.id
+  const { id } = getRouterParams(event)
   const body = await readBody(event)
   await BookBankModel.update(body, {
     where: {
