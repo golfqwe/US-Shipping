@@ -10,11 +10,11 @@ const snackbar = reactive({
   text: '',
   color: 'success'
 })
-const formDescription = ref()
+
 const items: tracking[] = reactive([])
+const files = ref([])
 
 const editedIndex = ref(-1)
-let editedItem = reactive({})
 
 const { data: listItems, refresh } = await useLazyFetch('/api/trackings/', {
   method: 'GET',
@@ -32,7 +32,6 @@ watch(dialog, (val) => {
 
 const editItem = (item: any) => {
   editedIndex.value = item.id
-  editedItem = item
   dialog.value = true
 }
 const close = async () => {
@@ -42,29 +41,25 @@ const close = async () => {
   })
 }
 const save = async () => {
-  const { valid } = await formDescription.value.validate()
-
-  if (!valid) {
-    return
-  }
-
-  const { error } = await useFetch('/api/invoices/', {
-    method: 'post',
-    body: {
-      trackingId: editedItem?.id,
-      userId: editedItem?.userId,
-      status: 'pending',
-      items: selectDescription
-    }
+  const formData = new FormData()
+  console.log('files.v :>> ', files.value)
+  files.value.forEach((it, inx) => {
+    formData.append('photo', it, it.name)
   })
-  if (error.value) {
-    snackbar.text = 'Save data failed'
-    snackbar.color = 'error'
-  } else {
-    snackbar.text = 'Save data successfully'
-    snackbar.color = 'success'
-  }
-  snackbar.status = true
+
+  const { error } = await useFetch('/api/upload/', {
+    method: 'post',
+    body: formData
+  })
+  console.log('errr :>> ', error.value)
+  // if (error.value) {
+  //   snackbar.text = 'Save data failed'
+  //   snackbar.color = 'error'
+  // } else {
+  //   snackbar.text = 'Save data successfully'
+  //   snackbar.color = 'success'
+  // }
+  // snackbar.status = true
 
   close()
   refresh()
@@ -173,15 +168,15 @@ const save = async () => {
 
               <td class="text-right">
                 <v-btn
-                  v-show=" item?.status?.code === 'paymented'"
+                  v-show=" item?.status?.code === 'waiting'"
                   size="small"
                   rounded="lg"
                   color="info"
                   @click="editItem(item)"
                 >
                   <v-icon start dark>
-                    mdi-cash-check
-                  </v-icon> ตรวจสอบสลิป
+                    mdi-upload
+                  </v-icon> อัปโหลด
                 </v-btn>
               </td>
             </tr>
@@ -190,16 +185,32 @@ const save = async () => {
       </v-card-item>
     </v-card>
 
-    <v-dialog v-model="dialog" persistent>
+    <v-dialog v-model="dialog" persistent max-width="450">
       <v-card>
         <v-card-title>
-          <span class="text-h5">บิลค่าขนส่ง</span>
+          <span class="text-h5">รูปพัสดุ</span>
         </v-card-title>
         <v-card-text>
-          1
+          <v-file-input
+            v-model="files"
+            multiple
+            prepend-icon="mdi-paperclip"
+          >
+            <template #selection="{ fileNames }">
+              <template v-for="fileName in fileNames" :key="fileName">
+                <v-chip
+                  size="small"
+                  label
+                  color="primary"
+                  class="me-2"
+                >
+                  {{ fileName }}
+                </v-chip>
+              </template>
+            </template>
+          </v-file-input>
         </v-card-text>
         <v-card-actions>
-          <small class="text-red">*indicates required field</small>
           <v-spacer />
           <v-btn color="error" variant="text" @click="dialog = false">
             Close
