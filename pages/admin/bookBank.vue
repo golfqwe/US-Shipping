@@ -34,9 +34,10 @@ const editedItem: BookBank = reactive({
 const { data: listItems, refresh } = await useFetch('/api/bookBank/', {
   method: 'GET'
 })
-Object.assign(items, listItems.value)
-watch(listItems, () => {
-  Object.assign(items, listItems.value)
+
+watch(listItems, (val) => {
+  items.length = 0
+  Object.assign(items, val)
 })
 
 watch(dialog, (val) => {

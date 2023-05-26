@@ -31,12 +31,13 @@ const editedItem: wareHouse = reactive({
   status: true
 })
 
-const { data: listWarehouse, refresh } = await useFetch('/api/warehouse/', {
+const { data: listWarehouse, refresh } = await useLazyFetch('/api/warehouse/', {
   method: 'GET'
 })
-Object.assign(items, listWarehouse.value)
-watch(listWarehouse, () => {
-  Object.assign(items, listWarehouse.value)
+
+watch(listWarehouse, (val) => {
+  item.length = []
+  Object.assign(items, val)
 })
 
 watch(search, (val) => {

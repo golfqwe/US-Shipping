@@ -23,12 +23,13 @@ const editedItem = reactive({
   status: true
 })
 
-const { data: listItems, refresh } = await useFetch('/api/localcarriers/', {
+const { data: listItems, refresh } = await useLazyFetch('/api/localcarriers/', {
   method: 'GET'
 })
-Object.assign(items, listItems.value)
-watch(listItems, () => {
-  Object.assign(items, listItems.value)
+
+watch(listItems, (val) => {
+  items.length = 0
+  Object.assign(items, val)
 })
 
 watch(dialog, (val) => {

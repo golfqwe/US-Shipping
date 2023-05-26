@@ -40,7 +40,12 @@ const sidebarItem: menu[] = [
   {
     title: 'แจ้งชำระบิล',
     icon: FileInvoiceIcon,
-    to: '/admin/ui/typography'
+    to: '/admin/payment'
+  },
+  {
+    title: 'บันทึกรูปสินค้า',
+    icon: TicketIcon,
+    to: '/admin/takePhoto'
   },
   { header: 'Warehouse' },
   {

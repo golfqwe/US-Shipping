@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { tracking } from '@/types/tracking/index'
-import { invoiceItem } from '@/types/invoiceItem/index'
 definePageMeta({
   middleware: 'checkauth'
 })
@@ -13,58 +12,13 @@ const snackbar = reactive({
 })
 const formDescription = ref()
 const items: tracking[] = reactive([])
-let selectDescription:invoiceItem[] = reactive([])
-const defaultDescription: invoiceItem[] = reactive([
-  {
-    id: 1,
-    description: 'Net Weight',
-    quantity: 1,
-    weight: 0,
-    fee: 0
-  },
-  {
-    id: 2,
-    description: 'Shipping Free Air Long Cargo(L) (Retail)',
-    quantity: 1,
-    weight: 0,
-    fee: 0
-  },
-  {
-    id: 3,
-    description: 'Volume Weight Charge',
-    quantity: 1,
-    weight: 0,
-    fee: 0
-  },
-  {
-    id: 4,
-    description: 'Transit Charge',
-    quantity: 1,
-    weight: 0,
-    fee: 0
-  },
-  {
-    id: 5,
-    description: 'Consolideate/Repack Fee',
-    quantity: 1,
-    weight: null,
-    fee: 70
-  },
-  {
-    id: 6,
-    description: 'Local Deliver in Capital 1-15.9 kg',
-    quantity: 1,
-    weight: null,
-    fee: 70
-  }
-])
 
 const editedIndex = ref(-1)
 let editedItem = reactive({})
 
 const { data: listItems, refresh } = await useLazyFetch('/api/trackings/', {
   method: 'GET',
-  query: { status: 'pending' }
+  query: { status: 'waiting, success' }
 })
 
 watch(listItems, (val) => {
@@ -79,7 +33,6 @@ watch(dialog, (val) => {
 const editItem = (item: any) => {
   editedIndex.value = item.id
   editedItem = item
-  selectDescription = reactive([])
   dialog.value = true
 }
 const close = async () => {
@@ -116,10 +69,7 @@ const save = async () => {
   close()
   refresh()
 }
-const toggleActive = (item: invoiceItem) => {
-  const pos = selectDescription.findIndex(it => it.id === item.id)
-  pos === -1 ? selectDescription.push(item) : selectDescription.splice(pos, 1)
-}
+
 </script>
 <template>
   <div>
@@ -127,7 +77,7 @@ const toggleActive = (item: invoiceItem) => {
       <v-card-item class="pa-6">
         <v-card-title class="text-h5 pt-sm-2 pb-7">
           <v-row justify="space-between">
-            <v-col>  Tracking </v-col>
+            <v-col> บันทึกรูปพัสดุ </v-col>
           </v-row>
         </v-card-title>
         <v-table class="month-table">
@@ -223,15 +173,15 @@ const toggleActive = (item: invoiceItem) => {
 
               <td class="text-right">
                 <v-btn
-                  v-show=" item?.status?.code === 'pending'"
+                  v-show=" item?.status?.code === 'paymented'"
                   size="small"
                   rounded="lg"
                   color="info"
                   @click="editItem(item)"
                 >
                   <v-icon start dark>
-                    mdi-receipt
-                  </v-icon> สร้างบิล
+                    mdi-cash-check
+                  </v-icon> ตรวจสอบสลิป
                 </v-btn>
               </td>
             </tr>
@@ -246,92 +196,7 @@ const toggleActive = (item: invoiceItem) => {
           <span class="text-h5">บิลค่าขนส่ง</span>
         </v-card-title>
         <v-card-text>
-          <v-container>
-            <v-row>
-              <v-col cols="5">
-                <v-list>
-                  <v-list-item
-                    v-for="(item, idx) in defaultDescription"
-                    :key="idx"
-                    :active="selectDescription.some((it) => it === item)"
-                    color="primary"
-                    @click="toggleActive(item)"
-                  >
-                    <v-list-item-title>{{ item.description }}</v-list-item-title>
-                  </v-list-item>
-                </v-list>
-              </v-col>
-
-              <v-col cols="">
-                <v-form ref="formDescription">
-                  <v-table class="month-table">
-                    <thead>
-                      <tr>
-                        <th class="text-subtitle-1 font-weight-bold w-50">
-                          description
-                        </th>
-                        <th class="text-subtitle-1 font-weight-bold text-center">
-                          quantity
-                        </th>
-                        <th class="text-subtitle-1 font-weight-bold">
-                          weight
-                        </th>
-                        <th class="text-subtitle-1 font-weight-bold">
-                          fee (Bath)
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr v-for="(item, id) in selectDescription" :key="id">
-                        <td>
-                          <v-text-field
-                            v-model="item.description"
-                            :rules="[(v: string) => !!v || 'Contact is required']"
-                            hide-details="auto"
-                            variant="outlined"
-                            density="compact"
-                            color="primary"
-                          />
-                        </td>
-                        <td>
-                          <v-text-field
-                            v-model.number="item.quantity"
-                            :rules="[(v: string) => !!v || 'Contact is required']"
-                            hide-details="auto"
-                            type="number"
-                            variant="outlined"
-                            density="compact"
-                            color="primary"
-                          />
-                        </td>
-                        <td>
-                          <v-text-field
-                            v-model.number="item.weight"
-                            hide-details="auto"
-                            variant="outlined"
-                            type="number"
-                            density="compact"
-                            color="primary"
-                          />
-                        </td>
-                        <td>
-                          <v-text-field
-                            v-model.number="item.fee"
-                            :rules="[(v: string) => !!v || 'Contact is required']"
-                            hide-details="auto"
-                            variant="outlined"
-                            type="number"
-                            density="compact"
-                            color="primary"
-                          />
-                        </td>
-                      </tr>
-                    </tbody>
-                  </v-table>
-                </v-form>
-              </v-col>
-            </v-row>
-          </v-container>
+          1
         </v-card-text>
         <v-card-actions>
           <small class="text-red">*indicates required field</small>
