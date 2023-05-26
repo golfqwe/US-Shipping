@@ -5,6 +5,7 @@ definePageMeta({
 })
 
 const dialog = ref(false)
+const dialogImage = ref(false)
 const snackbar = reactive({
   status: false,
   text: '',
@@ -14,11 +15,11 @@ const snackbar = reactive({
 const items: tracking[] = reactive([])
 const files = ref([])
 
-const editedIndex = ref(-1)
+let editedTracking = reactive({})
 
 const { data: listItems, refresh } = await useLazyFetch('/api/trackings/', {
   method: 'GET',
-  query: { status: 'waiting, success' }
+  query: { status: 'waiting,success' }
 })
 
 watch(listItems, (val) => {
@@ -31,19 +32,24 @@ watch(dialog, (val) => {
 })
 
 const editItem = (item: any) => {
-  editedIndex.value = item.id
+  editedTracking = item
   dialog.value = true
+}
+const selectItem = (item: any) => {
+  editedTracking = item
+  dialogImage.value = true
 }
 const close = async () => {
   dialog.value = false
   await nextTick(() => {
-    editedIndex.value = -1
+    Object.assign(editedTracking, {})
   })
 }
 const save = async () => {
   const formData = new FormData()
-  console.log('files.v :>> ', files.value)
-  files.value.forEach((it, inx) => {
+  formData.append('trackingNumber', editedTracking.trackingNumber)
+  formData.append('trackingId', editedTracking.id)
+  files.value.forEach((it) => {
     formData.append('photo', it, it.name)
   })
 
@@ -51,15 +57,15 @@ const save = async () => {
     method: 'post',
     body: formData
   })
-  console.log('errr :>> ', error.value)
-  // if (error.value) {
-  //   snackbar.text = 'Save data failed'
-  //   snackbar.color = 'error'
-  // } else {
-  //   snackbar.text = 'Save data successfully'
-  //   snackbar.color = 'success'
-  // }
-  // snackbar.status = true
+
+  if (error.value) {
+    snackbar.text = 'Save data failed'
+    snackbar.color = 'error'
+  } else {
+    snackbar.text = 'Save data successfully'
+    snackbar.color = 'success'
+  }
+  snackbar.status = true
 
   close()
   refresh()
@@ -178,6 +184,17 @@ const save = async () => {
                     mdi-upload
                   </v-icon> อัปโหลด
                 </v-btn>
+                <v-btn
+                  v-show=" item?.status?.code === 'success'"
+                  size="small"
+                  rounded="lg"
+                  color="success"
+                  @click="selectItem(item)"
+                >
+                  <v-icon start dark>
+                    mdi-eye
+                  </v-icon> ดูรูป
+                </v-btn>
               </td>
             </tr>
           </tbody>
@@ -193,6 +210,9 @@ const save = async () => {
         <v-card-text>
           <v-file-input
             v-model="files"
+            variant="outlined"
+            density="compact"
+            color="primary"
             multiple
             prepend-icon="mdi-paperclip"
           >
@@ -201,7 +221,6 @@ const save = async () => {
                 <v-chip
                   size="small"
                   label
-                  color="primary"
                   class="me-2"
                 >
                   {{ fileName }}
@@ -219,6 +238,43 @@ const save = async () => {
             Save
           </v-btn>
         </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <v-dialog v-model="dialogImage" max-width="750">
+      <v-card>
+        <v-card-title>
+          <span class="text-h5">รูปพัสดุ</span>
+        </v-card-title>
+        <v-card-text>
+          <v-row>
+            <v-col
+              v-for="(item,inx) in editedTracking.images.split(',')"
+              :key="inx"
+            >
+              <v-img
+                :src="`/${item}`"
+                :lazy-src="`/${item}`"
+                cover
+                width="100%"
+                class="bg-grey-lighten-2"
+              >
+                <template #placeholder>
+                  <v-row
+                    class="fill-height ma-0"
+                    align="center"
+                    justify="center"
+                  >
+                    <v-progress-circular
+                      indeterminate
+                      color="grey-lighten-5"
+                    />
+                  </v-row>
+                </template>
+              </v-img>
+            </v-col>
+          </v-row>
+        </v-card-text>
       </v-card>
     </v-dialog>
 

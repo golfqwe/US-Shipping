@@ -44,6 +44,10 @@ TrackingsModel.init({
     type: DataTypes.ENUM('Air', 'Ocean'),
     allowNull: false
   },
+  images: {
+    type: DataTypes.TEXT,
+    allowNull: true
+  },
   status: {
     type: DataTypes.ENUM,
     values: ['pending', 'waitpayment', 'paymented', 'waiting', 'success'],

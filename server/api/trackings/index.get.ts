@@ -19,20 +19,20 @@ export default defineEventHandler(async (event) => {
   }
 
   const users = await TrackingsModel.findAll({
-    where,
+    where
 
-    include: [
-      {
-        model: UsersModel
-      },
-      {
-        model: LocalCarriersModel
-      },
-      {
-        model: WareHouseModel
-      }
+    // include: [
+    //   {
+    //     model: UsersModel
+    //   },
+    //   {
+    //     model: LocalCarriersModel
+    //   },
+    //   {
+    //     model: WareHouseModel
+    //   }
 
-    ]
+    // ]
 
   })
   return users
