@@ -97,6 +97,7 @@ const save = async () => {
     method: 'post',
     body: {
       trackingId: editedItem?.id,
+      userId: editedItem?.userId,
       status: 'pending',
       items: selectDescription
     }

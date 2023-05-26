@@ -1,6 +1,6 @@
 /* Recent Transaction */
 type invoice = {
-  id?: string;
+  id?: number;
   trackingId?: number;
   receiverId?: string;
 };

@@ -2,6 +2,10 @@
 import { useDisplay } from 'vuetify'
 import { invoiceItem } from '@/types/invoiceItem/index'
 import { invoice } from '@/types/invoice/index'
+import { payment } from '@/types/payment/index'
+import { MyAddress } from '@/types/myAddress/index'
+import { BookBank } from '@/types/bookbank/index'
+
 const route = useRoute()
 
 definePageMeta({
@@ -10,18 +14,42 @@ definePageMeta({
 })
 
 const { smAndDown } = useDisplay()
-const invoiceItems: invoiceItem[] = reactive([])
+let invoiceItems: invoiceItem[] = reactive([])
 const invoiceInfo: invoice = reactive({})
+let paymentData: payment = reactive({})
+const addressList: MyAddress[] = reactive([])
+const bookbankList: BookBank[] = reactive([])
 
 const { data: invoiceList } = await useFetch(`/api/invoices/${route.params.id}`, {
   method: 'GET'
 })
-Object.assign(invoiceItems, invoiceList.value.InvoiceItemsModels)
+// Object.assign(invoiceItems, invoiceList.value.InvoiceItemsModels)
+
 Object.assign(invoiceInfo, invoiceList.value)
 
+const { data: addressData } = await useFetch('/api/myAddress/', {
+  method: 'GET'
+})
+Object.assign(addressList, addressData.value)
+const { data: bookbankData } = await useFetch('/api/bookBank/', {
+  method: 'GET'
+})
+Object.assign(bookbankList, bookbankData.value)
+
+paymentData = reactive({
+  invoiceId: invoiceInfo.id,
+  bankId: null,
+  amount: 0,
+  payDate: null,
+  slipImage: [],
+  receiverId: addressList.find(it => it.id === invoiceInfo.receiverId)
+})
+
 const calculateTotal = (it : invoiceItem) => {
-  return ((it.fee * (it.weight === 0 || !it.weight ? 1 : it.weight)) * it.quantity).toFixed(2)
+  return ((it.fee * (it.weight === 0 || !it.weight ? 1 : it.weight)) * it.quantity)
 }
+invoiceItems = invoiceList.value.InvoiceItemsModels.map(it => ({ ...it, total: calculateTotal(it) }))
+const sumTotal = (array, key: string) => array.reduce((sum, acc) => sum + Number(acc[key]), 0)
 
 </script>
 
@@ -36,19 +64,19 @@ const calculateTotal = (it : invoiceItem) => {
         <v-table>
           <thead>
             <tr>
-              <th class="text-left w-50">
+              <th class="text-subtitle-1 font-weight-bold w-50">
                 Description
               </th>
-              <th class="text-left">
+              <th class="text-subtitle-1 font-weight-bold ">
                 Quantity
               </th>
-              <th class="text-left">
+              <th class="text-subtitle-1 font-weight-bold ">
                 Weight
               </th>
-              <th class="text-left">
+              <th class="text-subtitle-1 font-weight-bold ">
                 Fee (Bath)
               </th>
-              <th class="text-left">
+              <th class="text-subtitle-1 font-weight-bold ">
                 Total (Bath)
               </th>
             </tr>
@@ -58,11 +86,58 @@ const calculateTotal = (it : invoiceItem) => {
               v-for="(item, inx) in invoiceItems"
               :key="inx"
             >
-              <td>{{ item.description }}</td>
-              <td>{{ item.quantity }}</td>
-              <td>{{ item.weight }}</td>
-              <td>{{ item.fee }}</td>
-              <td>{{ calculateTotal(item) }}</td>
+              <td>
+                <h6 class="text-subtitle-1 font-weight-bold ">
+                  {{ item.description }}
+                </h6>
+              </td>
+              <td>
+                <h6 class="text-body-1 text-muted text-center">
+                  {{ item.quantity }}
+                </h6>
+              </td>
+              <td>
+                <h6 class="text-body-1 text-muted text-center">
+                  {{ item.weight }}
+                </h6>
+              </td>
+              <td>
+                <h6 class="text-body-1 text-muted text-center">
+                  {{ item.fee }}
+                </h6>
+              </td>
+              <td>
+                <h6 class="text-subtitle-1 font-weight-bold">
+                  {{ item.total.toFixed(2) }}
+                </h6>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <h6 class="text-subtitle-1 font-weight-bold text-center">
+                  Total
+                </h6>
+              </td>
+              <td>
+                <h6 class="text-subtitle-1 font-weight-bold text-center">
+                  {{ sumTotal(invoiceItems,'quantity') }}
+                </h6>
+              </td>
+              <td>
+                <h6 class="text-subtitle-1 font-weight-bold text-center">
+                  {{ sumTotal(invoiceItems,'weight').toFixed(2) }}
+                </h6>
+              </td>
+              <td>
+                <h6 class="text-subtitle-1 font-weight-bold text-center">
+                  {{ sumTotal(invoiceItems,'fee').toFixed(2) }}
+                </h6>
+              </td>
+              <td>
+                <h6 class="text-subtitle-1 font-weight-bold text-center">
+                  {{ sumTotal(invoiceItems,'total').toFixed(2) }}
+                </h6>
+              </td>
             </tr>
           </tbody>
         </v-table>
@@ -79,7 +154,7 @@ const calculateTotal = (it : invoiceItem) => {
           </v-col>
           <v-col>
             <v-text-field
-              v-model="invoiceInfo.id"
+              v-model="paymentData.invoiceId"
               disabled
               variant="outlined"
               hide-details
@@ -95,12 +170,23 @@ const calculateTotal = (it : invoiceItem) => {
           </v-col>
           <v-col>
             <v-select
-              v-model="invoiceInfo.receiverId"
-              :items="['California', 'Colorado', 'Florida', 'Georgia', 'Texas', 'Wyoming']"
+              v-model="paymentData.receiverId"
+              :items="addressList"
               variant="outlined"
               hide-details
               color="primary"
-            />
+            >
+              <template #selection="{ item }">
+                <span>{{ item.value?.contact }}</span>
+              </template>
+              <template #item="{ props, item: {value} }">
+                <v-list-item
+                  v-bind="props"
+                  :title="value?.contact"
+                  :subtitle="value?.address"
+                />
+              </template>
+            </v-select>
           </v-col>
         </v-row>
         <v-row align="center">
@@ -111,12 +197,23 @@ const calculateTotal = (it : invoiceItem) => {
           </v-col>
           <v-col>
             <v-select
-              v-model="invoiceInfo.receiverId"
-              :items="['California', 'Colorado', 'Florida', 'Georgia', 'Texas', 'Wyoming']"
+              v-model="paymentData.bankId"
+              :items="bookbankList"
               variant="outlined"
               hide-details
               color="primary"
-            />
+            >
+              <template #selection="{ item }">
+                <span>{{ item.value?.accountNumber }}</span>
+              </template>
+              <template #item="{ props, item: {value} }">
+                <v-list-item
+                  v-bind="props"
+                  :title="`${value?.bankName} ${value?.accountType}`"
+                  :subtitle="value?.accountName"
+                />
+              </template>
+            </v-select>
           </v-col>
         </v-row>
         <v-row align="center">
@@ -127,6 +224,7 @@ const calculateTotal = (it : invoiceItem) => {
           </v-col>
           <v-col cols="auto">
             <v-text-field
+              v-model="paymentData.amount"
               variant="outlined"
               type="number"
               hide-details
@@ -141,7 +239,9 @@ const calculateTotal = (it : invoiceItem) => {
             </v-label>
           </v-col>
           <v-col>
+            {{ paymentData.payDate }}
             <v-text-field
+              v-model="paymentData.payDate"
               variant="outlined"
               type="datetime-local"
               hide-details

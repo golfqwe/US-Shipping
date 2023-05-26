@@ -21,11 +21,11 @@ InvoiceItemsModel.init({
     allowNull: false
   },
   weight: {
-    type: DataTypes.FLOAT,
+    type: DataTypes.DECIMAL,
     allowNull: true
   },
   fee: {
-    type: DataTypes.FLOAT,
+    type: DataTypes.DECIMAL,
     allowNull: false
   }
 

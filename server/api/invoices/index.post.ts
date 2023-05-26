@@ -3,6 +3,7 @@ import { invoiceSchema } from '~/server/utils/validation.invoice'
 import { InvoicesModel } from '~/server/models/Invoices.model'
 import { InvoiceItemsModel } from '~/server/models/InvoiceItems.model'
 import { TrackingsModel } from '~/server/models/Trackings.model'
+import { MyAddressModel } from '~/server/models/MyAddress.model'
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
@@ -16,10 +17,14 @@ export default defineEventHandler(async (event) => {
       message: error.message
     })
   }
+  const address = await MyAddressModel.findOne({
+    where: { createBy: body.userId, status: 'active' }
+  })
+
   const t = await sequelize.transaction()
 
   try {
-    const inv = await InvoicesModel.create(body)
+    const inv = await InvoicesModel.create({ ...body, receiverId: address?.dataValues.id })
 
     await InvoiceItemsModel.bulkCreate(body.items.map(it => ({
       invoiceId: inv.dataValues.id,
