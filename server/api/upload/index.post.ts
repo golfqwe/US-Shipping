@@ -3,7 +3,7 @@ import path from 'path'
 import { readFiles } from 'h3-formidable'
 
 export default defineEventHandler(async (event) => {
-  const { files: { photo: [{ filepath, mimetype }] } } = await readFiles(event, {
+  const { files: { photo } } = await readFiles(event, {
     includeFields: true
   })
 
@@ -13,9 +13,12 @@ export default defineEventHandler(async (event) => {
     fs.mkdirSync(dir)
   }
 
-  const imageName = String(Date.now()) + String(Math.round(Math.random() * 10000000))
-  const newPath = `${path.join('public', 'uploads', imageName)}.${mimetype.split('/')[1]}`
-  fs.copyFileSync(filepath, newPath)
+  for (const { filepath, mimetype } of Object.values(photo)) {
+    const imageName = String(Date.now()) + String(Math.round(Math.random() * 10000000))
+    console.log('🚀 ~ file: index.post.ts:17 ~ defineEventHandler ~ imageName:', imageName)
+    const newPath = `${path.join('public', 'uploads', imageName)}.${mimetype.split('/')[1]}`
+    fs.copyFileSync(filepath, newPath)
+  }
 
   return { success: true }
 })
