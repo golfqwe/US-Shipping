@@ -4,7 +4,7 @@ definePageMeta({
   layout: 'guest',
   middleware: 'checkauth'
 })
-const items:tracking[] = reactive([])
+const items: tracking[] = reactive([])
 
 const { data: listProducts } = await useFetch('/api/trackings/', {
   method: 'GET'
@@ -58,12 +58,14 @@ Object.assign(items, listProducts.value)
           </td>
           <td>
             <h6 class="text-body-1 text-muted">
-              {{ new Date(item?.createdAt).toLocaleString('en-US', { timeZone: 'UTC' }) }}
+              {{
+                new Date(item?.createdAt).toLocaleString("en-US", {
+                  timeZone: "UTC",
+                })
+              }}
             </h6>
           </td>
-          <td>
-            -
-          </td>
+          <td>-</td>
 
           <td>
             <h6 class="text-body-1 text-muted text-center">
@@ -73,21 +75,35 @@ Object.assign(items, listProducts.value)
                 :color="item.carrier === 'Air' ? 'success' : 'blue'"
               >
                 {{
-                  item.carrier === "Air"
-                    ? "  mdi-airplane"
-                    : "   mdi-sail-boat"
+                  item.carrier === "Air" ? "  mdi-airplane" : "   mdi-sail-boat"
                 }}
               </v-icon>
               {{ item.carrier }}
             </h6>
           </td>
           <td>
-            <v-chip :color="`${item.status?.code === 'payment'? 'info' : item.status?.code === 'waiting'? 'warning' : item.status?.code === 'success'? 'success' : ''}`">
+            <v-chip
+              :color="`${
+                item?.status?.code === 'waitpayment'
+                  ? 'info'
+                  : item?.status?.code === 'paymented'
+                    ? 'secondary'
+                    : item?.status?.code === 'waiting'
+                      ? 'warning'
+                      : item?.status?.code === 'success'
+                        ? 'secondary'
+                        : ''
+              }`"
+            >
               {{ item.status.desc }}
             </v-chip>
           </td>
           <td class="text-right">
-            <v-btn variant="text" color="success" icon="mdi-pencil-box-outline" />
+            <v-btn
+              variant="text"
+              color="success"
+              icon="mdi-pencil-box-outline"
+            />
           </td>
         </tr>
       </tbody>

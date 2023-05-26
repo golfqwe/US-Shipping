@@ -8,5 +8,5 @@ export const TrackingSchema = Joi.object({
   website: Joi.string().required(),
   description: Joi.string().required(),
   carrier: Joi.string().valid('Air', 'Ocean').required(),
-  status: Joi.string().valid('pending', 'payment', 'waiting', 'success').required()
+  status: Joi.string().valid('pending', 'waitpayment', 'paymented', 'waiting', 'success').required()
 })

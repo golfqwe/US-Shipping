@@ -22,7 +22,7 @@ InvoiceItemsModel.init({
   },
   weight: {
     type: DataTypes.FLOAT,
-    allowNull: false
+    allowNull: true
   },
   fee: {
     type: DataTypes.FLOAT,

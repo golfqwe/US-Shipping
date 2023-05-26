@@ -60,6 +60,7 @@ const defaultDescription: description[] = reactive([
 ])
 
 const editedIndex = ref(-1)
+let editedItem = reactive({})
 
 const { data: listItems, refresh } = await useFetch('/api/trackings/', {
   method: 'GET'
@@ -75,6 +76,7 @@ watch(dialog, (val) => {
 
 const editItem = (item: any) => {
   editedIndex.value = item.id
+  editedItem = item
   selectDescription = reactive([])
   dialog.value = true
 }
@@ -91,12 +93,12 @@ const save = async () => {
     return
   }
 
-  const { error } = await useFetch('/api/products/', {
+  const { error } = await useFetch('/api/invoices/', {
     method: 'post',
     body: {
-      userId: null,
-      userId: null,
-      userId: null
+      trackingId: editedItem?.id,
+      status: 'pending',
+      items: selectDescription
     }
   })
   if (error.value) {
@@ -201,13 +203,15 @@ const toggleActive = (item: description) => {
               <td>
                 <v-chip
                   :color="`${
-                    item?.status?.code === 'payment'
+                    item?.status?.code === 'waitpayment'
                       ? 'info'
-                      : item?.status?.code === 'waiting'
-                        ? 'warning'
-                        : item?.status?.code === 'success'
-                          ? 'success'
-                          : ''
+                      : item?.status?.code === 'paymented'
+                        ? 'secondary'
+                        : item?.status?.code === 'waiting'
+                          ? 'warning'
+                          : item?.status?.code === 'success'
+                            ? 'secondary'
+                            : ''
                   }`"
                 >
                   {{ item?.status?.desc }}

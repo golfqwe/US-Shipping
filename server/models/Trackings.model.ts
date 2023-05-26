@@ -46,7 +46,7 @@ TrackingsModel.init({
   },
   status: {
     type: DataTypes.ENUM,
-    values: ['pending', 'payment', 'waiting', 'success'],
+    values: ['pending', 'waitpayment', 'paymented', 'waiting', 'success'],
     get () {
       const status = this.getDataValue('status')
       const result = {
@@ -57,8 +57,11 @@ TrackingsModel.init({
         case 'pending':
           result.desc = 'รอแจ้งบิลค่าขนส่ง'
           break
-        case 'payment':
+        case 'waitpayment':
           result.desc = 'รอชำละบิลค่าขนส่ง'
+          break
+        case 'paymented':
+          result.desc = 'แจ้งชำละแล้ว รอตรวจสอบ'
           break
         case 'waiting':
           result.desc = 'รอสินค้ามาถึง'

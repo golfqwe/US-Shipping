@@ -1,25 +1,17 @@
 import { DataTypes, Model } from 'sequelize'
 import { sequelize } from '../utils/db.instance'
-import { TrackingsModel } from './Trackings.model'
-import { MyAddressModel } from './MyAddress.model'
-import { InvoiceItemsModel } from './InvoiceItems.model'
+// import { TrackingsModel } from './Trackings.model'
+// import { MyAddressModel } from './MyAddress.model'
+// import { InvoiceItemsModel } from './InvoiceItems.model'
 
 export class InvoicesModel extends Model { }
 
 InvoicesModel.init({
   trackingId: {
-    type: DataTypes.INTEGER,
-    references: {
-      model: TrackingsModel,
-      key: 'id'
-    }
+    type: DataTypes.INTEGER
   },
   receiverId: {
-    type: DataTypes.INTEGER,
-    references: {
-      model: MyAddressModel,
-      key: 'id'
-    }
+    type: DataTypes.INTEGER
   },
   status: {
     type: DataTypes.ENUM,
@@ -27,6 +19,6 @@ InvoicesModel.init({
   }
 }, { sequelize, tableName: 'invoices' })
 
-InvoicesModel.hasMany(InvoiceItemsModel)
-InvoicesModel.belongsTo(TrackingsModel, { foreignKey: 'trackingId' })
-InvoicesModel.belongsTo(MyAddressModel, { as: 'receiverId' })
+// InvoicesModel.hasMany(InvoiceItemsModel)
+// InvoicesModel.belongsTo(TrackingsModel, { foreignKey: 'trackingId' })
+// InvoicesModel.belongsTo(MyAddressModel, { as: 'receiverId' })
