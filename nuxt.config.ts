@@ -1,8 +1,9 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  ssr: false,
+  ssr: true,
   plugins: [
-    { src: '~/plugins/vuetify.ts', mode: 'client' }
+    { src: '~/plugins/vuetify.ts', mode: 'client' },
+    { src: '~/plugins/ckeditorPlugin.ts', mode: 'client' }
   ],
   typescript: { shim: false },
   build: {
