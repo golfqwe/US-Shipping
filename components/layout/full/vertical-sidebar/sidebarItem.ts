@@ -68,7 +68,7 @@ const sidebarItem: menu[] = [
   {
     title: 'ตารางรอบนำเข้า',
     icon: CalendarIcon,
-    to: '/admin/ui/typography'
+    to: '/admin/nextDayService'
   },
   {
     title: 'คำถามที่พบบ่อย',

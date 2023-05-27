@@ -33,12 +33,12 @@ const menuMain = reactive([
 const menuSub = reactive([
   {
     text: 'รอบนำเข้าสินค้า',
-    icon: 'icon1.png',
-    link: '/'
+    icon: 'package.png',
+    link: '/nextDayService'
   },
   {
     text: 'บริการรับกดสั่งสินค้า ประมูลสินค้า',
-    icon: 'icon1.png',
+    icon: 'package.png',
     link: '/'
   },
   {
