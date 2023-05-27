@@ -3,10 +3,17 @@ import { getServerSession } from '#auth'
 
 export default defineEventHandler(async (event) => {
   const session = await getServerSession(event)
+  const { type } = getQuery(event)
   let where = {}
   if (session?.user?.role === 'user') {
     where = { status: 'active' }
   }
-  const bookbank = await ArchivesModel.findAll({ where })
-  return bookbank
+  if (type) {
+    where = {
+      ...where,
+      type
+    }
+  }
+  const archive = await ArchivesModel.findAll({ where })
+  return archive
 })

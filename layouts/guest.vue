@@ -39,17 +39,17 @@ const menuSub = reactive([
   {
     text: 'บริการรับกดสั่งสินค้า ประมูลสินค้า',
     icon: 'package.png',
-    link: '/'
+    link: '/auction'
   },
   {
     text: 'คำถามที่พบบ่อย สินค้าต้องห้าม',
     icon: 'faq.png',
-    link: '/'
+    link: '/faq'
   },
   {
     text: 'ติดต่อเจ้าหน้าที่',
     icon: 'customerService.png',
-    link: '/'
+    link: '/customService'
   }
 ])
 

@@ -9,6 +9,9 @@
     "deploy": "npx nuxi generate --dotenv .env.production && gh-pages --dotfiles -d .output/public"
   },
   "dependencies": {
+    "@ckeditor/ckeditor5-build-classic": "^38.0.1",
+    "@ckeditor/ckeditor5-editor-decoupled": "^38.0.1",
+    "@ckeditor/ckeditor5-vue": "^5.1.0",
     "@mdi/font": "^6.5.95",
     "@nuxtjs/vuetify": "^1.12.3",
     "@tiptap/starter-kit": "2.0.0-beta.192",

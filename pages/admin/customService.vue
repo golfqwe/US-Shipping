@@ -1,3 +1,5 @@
+<script>
+</script>
 <script setup lang="ts">
 
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic'
@@ -34,7 +36,7 @@ const editedItem = reactive({
 
 const { data: listItems, refresh } = await useLazyFetch('/api/archives/', {
   method: 'GET',
-  params: { type: 'nextDayService' }
+  params: { type: 'customService' }
 })
 
 watch(listItems, (val) => {
@@ -88,7 +90,7 @@ const save = async () => {
       method: 'post',
       body: {
         content: editedItem.content,
-        type: 'nextDayService',
+        type: 'customService',
         status: editedItem.status ? 'active' : 'inactive'
       }
     })
@@ -111,7 +113,7 @@ const save = async () => {
       <v-card-item class="pa-6">
         <v-card-title class="text-h5 pt-sm-2 pb-7">
           <v-row justify="space-between">
-            <v-col> รอบนำเข้าสินค้า </v-col>
+            <v-col> ติดต่อเจ้าหน้าที่ </v-col>
             <v-col cols="auto">
               <v-btn color="info" @click="dialog = true">
                 <v-icon start>
@@ -184,7 +186,7 @@ const save = async () => {
     <v-dialog v-model="dialog" persistent width="800">
       <v-card>
         <v-card-title>
-          <span class="text-h5">{{ editedIndex > -1 ? "แก้ไข" : "เพิ่ม" }}รอบนำเข้าสินค้า</span>
+          <span class="text-h5">{{ editedIndex > -1 ? "แก้ไข" : "เพิ่ม" }}ติดต่อเจ้าหน้าที่</span>
         </v-card-title>
         <v-card-text>
           <v-container>

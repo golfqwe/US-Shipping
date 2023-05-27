@@ -6,7 +6,9 @@ import {
   TruckIcon,
   BuildingBankIcon,
   CalendarIcon,
-  QuestionMarkIcon
+  QuestionMarkIcon,
+  HeadsetIcon,
+  ShoppingCartIcon
 } from 'vue-tabler-icons'
 
 export interface menu {
@@ -73,7 +75,17 @@ const sidebarItem: menu[] = [
   {
     title: 'คำถามที่พบบ่อย',
     icon: QuestionMarkIcon,
-    to: '/admin/sample-page'
+    to: '/admin/faq'
+  },
+  {
+    title: 'บริการรับกดสั่งสินค้า ประมูลสินค้า',
+    icon: ShoppingCartIcon,
+    to: '/admin/auction'
+  },
+  {
+    title: 'ติดต่อเจ้าหน้าที่',
+    icon: HeadsetIcon,
+    to: '/admin/customService'
   }
 //   { header: 'utilities' },
 //   {
