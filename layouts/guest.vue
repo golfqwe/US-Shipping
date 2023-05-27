@@ -2,6 +2,16 @@
 <script setup lang="ts">
 const { status, data, signOut } = useSession()
 
+const title = ref('Us-shipping ')
+useHead({
+  meta: [{ content: title }],
+  titleTemplate: (titleChunk) => {
+    return titleChunk
+      ? `${titleChunk}`
+      : 'Us-shipping '
+  }
+})
+
 const menuMain = reactive([
   {
     text: 'ที่อยู่ของฉัน',
