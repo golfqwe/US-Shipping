@@ -5,22 +5,22 @@ const { status, data, signOut } = useSession()
 const menuMain = reactive([
   {
     text: 'ที่อยู่ของฉัน',
-    icon: 'icon1.png',
+    icon: 'shop.png',
     link: '/myAddress'
   },
   {
     text: 'ที่อยู่โกดังสินค้า',
-    icon: 'icon1.png',
+    icon: 'shop.png',
     link: '/warehouse'
   },
   {
     text: 'Register Tracking',
-    icon: 'icon1.png',
+    icon: 'invoice.png',
     link: '/register-tracking'
   },
   {
     text: 'บิลค่าขนส่ง',
-    icon: 'icon1.png',
+    icon: 'payment.png',
     link: '/trackings'
   }
   // {
@@ -43,12 +43,12 @@ const menuSub = reactive([
   },
   {
     text: 'คำถามที่พบบ่อย สินค้าต้องห้าม',
-    icon: 'icon1.png',
+    icon: 'faq.png',
     link: '/'
   },
   {
     text: 'ติดต่อเจ้าหน้าที่',
-    icon: 'icon1.png',
+    icon: 'customerService.png',
     link: '/'
   }
 ])
