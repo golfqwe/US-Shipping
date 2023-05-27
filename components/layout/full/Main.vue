@@ -29,9 +29,9 @@ const sDrawer = ref(true)
             <!---End Single Item-->
           </template>
         </v-list>
-        <div class="pa-4">
+        <!-- <div class="pa-4">
           <LayoutFullVerticalSidebarExtraBox />
-        </div>
+        </div> -->
       </perfect-scrollbar>
     </div>
   </v-navigation-drawer>
@@ -52,10 +52,6 @@ const sDrawer = ref(true)
         <LayoutFullVerticalHeaderNotificationDD />
       </div>
       <div>
-        <!-- Upgrade button -->
-        <v-btn class="mr-2 bg-primary" href="https://adminmart.com/templates/nuxtjs/" target="_blank">
-          Download Free
-        </v-btn>
         <!-- User Profile -->
         <LayoutFullVerticalHeaderProfileDD />
       </div>

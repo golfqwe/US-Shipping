@@ -2,6 +2,7 @@
 </script>
 <template>
   <v-app>
-    <NuxtPage />
+    <!-- <NuxtPage /> -->
+    <slot />
   </v-app>
 </template>

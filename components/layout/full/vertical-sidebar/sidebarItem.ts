@@ -6,7 +6,9 @@ import {
   TruckIcon,
   BuildingBankIcon,
   CalendarIcon,
-  QuestionMarkIcon
+  QuestionMarkIcon,
+  HeadsetIcon,
+  ShoppingCartIcon
 } from 'vue-tabler-icons'
 
 export interface menu {
@@ -35,12 +37,17 @@ const sidebarItem: menu[] = [
   {
     title: 'Tracking',
     icon: TicketIcon,
-    to: '/admin/ui/typography'
+    to: '/admin/trackings'
   },
   {
     title: 'แจ้งชำระบิล',
     icon: FileInvoiceIcon,
-    to: '/admin/ui/typography'
+    to: '/admin/payment'
+  },
+  {
+    title: 'บันทึกรูปสินค้า',
+    icon: TicketIcon,
+    to: '/admin/takePhoto'
   },
   { header: 'Warehouse' },
   {
@@ -51,24 +58,34 @@ const sidebarItem: menu[] = [
   {
     title: 'ประเภทขนส่ง',
     icon: TruckIcon,
-    to: '/admin/ui/typography'
+    to: '/admin/localCarriers'
   },
   { header: 'Payment' },
   {
     title: 'ข้อมูลบัญชีที่รับชำระ',
     icon: BuildingBankIcon,
-    to: '/admin/ui/typography'
+    to: '/admin/bookBank'
   },
   { header: 'utilities' },
   {
     title: 'ตารางรอบนำเข้า',
     icon: CalendarIcon,
-    to: '/admin/ui/typography'
+    to: '/admin/nextDayService'
   },
   {
     title: 'คำถามที่พบบ่อย',
     icon: QuestionMarkIcon,
-    to: '/admin/sample-page'
+    to: '/admin/faq'
+  },
+  {
+    title: 'บริการรับกดสั่งสินค้า ประมูลสินค้า',
+    icon: ShoppingCartIcon,
+    to: '/admin/auction'
+  },
+  {
+    title: 'ติดต่อเจ้าหน้าที่',
+    icon: HeadsetIcon,
+    to: '/admin/customService'
   }
 //   { header: 'utilities' },
 //   {

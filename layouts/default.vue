@@ -1,26 +1,30 @@
 <script setup lang="ts">
-const title = ref('Modernize - Nuxt3 Typescript based Free Admin Dashboard Template')
+const title = ref('Us-shipping - Admin')
 useHead({
   meta: [{ content: title }],
   titleTemplate: (titleChunk) => {
     return titleChunk
-      ? `${titleChunk} - Nuxt3 Typescript based Free Admin Dashboard Template`
-      : 'Modernize - Nuxt3 Typescript based Free Admin Dashboard Template'
+      ? `${titleChunk} - Admin`
+      : 'Us-shipping - Admin manage'
   }
 })
+
 </script>
 
 <template>
-  <v-locale-provider>
-    <v-app>
-      <LayoutFullMain />
-      <v-main>
-        <v-container fluid class="page-wrapper">
-          <div class="maxWidth">
-            <NuxtPage />
-          </div>
-        </v-container>
-      </v-main>
-    </v-app>
-  </v-locale-provider>
+  <ClientOnly>
+    <v-locale-provider>
+      <v-app>
+        <LayoutFullMain />
+        <v-main>
+          <v-container fluid class="page-wrapper">
+            <div class="maxWidth">
+              <!-- <NuxtPage /> -->
+              <slot />
+            </div>
+          </v-container>
+        </v-main>
+      </v-app>
+    </v-locale-provider>
+  </ClientOnly>
 </template>

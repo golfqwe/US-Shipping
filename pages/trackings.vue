@@ -1,16 +1,26 @@
 <script lang="ts" setup>
+import type { tracking } from '@/types/tracking/index'
 definePageMeta({
-  layout: 'guest'
+  layout: 'guest',
+  middleware: 'checkauth'
 })
-const listInvoices = reactive([
-  { test: 'tst' }
-])
+const items: tracking[] = reactive([])
+const editedTracking = reactive({})
+
+const { data: listTracking } = await useLazyFetch('/api/trackings/', {
+  method: 'GET'
+})
+
+watch(listTracking, (val) => {
+  items.length = 0
+  Object.assign(items, val)
+})
 </script>
 
 <template>
   <v-sheet class="pa-6" color="white" rounded>
     <h5 class="text-h5 font-weight-bold mb-4 text-darkprimary">
-      บิลนำเข้าสินค้า
+      บิลค่าขนส่ง
     </h5>
 
     <v-table class="month-table">
@@ -19,7 +29,7 @@ const listInvoices = reactive([
           <th class="text-subtitle-1 font-weight-bold">
             Tracking No
           </th>
-          <th class="text-subtitle-1 font-weight-bold">
+          <th class="text-subtitle-1 font-weight-bold text-center">
             จำนวนกล่อง
           </th>
           <th class="text-subtitle-1 font-weight-bold">
@@ -31,48 +41,95 @@ const listInvoices = reactive([
           <th class="text-subtitle-1 font-weight-bold text-right">
             ประเภทจัดส่ง
           </th>
+          <th class="text-subtitle-1 font-weight-bold">
+            สถานะ
+          </th>
           <th class="text-subtitle-1 font-weight-bold text-right">
             Action
           </th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(item, index) in listInvoices" :key="index" class="month-item">
+        <tr v-for="(item, index) in items" :key="index" class="month-item">
           <td>
             <p class="text-15 font-weight-medium">
-              {{ item.test }}
+              {{ item.trackingNumber }}
             </p>
           </td>
           <td>
-            <div class="">
-              <h6 class="text-subtitle-1 font-weight-bold">
-                {{ item.test }}
-              </h6>
-              <div class="text-13 mt-1 text-muted">
-                {{ item.test }}
-              </div>
-            </div>
+            <h6 class="text-subtitle-1 font-weight-bold text-center">
+              {{ 1 }}
+            </h6>
           </td>
           <td>
             <h6 class="text-body-1 text-muted">
-              {{ item.test }}
+              {{
+                new Date(item?.createdAt).toLocaleString("en-US", {
+                  timeZone: "UTC",
+                })
+              }}
             </h6>
           </td>
           <td>
-            <v-chip :class="'text-body-1 bg-info' " color="white" size="small">
+            <h6 class="text-body-1 text-muted">
               {{
-                item.test
+                item?.receiveDate ? new Date(item?.receiveDate).toLocaleString("th-TH", {
+                  timeZone: "UTC",
+                }) : '-'
               }}
-            </v-chip>
+            </h6>
           </td>
 
           <td>
-            <h6 class="text-h6 text-right">
-              {{ item.test }}
+            <h6 class="text-body-1 text-muted text-center">
+              <v-icon
+                start
+                size="x-large"
+                :color="item.carrier === 'Air' ? 'success' : 'blue'"
+              >
+                {{
+                  item.carrier === "Air" ? "  mdi-airplane" : "   mdi-sail-boat"
+                }}
+              </v-icon>
+              {{ item.carrier }}
             </h6>
           </td>
+          <td>
+            <v-chip
+              :color="`${
+                item?.status?.code === 'waitpayment'
+                  ? 'secondary'
+                  : item?.status?.code === 'paymented'
+                    ? 'info'
+                    : item?.status?.code === 'waiting'
+                      ? 'warning'
+                      : item?.status?.code === 'success'
+                        ? 'success'
+                        : 'accent'
+              }`"
+            >
+              {{ item.status.desc }}
+            </v-chip>
+          </td>
           <td class="text-right">
-            <v-btn variant="text" color="success" icon="mdi-pencil-box-outline" />
+            <v-tooltip
+              location="bottom"
+            >
+              <template #activator="{ props }">
+                <v-btn
+                  v-show=" item?.status?.code === 'waitpayment'"
+                  icon
+                  v-bind="props"
+                  variant="text"
+                  :to="`/payment/${item.id}`"
+                >
+                  <v-icon color="info">
+                    mdi-cash
+                  </v-icon>
+                </v-btn>
+              </template>
+              <span>ชำละบิล</span>
+            </v-tooltip>
           </td>
         </tr>
       </tbody>
