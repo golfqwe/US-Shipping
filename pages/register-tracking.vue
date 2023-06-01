@@ -9,6 +9,11 @@ definePageMeta({
 // const { data } = useSession()
 const config = useRuntimeConfig()
 const router = useRouter()
+let userInfo = useUserStore()
+
+if (process.client) {
+  userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}')
+}
 
 const formRegisterTracking = ref()
 const editedItem: tracking = reactive({
@@ -57,6 +62,9 @@ const save = async () => {
     method: 'post',
     body: {
       ...editedItem
+    },
+    headers: {
+      authorization: 'Bearer ' + userInfo?.token
     },
     onResponseError ({ response }) {
       if (response.status === 401) {
