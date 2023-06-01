@@ -6,7 +6,7 @@ definePageMeta({
 
 const items: Archive[] = reactive([])
 
-const { data: listAddress } = await useFetch('/api/archives/', {
+const { data: listAddress } = await useFetch('/api/archives', {
   method: 'GET',
   params: { type: 'nextDayService' }
 })

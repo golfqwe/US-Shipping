@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-const { signIn } = useSession()
 definePageMeta({
   layout: 'guest'
 })
@@ -23,18 +22,18 @@ const mySignInHandler = async () => {
     return
   }
   rememberMe()
-  const { error } = await signIn('credentials', { ...formData, redirect: false })
+  // const { error } = await signIn('credentials', { ...formData, redirect: false })
 
-  if (error) {
-    // Do your custom error handling here
-    snackbar.text = 'You have made a terrible mistake while entering your credentials'
-    snackbar.color = 'error'
+  // if (error) {
+  //   // Do your custom error handling here
+  //   snackbar.text = 'You have made a terrible mistake while entering your credentials'
+  //   snackbar.color = 'error'
 
-    snackbar.status = true
-  } else {
-    // No error, continue with the sign in, e.g., by following the returned redirect:
-    return navigateTo('/')
-  }
+  //   snackbar.status = true
+  // } else {
+  //   // No error, continue with the sign in, e.g., by following the returned redirect:
+  //   return navigateTo('/')
+  // }
 }
 const rememberMe = () => {
   if (rmCheck.value) {

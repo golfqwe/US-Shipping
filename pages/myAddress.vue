@@ -4,7 +4,8 @@ definePageMeta({
   layout: 'guest',
   middleware: 'checkauth'
 })
-const { data } = useSession()
+// const { data } = useSession()
+const config = useRuntimeConfig()
 
 const dialog = ref(false)
 const snackbar = reactive({
@@ -34,7 +35,8 @@ const editedItem: MyAddress = reactive({
   status: true
 })
 
-const { data: listAddress, refresh } = await useFetch('/api/myAddress/', {
+const { data: listAddress, refresh } = await useFetch('/api/myaddress', {
+  baseURL: config.public.apiBase,
   method: 'GET'
 })
 Object.assign(items, listAddress.value)
@@ -89,7 +91,7 @@ const save = async () => {
         email: editedItem.email,
         phone: editedItem.phone,
         address: editedItem.address,
-        createBy: data.value?.user?.id,
+        createBy: 1, // data.value?.user?.id,
         status: editedItem.status ? 'active' : 'inactive'
       }
     })

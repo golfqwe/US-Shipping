@@ -1,6 +1,6 @@
 
 <script setup lang="ts">
-const { status, data, signOut } = useSession()
+// const { status, data, signOut } = useSession()
 
 const title = ref('Us-shipping ')
 useHead({
@@ -103,7 +103,7 @@ function useAsset (path: string): string {
 
           <v-col cols="auto" class="ma-2 hidden-sm-and-down">
             <div class="d-flex flex-column text-right">
-              <div v-if="status === 'authenticated' ">
+              <div>
                 <v-menu
                   :close-on-content-click="false"
                 >
@@ -113,12 +113,12 @@ function useAsset (path: string): string {
                       color="primary"
                       v-bind="props"
                     >
-                      {{ data?.user?.name }}
+                      data?.user?.name
                     </v-btn>
                   </template>
                   <v-sheet rounded="md" width="200" elevation="10" class="mt-2">
                     <v-list class="py-0" lines="one" density="compact">
-                      <v-list-item v-if="data?.user?.role === 'admin'" active-color="primary" link to="/admin">
+                      <v-list-item active-color="primary" link to="/admin">
                         <template #prepend>
                           <FolderIcon stroke-width="1.5" size="20" />
                         </template>
@@ -128,14 +128,14 @@ function useAsset (path: string): string {
                       </v-list-item>
                     </v-list>
                     <div class="pt-4 pb-4 px-5 text-center">
-                      <v-btn color="primary" variant="outlined" block @click="signOut({ callbackUrl: '/login' })">
+                      <v-btn color="primary" variant="outlined" block>
                         Logout
                       </v-btn>
                     </div>
                   </v-sheet>
                 </v-menu>
               </div>
-              <div v-else>
+              <div>
                 <NuxtLink to="login" class="text-decoration-none text-darkprimary font-weight-bold">
                   เข้าสู่ระบบ
                 </NuxtLink>|<NuxtLink to="register" class="text-decoration-none text-darkprimary font-weight-bold">
@@ -195,7 +195,7 @@ function useAsset (path: string): string {
         </div>
         <v-container>
           <!-- <v-sheet rounded color="accent" height="60" /> -->
-          <v-row v-if="status === 'authenticated' " justify="center">
+          <v-row justify="center">
             <v-col>
               <v-sheet class="" color="white" rounded border>
                 <v-container>
