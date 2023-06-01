@@ -1,4 +1,7 @@
 <script lang="ts" setup>
+
+const config = useRuntimeConfig()
+
 definePageMeta({
   layout: 'guest'
 })
@@ -8,6 +11,9 @@ const snackbar = reactive({
   text: '',
   color: 'success'
 })
+const router = useRouter()
+const userInfo = useUserStore()
+
 const formLogin = ref()
 const rmCheck = ref(false)
 const formData = reactive({
@@ -24,16 +30,26 @@ const mySignInHandler = async () => {
   rememberMe()
   // const { error } = await signIn('credentials', { ...formData, redirect: false })
 
-  // if (error) {
-  //   // Do your custom error handling here
-  //   snackbar.text = 'You have made a terrible mistake while entering your credentials'
-  //   snackbar.color = 'error'
+  const { data } = await useFetch('/api/auth/signIn', {
+    baseURL: config.public.apiBase,
+    method: 'post',
+    body: {
+      ...formData
+    }
+  })
 
-  //   snackbar.status = true
-  // } else {
-  //   // No error, continue with the sign in, e.g., by following the returned redirect:
-  //   return navigateTo('/')
-  // }
+  if (!data.value) {
+    // Do your custom error handling here
+    snackbar.text = 'You have made a terrible mistake while entering your credentials'
+    snackbar.color = 'error'
+
+    snackbar.status = true
+  } else {
+    userInfo.value = data?.value?.data
+    // No error, continue with the sign in, e.g., by following the returned redirect:
+    // return navigateTo('/')
+    router.push({ path: '/' })
+  }
 }
 const rememberMe = () => {
   if (rmCheck.value) {

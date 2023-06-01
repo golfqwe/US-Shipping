@@ -1,5 +1,7 @@
 <script lang="ts" setup>
 import type { user } from '@/types/user/index'
+const config = useRuntimeConfig()
+
 definePageMeta({
   layout: 'guest'
 })
@@ -26,7 +28,8 @@ const save = async () => {
     return
   }
 
-  const { error } = await useFetch('/api/auth/register/', {
+  const { error } = await useFetch('/api/auth/signUp', {
+    baseURL: config.public.apiBase,
     method: 'post',
     body: {
       ...editedItem,

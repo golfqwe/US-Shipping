@@ -7,7 +7,7 @@ definePageMeta({
   middleware: 'checkauth'
 })
 // const { data } = useSession()
-
+const config = useRuntimeConfig()
 const formRegisterTracking = ref()
 const editedItem: tracking = reactive({
   userId: 1, // data.value?.user?.id,
@@ -35,6 +35,7 @@ watch(() => editedItem.carrier, (carrier) => {
 
 const fetchListWareHouse = async (carrier: string) => {
   const { data: listWarehouse } = await useFetch('/api/warehouse/', {
+    baseURL: config.public.apiBase,
     method: 'GET',
     params: { carrier }
   })
@@ -48,6 +49,7 @@ const save = async () => {
   }
 
   const { error } = await useFetch('/api/trackings/', {
+    baseURL: config.public.apiBase,
     method: 'post',
     body: {
       ...editedItem
@@ -67,6 +69,7 @@ const save = async () => {
 
 // on mounted
 const { data: listItems } = await useFetch('/api/localcarriers/', {
+  baseURL: config.public.apiBase,
   method: 'GET'
 })
 Object.assign(itemsLocalCarrier, listItems.value)

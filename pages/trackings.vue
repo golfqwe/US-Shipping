@@ -4,10 +4,11 @@ definePageMeta({
   layout: 'guest',
   middleware: 'checkauth'
 })
+const config = useRuntimeConfig()
 const items: tracking[] = reactive([])
-const editedTracking = reactive({})
 
 const { data: listTracking } = await useLazyFetch('/api/trackings/', {
+  baseURL: config.public.apiBase,
   method: 'GET'
 })
 

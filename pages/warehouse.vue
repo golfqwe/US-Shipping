@@ -4,11 +4,12 @@ definePageMeta({
   layout: 'guest',
   middleware: 'checkauth'
 })
-
+const config = useRuntimeConfig()
 const items = reactive({})
 const currentItem = ref(Object.keys(items)[0])
 
 const { data: listWarehouse } = await useFetch('/api/warehouse/', {
+  baseURL: config.public.apiBase,
   method: 'GET',
   query: { status: 'active' }
 })

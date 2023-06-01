@@ -3,10 +3,11 @@ import type { Archive } from '@/types/archive/index'
 definePageMeta({
   layout: 'guest'
 })
-
+const config = useRuntimeConfig()
 const items: Archive[] = reactive([])
 
 const { data: listAddress } = await useFetch('/api/archives/', {
+  baseURL: config.public.apiBase,
   method: 'GET',
   params: { type: 'auction' }
 })

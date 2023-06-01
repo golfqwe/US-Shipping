@@ -1,6 +1,5 @@
 
 <script setup lang="ts">
-// const { status, data, signOut } = useSession()
 
 const title = ref('Us-shipping ')
 useHead({
@@ -11,7 +10,7 @@ useHead({
       : 'Us-shipping '
   }
 })
-
+const userInfo = useUserStore()
 const menuMain = reactive([
   {
     text: 'ที่อยู่ของฉัน',
@@ -63,11 +62,34 @@ const menuSub = reactive([
   }
 ])
 
+const snackbar = reactive({
+  status: false,
+  text: '',
+  color: 'success'
+})
+
 const config = useRuntimeConfig()
 
 function useAsset (path: string): string {
   // @ts-expect-error: wrong type info
   return new URL(`${config.BASE_URL}` + path, import.meta.url)
+}
+
+const signOut = async () => {
+  const { error } = await useFetch('/api/auth/signOut', {
+    baseURL: config.public.apiBase,
+    method: 'post'
+  })
+  if (error) {
+    // Do your custom error handling here
+    snackbar.text = 'You have made a terrible mistake while entering your credentials'
+    snackbar.color = 'error'
+
+    snackbar.status = true
+  } else {
+    // No error, continue with the sign in, e.g., by following the returned redirect:
+    return navigateTo('/')
+  }
 }
 
 </script>
@@ -113,7 +135,7 @@ function useAsset (path: string): string {
                       color="primary"
                       v-bind="props"
                     >
-                      data?.user?.name
+                      {{ userInfo?.name }}
                     </v-btn>
                   </template>
                   <v-sheet rounded="md" width="200" elevation="10" class="mt-2">
@@ -128,7 +150,7 @@ function useAsset (path: string): string {
                       </v-list-item>
                     </v-list>
                     <div class="pt-4 pb-4 px-5 text-center">
-                      <v-btn color="primary" variant="outlined" block>
+                      <v-btn color="primary" variant="outlined" block @click="signOut()">
                         Logout
                       </v-btn>
                     </div>
@@ -261,6 +283,14 @@ function useAsset (path: string): string {
         </v-container>
       </v-main>
     </v-app>
+    <v-snackbar
+      v-model="snackbar.status"
+      :timeout="2000"
+      :color="snackbar.color"
+      location="top right"
+    >
+      {{ snackbar.text }}
+    </v-snackbar>
   </ClientOnly>
 </template>
 
