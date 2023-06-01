@@ -5,6 +5,14 @@ definePageMeta({
   middleware: 'checkauth'
 })
 
+const config = useRuntimeConfig()
+let userInfo = useUserStore()
+const router = useRouter()
+
+if (process.client) {
+  userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}')
+}
+
 const dialog = ref(false)
 const snackbar = reactive({
   status: false,
@@ -16,13 +24,22 @@ const items: tracking[] = reactive([])
 const editedItem = reactive({})
 const peyment = reactive({})
 
-const { data: listItems, refresh } = await useLazyFetch('/api/trackings/', {
+const { data: listItems, refresh } = await useLazyFetch('/api/trackings', {
+  baseURL: config.public.apiBase,
   method: 'GET',
-  query: { status: 'waitpayment,paymented' }
+  query: { status: 'waitpayment,paymented' },
+  headers: {
+    authorization: 'Bearer ' + userInfo?.token
+  },
+  onResponseError ({ response }) {
+    if (response.status === 401) {
+      router.push({ path: '/login' })
+    }
+  }
 })
 
 watch(listItems, (val) => {
-  items.length = 0
+  items.slice(0)
   Object.assign(items, val)
 })
 
@@ -32,7 +49,11 @@ watch(dialog, (val) => {
 
 const editItem = async (item: any) => {
   const { data } = await useFetch(`/api/payment/${item.id}`, {
-    method: 'get'
+    baseURL: config.public.apiBase,
+    method: 'get',
+    headers: {
+      authorization: 'Bearer ' + userInfo?.token
+    }
   })
 
   Object.assign(peyment, data.value)
@@ -47,9 +68,13 @@ const close = async () => {
 }
 const save = async () => {
   const { error } = await useFetch(`/api/trackings/${editedItem.id}`, {
+    baseURL: config.public.apiBase,
     method: 'put',
     body: {
       status: 'waiting'
+    },
+    headers: {
+      authorization: 'Bearer ' + userInfo?.token
     }
   })
   if (error.value) {

@@ -6,6 +6,13 @@ definePageMeta({
 })
 // const { data } = useSession()
 const config = useRuntimeConfig()
+let userInfo = useUserStore()
+const router = useRouter()
+const UserId = useUserId()
+
+if (process.client) {
+  userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}')
+}
 
 const dialog = ref(false)
 const snackbar = reactive({
@@ -37,8 +44,17 @@ const editedItem: MyAddress = reactive({
 
 const { data: listAddress, refresh } = await useFetch('/api/myaddress', {
   baseURL: config.public.apiBase,
-  method: 'GET'
+  method: 'GET',
+  headers: {
+    authorization: 'Bearer ' + userInfo?.token
+  },
+  onResponseError ({ response }) {
+    if (response.status === 401) {
+      router.push({ path: '/login' })
+    }
+  }
 })
+console.log('listAddress :>> ', listAddress.value)
 Object.assign(items, listAddress.value)
 
 watch(listAddress, () => {
@@ -68,7 +84,12 @@ const save = async () => {
   }
   if (editedIndex.value > -1) {
     const { error } = await useFetch('/api/myAddress/' + editedIndex.value, {
+      baseURL: config.public.apiBase,
       method: 'put',
+
+      headers: {
+        authorization: 'Bearer ' + userInfo?.token
+      },
       body: {
         ...editedItem,
         status: editedItem.status ? 'active' : 'inactive'
@@ -85,13 +106,17 @@ const save = async () => {
     snackbar.status = true
   } else {
     const { error } = await useFetch('/api/myAddress/', {
+      baseURL: config.public.apiBase,
       method: 'post',
+      headers: {
+        authorization: 'Bearer ' + userInfo?.token
+      },
       body: {
         contact: editedItem.contact,
         email: editedItem.email,
         phone: editedItem.phone,
         address: editedItem.address,
-        createBy: 1, // data.value?.user?.id,
+        createBy: userInfo?.value?.id || UserId, // data.value?.user?.id,
         status: editedItem.status ? 'active' : 'inactive'
       }
     })

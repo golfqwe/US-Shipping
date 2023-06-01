@@ -5,6 +5,14 @@ definePageMeta({
   middleware: 'checkauth'
 })
 
+const config = useRuntimeConfig()
+let userInfo = useUserStore()
+const router = useRouter()
+
+if (process.client) {
+  userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}')
+}
+
 const dialog = ref(false)
 const snackbar = reactive({
   status: false,
@@ -62,13 +70,22 @@ const defaultDescription: invoiceItem[] = reactive([
 const editedIndex = ref(-1)
 let editedItem = reactive({})
 
-const { data: listItems, refresh } = await useLazyFetch('/api/trackings/', {
+const { data: listItems, refresh } = await useLazyFetch('/api/trackings', {
+  baseURL: config.public.apiBase,
   method: 'GET',
-  query: { status: 'pending' }
+  query: { status: 'pending' },
+  headers: {
+    authorization: 'Bearer ' + userInfo?.token
+  },
+  onResponseError ({ response }) {
+    if (response.status === 401) {
+      router.push({ path: '/login' })
+    }
+  }
 })
 
 watch(listItems, (val) => {
-  items.length = 0
+  items.slice(0)
   Object.assign(items, val)
 })
 
@@ -96,7 +113,11 @@ const save = async () => {
   }
 
   const { error } = await useFetch('/api/invoices/', {
+    baseURL: config.public.apiBase,
     method: 'post',
+    headers: {
+      authorization: 'Bearer ' + userInfo?.token
+    },
     body: {
       trackingId: editedItem?.id,
       userId: editedItem?.userId,

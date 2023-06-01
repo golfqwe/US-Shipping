@@ -4,6 +4,14 @@ definePageMeta({
   middleware: 'checkauth'
 })
 
+const config = useRuntimeConfig()
+let userInfo = useUserStore()
+const router = useRouter()
+
+if (process.client) {
+  userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}')
+}
+
 const dialog = ref(false)
 const snackbar = reactive({
   status: false,
@@ -32,11 +40,20 @@ const editedItem: BookBank = reactive({
 })
 
 const { data: listItems, refresh } = await useFetch('/api/bookBank/', {
-  method: 'GET'
+  method: 'GET',
+  baseURL: config.public.apiBase,
+  headers: {
+    authorization: 'Bearer ' + userInfo?.token
+  },
+  onResponseError ({ response }) {
+    if (response.status === 401) {
+      router.push({ path: '/login' })
+    }
+  }
 })
 
 watch(listItems, (val) => {
-  items.length = 0
+  items.slice(0)
   Object.assign(items, val)
 })
 
@@ -65,6 +82,10 @@ const save = async () => {
   if (editedIndex.value > -1) {
     const { error } = await useFetch('/api/bookBank/' + editedIndex.value, {
       method: 'put',
+      baseURL: config.public.apiBase,
+      headers: {
+        authorization: 'Bearer ' + userInfo?.token
+      },
       body: {
         ...editedItem,
         status: editedItem.status ? 'active' : 'inactive'
@@ -81,6 +102,10 @@ const save = async () => {
   } else {
     const { error } = await useFetch('/api/bookBank/', {
       method: 'post',
+      baseURL: config.public.apiBase,
+      headers: {
+        authorization: 'Bearer ' + userInfo?.token
+      },
       body: {
         accountName: editedItem.accountName,
         bankName: editedItem.bankName,

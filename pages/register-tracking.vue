@@ -8,6 +8,8 @@ definePageMeta({
 })
 // const { data } = useSession()
 const config = useRuntimeConfig()
+const router = useRouter()
+
 const formRegisterTracking = ref()
 const editedItem: tracking = reactive({
   userId: 1, // data.value?.user?.id,
@@ -34,11 +36,13 @@ watch(() => editedItem.carrier, (carrier) => {
 })
 
 const fetchListWareHouse = async (carrier: string) => {
-  const { data: listWarehouse } = await useFetch('/api/warehouse/', {
+  const { data: listWarehouse } = await useFetch('/api/warehouse', {
     baseURL: config.public.apiBase,
     method: 'GET',
     params: { carrier }
   })
+  itemsWareHouse.splice(0)
+  editedItem.wareHouseId = null
   Object.assign(itemsWareHouse, listWarehouse.value)
 }
 const save = async () => {
@@ -48,11 +52,16 @@ const save = async () => {
     return
   }
 
-  const { error } = await useFetch('/api/trackings/', {
+  const { error } = await useFetch('/api/trackings', {
     baseURL: config.public.apiBase,
     method: 'post',
     body: {
       ...editedItem
+    },
+    onResponseError ({ response }) {
+      if (response.status === 401) {
+        router.push({ path: '/login' })
+      }
     }
   })
 
@@ -68,7 +77,7 @@ const save = async () => {
 }
 
 // on mounted
-const { data: listItems } = await useFetch('/api/localcarriers/', {
+const { data: listItems } = await useFetch('/api/localcarriers', {
   baseURL: config.public.apiBase,
   method: 'GET'
 })

@@ -4,6 +4,14 @@ definePageMeta({
   middleware: 'checkauth'
 })
 
+const config = useRuntimeConfig()
+let userInfo = useUserStore()
+const router = useRouter()
+
+if (process.client) {
+  userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}')
+}
+
 const dialog = ref(false)
 const dialogImage = ref(false)
 const snackbar = reactive({
@@ -18,12 +26,21 @@ const files = ref([])
 let editedTracking = reactive({})
 
 const { data: listItems, refresh } = await useLazyFetch('/api/trackings/', {
+  baseURL: config.public.apiBase,
   method: 'GET',
-  query: { status: 'waiting,success' }
+  query: { status: 'waiting,success' },
+  headers: {
+    authorization: 'Bearer ' + userInfo?.token
+  },
+  onResponseError ({ response }) {
+    if (response.status === 401) {
+      router.push({ path: '/login' })
+    }
+  }
 })
 
 watch(listItems, (val) => {
-  items.length = 0
+  items.slice(0)
   Object.assign(items, val)
 })
 
@@ -54,8 +71,12 @@ const save = async () => {
   })
 
   const { error } = await useFetch('/api/upload/', {
+    baseURL: config.public.apiBase,
     method: 'post',
-    body: formData
+    body: formData,
+    headers: {
+      authorization: 'Bearer ' + userInfo?.token
+    }
   })
 
   if (error.value) {

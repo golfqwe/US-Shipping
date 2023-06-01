@@ -4,6 +4,14 @@ definePageMeta({
   middleware: 'checkauth'
 })
 
+const config = useRuntimeConfig()
+let userInfo = useUserStore()
+const router = useRouter()
+
+if (process.client) {
+  userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}')
+}
+
 const dialog = ref(false)
 const snackbar = reactive({
   status: false,
@@ -23,12 +31,21 @@ const editedItem = reactive({
   status: true
 })
 
-const { data: listItems, refresh } = await useLazyFetch('/api/localcarriers/', {
-  method: 'GET'
+const { data: listItems, refresh } = await useLazyFetch('/api/localcarriers', {
+  method: 'GET',
+  baseURL: config.public.apiBase,
+  headers: {
+    authorization: 'Bearer ' + userInfo?.token
+  },
+  onResponseError ({ response }) {
+    if (response.status === 401) {
+      router.push({ path: '/login' })
+    }
+  }
 })
 
 watch(listItems, (val) => {
-  items.length = 0
+  items.slice(0)
   Object.assign(items, val)
 })
 
@@ -58,7 +75,11 @@ const save = async () => {
     const { error } = await useFetch(
       '/api/localcarriers/' + editedIndex.value,
       {
+        baseURL: config.public.apiBase,
         method: 'put',
+        headers: {
+          authorization: 'Bearer ' + userInfo?.token
+        },
         body: {
           ...editedItem,
           status: editedItem.status ? 'active' : 'inactive'
@@ -75,7 +96,11 @@ const save = async () => {
     snackbar.status = true
   } else {
     const { error } = await useFetch('/api/localcarriers/', {
+      baseURL: config.public.apiBase,
       method: 'post',
+      headers: {
+        authorization: 'Bearer ' + userInfo?.token
+      },
       body: {
         name: editedItem.name,
         status: editedItem.status ? 'active' : 'inactive'

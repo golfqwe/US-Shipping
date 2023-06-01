@@ -10,7 +10,18 @@ useHead({
       : 'Us-shipping '
   }
 })
-const userInfo = useUserStore()
+
+const config = useRuntimeConfig()
+let userInfo = useUserStore()
+
+if (process.client) {
+  userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}')
+}
+
+const userName = useUserName() // Same as useState('color')
+watch(userName, (val) => {
+  userInfo.name = val
+})
 const menuMain = reactive([
   {
     text: 'ที่อยู่ของฉัน',
@@ -68,19 +79,18 @@ const snackbar = reactive({
   color: 'success'
 })
 
-const config = useRuntimeConfig()
-
 function useAsset (path: string): string {
   // @ts-expect-error: wrong type info
   return new URL(`${config.BASE_URL}` + path, import.meta.url)
 }
 
 const signOut = async () => {
-  const { error } = await useFetch('/api/auth/signOut', {
+  const { data } = await useFetch('/api/auth/signOut', {
     baseURL: config.public.apiBase,
     method: 'post'
   })
-  if (error) {
+
+  if (!data.value) {
     // Do your custom error handling here
     snackbar.text = 'You have made a terrible mistake while entering your credentials'
     snackbar.color = 'error'
@@ -88,7 +98,9 @@ const signOut = async () => {
     snackbar.status = true
   } else {
     // No error, continue with the sign in, e.g., by following the returned redirect:
-    return navigateTo('/')
+    localStorage.removeItem('userInfo')
+    userName.value = ''
+    return navigateTo('/login')
   }
 }
 
@@ -125,7 +137,7 @@ const signOut = async () => {
 
           <v-col cols="auto" class="ma-2 hidden-sm-and-down">
             <div class="d-flex flex-column text-right">
-              <div>
+              <div v-if="userInfo?.name">
                 <v-menu
                   :close-on-content-click="false"
                 >
@@ -135,7 +147,7 @@ const signOut = async () => {
                       color="primary"
                       v-bind="props"
                     >
-                      {{ userInfo?.name }}
+                      {{ userInfo?.name || userName }}
                     </v-btn>
                   </template>
                   <v-sheet rounded="md" width="200" elevation="10" class="mt-2">
@@ -157,7 +169,7 @@ const signOut = async () => {
                   </v-sheet>
                 </v-menu>
               </div>
-              <div>
+              <div v-else>
                 <NuxtLink to="login" class="text-decoration-none text-darkprimary font-weight-bold">
                   เข้าสู่ระบบ
                 </NuxtLink>|<NuxtLink to="register" class="text-decoration-none text-darkprimary font-weight-bold">
@@ -217,7 +229,7 @@ const signOut = async () => {
         </div>
         <v-container>
           <!-- <v-sheet rounded color="accent" height="60" /> -->
-          <v-row justify="center">
+          <v-row v-if="userInfo?.name || userName" justify="center">
             <v-col>
               <v-sheet class="" color="white" rounded border>
                 <v-container>

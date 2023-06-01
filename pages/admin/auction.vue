@@ -1,5 +1,3 @@
-<script>
-</script>
 <script setup lang="ts">
 
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic'
@@ -10,6 +8,14 @@ import type { Archive } from '@/types/archive/index'
 definePageMeta({
   middleware: 'checkauth'
 })
+
+const config = useRuntimeConfig()
+let userInfo = useUserStore()
+const router = useRouter()
+
+if (process.client) {
+  userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}')
+}
 
 const editorConfig = ref({
   extraPlugins: [MyCustomUploadAdapterPlugin]
@@ -34,13 +40,22 @@ const editedItem = reactive({
   status: true
 })
 
-const { data: listItems, refresh } = await useLazyFetch('/api/archives/', {
+const { data: listItems, refresh } = await useLazyFetch('/api/archives', {
+  baseURL: config.public.apiBase,
   method: 'GET',
-  params: { type: 'auction' }
+  params: { type: 'auction' },
+  headers: {
+    authorization: 'Bearer ' + userInfo?.token
+  },
+  onResponseError ({ response }) {
+    if (response.status === 401) {
+      router.push({ path: '/login' })
+    }
+  }
 })
 
 watch(listItems, (val) => {
-  items.length = 0
+  items.slice(0)
   Object.assign(items, val)
 })
 

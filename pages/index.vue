@@ -1,10 +1,14 @@
 <script setup lang="ts">
 /* -For Set Blank Layout- */
+
 definePageMeta({
   layout: 'guest'
 })
-const userInfo = useUserStore()
 
+// let userInfo = useUserStore()
+// if (process.client) {
+//   userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}')
+// }
 </script>
 
 <template>
@@ -12,7 +16,7 @@ const userInfo = useUserStore()
     <section>
       <h2>WWF History</h2>
       <p>
-        {{ userInfo }}
+        <!-- {{ userInfo }} -->
       </p>
     </section>
   </v-content>

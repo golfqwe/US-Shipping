@@ -13,6 +13,8 @@ const snackbar = reactive({
 })
 const router = useRouter()
 const userInfo = useUserStore()
+const userName = useUserName()
+const UserId = useUserId()
 
 const formLogin = ref()
 const rmCheck = ref(false)
@@ -46,7 +48,13 @@ const mySignInHandler = async () => {
     snackbar.status = true
   } else {
     userInfo.value = data?.value?.data
+    if (process.client) {
+      localStorage.setItem('userInfo', JSON.stringify(data?.value?.data))
+    }
+    userName.value = data?.value?.data?.name
+    UserId.value = data?.value?.data?.id
     // No error, continue with the sign in, e.g., by following the returned redirect:
+
     // return navigateTo('/')
     router.push({ path: '/' })
   }

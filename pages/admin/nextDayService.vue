@@ -9,6 +9,14 @@ definePageMeta({
   middleware: 'checkauth'
 })
 
+const config = useRuntimeConfig()
+let userInfo = useUserStore()
+const router = useRouter()
+
+if (process.client) {
+  userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}')
+}
+
 const editorConfig = ref({
   extraPlugins: [MyCustomUploadAdapterPlugin]
 })
@@ -33,12 +41,21 @@ const editedItem = reactive({
 })
 
 const { data: listItems, refresh } = await useLazyFetch('/api/archives/', {
+  baseURL: config.public.apiBase,
   method: 'GET',
-  params: { type: 'nextDayService' }
+  params: { type: 'nextDayService' },
+  headers: {
+    authorization: 'Bearer ' + userInfo?.token
+  },
+  onResponseError ({ response }) {
+    if (response.status === 401) {
+      router.push({ path: '/login' })
+    }
+  }
 })
 
 watch(listItems, (val) => {
-  items.length = 0
+  items.slice(0)
   Object.assign(items, val)
 })
 
@@ -68,7 +85,11 @@ const save = async () => {
     const { error } = await useFetch(
       '/api/archives/' + editedIndex.value,
       {
+        baseURL: config.public.apiBase,
         method: 'put',
+        headers: {
+          authorization: 'Bearer ' + userInfo?.token
+        },
         body: {
           ...editedItem,
           status: editedItem.status ? 'active' : 'inactive'
@@ -86,6 +107,10 @@ const save = async () => {
   } else {
     const { error } = await useFetch('/api/archives/', {
       method: 'post',
+      baseURL: config.public.apiBase,
+      headers: {
+        authorization: 'Bearer ' + userInfo?.token
+      },
       body: {
         content: editedItem.content,
         type: 'nextDayService',

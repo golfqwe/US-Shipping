@@ -1,6 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  ssr: true,
+  ssr: false,
   plugins: [
     { src: '~/plugins/vuetify.ts', mode: 'client' },
     { src: '~/plugins/ckeditorPlugin.ts', mode: 'client' }
@@ -9,7 +9,6 @@ export default defineNuxtConfig({
   build: {
     transpile: ['vuetify']
   },
-
   runtimeConfig: {
     public: {
       BASE_URL: process.env.BASE_URL,

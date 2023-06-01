@@ -5,15 +5,30 @@ definePageMeta({
   middleware: 'checkauth'
 })
 const config = useRuntimeConfig()
+let userInfo = useUserStore()
+const router = useRouter()
+
+if (process.client) {
+  userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}')
+}
+
 const items: tracking[] = reactive([])
 
 const { data: listTracking } = await useLazyFetch('/api/trackings/', {
   baseURL: config.public.apiBase,
-  method: 'GET'
+  method: 'GET',
+  headers: {
+    authorization: 'Bearer ' + userInfo?.token
+  },
+  onResponseError ({ response }) {
+    if (response.status === 401) {
+      router.push({ path: '/login' })
+    }
+  }
 })
 
 watch(listTracking, (val) => {
-  items.length = 0
+  items.slice(0)
   Object.assign(items, val)
 })
 </script>

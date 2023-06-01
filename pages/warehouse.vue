@@ -5,13 +5,28 @@ definePageMeta({
   middleware: 'checkauth'
 })
 const config = useRuntimeConfig()
+let userInfo = useUserStore()
+const router = useRouter()
+
+if (process.client) {
+  userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}')
+}
+
 const items = reactive({})
 const currentItem = ref(Object.keys(items)[0])
 
 const { data: listWarehouse } = await useFetch('/api/warehouse/', {
   baseURL: config.public.apiBase,
   method: 'GET',
-  query: { status: 'active' }
+  headers: {
+    authorization: 'Bearer ' + userInfo?.token
+  },
+  query: { status: 'active' },
+  onResponseError ({ response }) {
+    if (response.status === 401) {
+      router.push({ path: '/login' })
+    }
+  }
 })
 
 const groupBy = (objectArray: [], groupKey: string) => {
