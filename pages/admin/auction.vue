@@ -10,11 +10,11 @@ definePageMeta({
 })
 
 const config = useRuntimeConfig()
-let userInfo = useUserStore()
+const userInfo = useUserStore()
 const router = useRouter()
 
-if (process.client) {
-  userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}')
+if (localStorage.getItem('userInfo')) {
+  userInfo.value = JSON.parse(localStorage.getItem('userInfo'))
 }
 
 const editorConfig = ref({
@@ -41,11 +41,11 @@ const editedItem = reactive({
 })
 
 const { data: listItems, refresh } = await useLazyFetch('/api/archives', {
-  baseURL: config.public.apiBase,
   method: 'GET',
   params: { type: 'auction' },
+  baseURL: config.public.apiBase,
   headers: {
-    authorization: 'Bearer ' + userInfo?.token
+    authorization: 'Bearer ' + userInfo?.value?.token
   },
   onResponseError ({ response }) {
     if (response.status === 401) {
@@ -86,6 +86,10 @@ const save = async () => {
       '/api/archives/' + editedIndex.value,
       {
         method: 'put',
+        baseURL: config.public.apiBase,
+        headers: {
+          authorization: 'Bearer ' + userInfo?.value?.token
+        },
         body: {
           ...editedItem,
           status: editedItem.status ? 'active' : 'inactive'
@@ -103,6 +107,10 @@ const save = async () => {
   } else {
     const { error } = await useFetch('/api/archives/', {
       method: 'post',
+      baseURL: config.public.apiBase,
+      headers: {
+        authorization: 'Bearer ' + userInfo?.value?.token
+      },
       body: {
         content: editedItem.content,
         type: 'auction',

@@ -5,11 +5,10 @@ definePageMeta({
 })
 
 const config = useRuntimeConfig()
-let userInfo = useUserStore()
+const userInfo = useUserStore()
 const router = useRouter()
-
-if (process.client) {
-  userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}')
+if (localStorage.getItem('userInfo')) {
+  userInfo.value = JSON.parse(localStorage.getItem('userInfo'))
 }
 
 const dialog = ref(false)
@@ -30,7 +29,7 @@ const { data: listItems, refresh } = await useLazyFetch('/api/trackings/', {
   method: 'GET',
   query: { status: 'waiting,success' },
   headers: {
-    authorization: 'Bearer ' + userInfo?.token
+    authorization: 'Bearer ' + userInfo?.value?.token
   },
   onResponseError ({ response }) {
     if (response.status === 401) {
@@ -66,16 +65,16 @@ const save = async () => {
   const formData = new FormData()
   formData.append('trackingNumber', editedTracking.trackingNumber)
   formData.append('trackingId', editedTracking.id)
-  files.value.forEach((it) => {
-    formData.append('photo', it, it.name)
+  files.value.forEach((it, inx) => {
+    formData.append('photo' + inx, it, it.name)
   })
 
-  const { error } = await useFetch('/api/upload/', {
+  const { error } = await useFetch('/api/upload/trackings', {
     baseURL: config.public.apiBase,
     method: 'post',
     body: formData,
     headers: {
-      authorization: 'Bearer ' + userInfo?.token
+      authorization: 'Bearer ' + userInfo?.value?.token
     }
   })
 
@@ -283,8 +282,8 @@ const save = async () => {
               :key="inx"
             >
               <v-img
-                :src="item"
-                :lazy-src="item"
+                :src="`${config.public.apiBase}${item}`"
+                :lazy-src="`${config.public.apiBase}${item}`"
                 cover
                 width="100%"
                 class="bg-grey-lighten-2"

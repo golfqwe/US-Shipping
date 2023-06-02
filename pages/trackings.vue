@@ -5,20 +5,22 @@ definePageMeta({
   middleware: 'checkauth'
 })
 const config = useRuntimeConfig()
-let userInfo = useUserStore()
 const router = useRouter()
+const userInfo = useUserStore()
 
-if (process.client) {
-  userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}')
+if (localStorage.getItem('userInfo')) {
+  userInfo.value = JSON.parse(localStorage.getItem('userInfo'))
 }
 
 const items: tracking[] = reactive([])
+const dialogImage = ref(false)
+let editedTracking = reactive({})
 
-const { data: listTracking } = await useLazyFetch('/api/trackings/', {
+const { data: listTracking } = await useLazyFetch('/api/trackings', {
   baseURL: config.public.apiBase,
   method: 'GET',
   headers: {
-    authorization: 'Bearer ' + userInfo?.token
+    authorization: 'Bearer ' + userInfo?.value?.token
   },
   onResponseError ({ response }) {
     if (response.status === 401) {
@@ -31,6 +33,11 @@ watch(listTracking, (val) => {
   items.slice(0)
   Object.assign(items, val)
 })
+
+const selectItem = (item: any) => {
+  editedTracking = item
+  dialogImage.value = true
+}
 </script>
 
 <template>
@@ -80,7 +87,7 @@ watch(listTracking, (val) => {
           <td>
             <h6 class="text-body-1 text-muted">
               {{
-                new Date(item?.createdAt).toLocaleString("en-US", {
+                new Date(item?.createdAt).toLocaleString("th-TH", {
                   timeZone: "UTC",
                 })
               }}
@@ -146,10 +153,59 @@ watch(listTracking, (val) => {
               </template>
               <span>ชำละบิล</span>
             </v-tooltip>
+
+            <v-btn
+              v-show=" item?.status?.code === 'success'"
+              size="small"
+              rounded="lg"
+              color="success"
+              @click="selectItem(item)"
+            >
+              <v-icon start dark>
+                mdi-eye
+              </v-icon> ดูรูป
+            </v-btn>
           </td>
         </tr>
       </tbody>
     </v-table>
+
+    <v-dialog v-model="dialogImage" max-width="750">
+      <v-card>
+        <v-card-title>
+          <span class="text-h5">รูปพัสดุ</span>
+        </v-card-title>
+        <v-card-text>
+          <v-row>
+            <v-col
+              v-for="(item,inx) in editedTracking.images.split(',')"
+              :key="inx"
+            >
+              <v-img
+                :src="`${config.public.apiBase}${item}`"
+                :lazy-src="`${config.public.apiBase}${item}`"
+                cover
+                width="100%"
+                class="bg-grey-lighten-2"
+              >
+                <template #placeholder>
+                  <v-row
+                    class="fill-height ma-0"
+                    align="center"
+                    justify="center"
+                  >
+                    <v-progress-circular
+                      indeterminate
+                      color="grey-lighten-5"
+                    />
+                  </v-row>
+                </template>
+              </v-img>
+            </v-col>
+          </v-row>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
   </v-sheet>
 </template>
 

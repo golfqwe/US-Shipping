@@ -6,12 +6,12 @@ definePageMeta({
 })
 // const { data } = useSession()
 const config = useRuntimeConfig()
-let userInfo = useUserStore()
+const userInfo = useUserStore()
 const router = useRouter()
 const UserId = useUserId()
 
-if (process.client) {
-  userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}')
+if (localStorage.getItem('userInfo')) {
+  userInfo.value = JSON.parse(localStorage.getItem('userInfo'))
 }
 
 const dialog = ref(false)
@@ -46,7 +46,7 @@ const { data: listAddress, refresh } = await useFetch('/api/myaddress', {
   baseURL: config.public.apiBase,
   method: 'GET',
   headers: {
-    authorization: 'Bearer ' + userInfo?.token
+    authorization: 'Bearer ' + userInfo?.value.token
   },
   onResponseError ({ response }) {
     if (response.status === 401) {
@@ -54,7 +54,7 @@ const { data: listAddress, refresh } = await useFetch('/api/myaddress', {
     }
   }
 })
-console.log('listAddress :>> ', listAddress.value)
+
 Object.assign(items, listAddress.value)
 
 watch(listAddress, () => {
@@ -116,7 +116,7 @@ const save = async () => {
         email: editedItem.email,
         phone: editedItem.phone,
         address: editedItem.address,
-        createBy: userInfo?.value?.id || UserId, // data.value?.user?.id,
+        createBy: userInfo?.id || UserId, // data.value?.user?.id,
         status: editedItem.status ? 'active' : 'inactive'
       }
     })

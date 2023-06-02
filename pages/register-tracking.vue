@@ -9,15 +9,14 @@ definePageMeta({
 // const { data } = useSession()
 const config = useRuntimeConfig()
 const router = useRouter()
-let userInfo = useUserStore()
 
-if (process.client) {
-  userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}')
+const userInfo = useUserStore()
+if (localStorage.getItem('userInfo')) {
+  userInfo.value = JSON.parse(localStorage.getItem('userInfo'))
 }
-
 const formRegisterTracking = ref()
 const editedItem: tracking = reactive({
-  userId: 1, // data.value?.user?.id,
+  userId: userInfo?.value?.id, // data.value?.user?.id,
   carrierId: null,
   wareHouseId: null,
   trackingNumber: '',
@@ -64,7 +63,7 @@ const save = async () => {
       ...editedItem
     },
     headers: {
-      authorization: 'Bearer ' + userInfo?.token
+      authorization: 'Bearer ' + userInfo?.value.token
     },
     onResponseError ({ response }) {
       if (response.status === 401) {

@@ -7,6 +7,13 @@ import { MyAddress } from '@/types/myAddress/index'
 import { BookBank } from '@/types/bookbank/index'
 
 const route = useRoute()
+const config = useRuntimeConfig()
+const router = useRouter()
+const userInfo = useUserStore()
+
+if (localStorage.getItem('userInfo')) {
+  userInfo.value = JSON.parse(localStorage.getItem('userInfo'))
+}
 
 definePageMeta({
   layout: 'guest',
@@ -27,18 +34,35 @@ const snackbar = reactive({
 })
 
 const { data: invoiceList } = await useFetch(`/api/invoices/${route.params.id}`, {
-  method: 'GET'
+  method: 'GET',
+  baseURL: config.public.apiBase,
+  headers: {
+    authorization: 'Bearer ' + userInfo?.value?.token
+  },
+  onResponseError ({ response }) {
+    if (response.status === 401) {
+      router.push({ path: '/login' })
+    }
+  }
 })
 // Object.assign(invoiceItems, invoiceList.value.InvoiceItemsModels)
 
 Object.assign(invoiceInfo, invoiceList.value)
 
 const { data: addressData } = await useFetch('/api/myAddress/', {
-  method: 'GET'
+  method: 'GET',
+  baseURL: config.public.apiBase,
+  headers: {
+    authorization: 'Bearer ' + userInfo?.value?.token
+  }
 })
 Object.assign(addressList, addressData.value)
-const { data: bookbankData } = await useFetch('/api/bookBank/', {
-  method: 'GET'
+const { data: bookbankData } = await useFetch('/api/bookbank/', {
+  method: 'GET',
+  baseURL: config.public.apiBase,
+  headers: {
+    authorization: 'Bearer ' + userInfo?.value?.token
+  }
 })
 Object.assign(bookbankList, bookbankData.value)
 
@@ -54,7 +78,7 @@ paymentData = reactive({
 const calculateTotal = (it : invoiceItem) => {
   return ((it.fee * (it.weight === 0 || !it.weight ? 1 : it.weight)) * it.quantity)
 }
-invoiceItems = invoiceList.value.InvoiceItemsModels.map(it => ({ ...it, total: calculateTotal(it) }))
+invoiceItems = invoiceList.value.invoiceItems.map(it => ({ ...it, total: calculateTotal(it) }))
 const sumTotal = (array, key: string) => array.reduce((sum, acc) => sum + Number(acc[key]), 0)
 
 const save = async () => {
@@ -71,24 +95,32 @@ const save = async () => {
   })
 
   try {
-    const { data } = await useFetch('/api/upload/slip/', {
+    const { data: resFile } = await useFetch('/api/upload/slip/', {
       method: 'post',
+      baseURL: config.public.apiBase,
+      headers: {
+        authorization: 'Bearer ' + userInfo?.value?.token
+      },
       body: formData
     })
 
-    const { error } = await useFetch('/api/payment/', {
+    const { data } = await useFetch('/api/payments/', {
       method: 'post',
+      baseURL: config.public.apiBase,
+      headers: {
+        authorization: 'Bearer ' + userInfo?.value?.token
+      },
       body: {
         trackingId: invoiceInfo.trackingId,
         invoiceId: paymentData.invoiceId,
         bankId: paymentData.bankId?.id,
         amount: paymentData.amount,
         payDate: paymentData.payDate,
-        slipImage: data?.value?.pathFile,
+        slipImage: resFile?.value?.pathFile,
         status: 'pending'
       }
     })
-    if (error) {
+    if (!data.value) {
       snackbar.text = 'Save data failed'
       snackbar.color = 'error'
     } else {
@@ -177,22 +209,22 @@ const save = async () => {
               </td>
               <td>
                 <h6 class="text-subtitle-1 font-weight-bold text-center">
-                  {{ sumTotal(invoiceItems,'quantity') }}
+                  {{ sumTotal(invoiceItems||[],'quantity') }}
                 </h6>
               </td>
               <td>
                 <h6 class="text-subtitle-1 font-weight-bold text-center">
-                  {{ sumTotal(invoiceItems,'weight').toFixed(2) }}
+                  {{ sumTotal(invoiceItems||[],'weight').toFixed(2) }}
                 </h6>
               </td>
               <td>
                 <h6 class="text-subtitle-1 font-weight-bold text-center">
-                  {{ sumTotal(invoiceItems,'fee').toFixed(2) }}
+                  {{ sumTotal(invoiceItems||[],'fee').toFixed(2) }}
                 </h6>
               </td>
               <td>
                 <h6 class="text-subtitle-1 font-weight-bold text-center">
-                  {{ sumTotal(invoiceItems,'total').toLocaleString('th-TH', {
+                  {{ sumTotal(invoiceItems||[],'total').toLocaleString('th-TH', {
                     style: 'currency',
                     currency: 'THB',
                   }) }}

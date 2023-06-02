@@ -6,11 +6,11 @@ definePageMeta({
 })
 
 const config = useRuntimeConfig()
-let userInfo = useUserStore()
+const userInfo = useUserStore()
 const router = useRouter()
 
-if (process.client) {
-  userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}')
+if (localStorage.getItem('userInfo')) {
+  userInfo.value = JSON.parse(localStorage.getItem('userInfo'))
 }
 
 const dialog = ref(false)
@@ -43,7 +43,7 @@ const { data: listWarehouse, refresh } = await useLazyFetch('/api/warehouse/', {
   method: 'GET',
   baseURL: config.public.apiBase,
   headers: {
-    authorization: 'Bearer ' + userInfo?.token
+    authorization: 'Bearer ' + userInfo?.value?.token
   },
   onResponseError ({ response }) {
     if (response.status === 401) {
@@ -101,7 +101,7 @@ const save = async () => {
       method: 'put',
       baseURL: config.public.apiBase,
       headers: {
-        authorization: 'Bearer ' + userInfo?.token
+        authorization: 'Bearer ' + userInfo?.value?.token
       },
       body: {
         ...editedItem,
@@ -122,7 +122,7 @@ const save = async () => {
       method: 'post',
       baseURL: config.public.apiBase,
       headers: {
-        authorization: 'Bearer ' + userInfo?.token
+        authorization: 'Bearer ' + userInfo?.value?.token
       },
       body: {
         country: editedItem.country,

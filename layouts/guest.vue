@@ -11,17 +11,11 @@ useHead({
   }
 })
 
+const router = useRouter()
 const config = useRuntimeConfig()
-let userInfo = useUserStore()
 
-if (process.client) {
-  userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}')
-}
+const userInfo = useUserStore()
 
-const userName = useUserName() // Same as useState('color')
-watch(userName, (val) => {
-  userInfo.name = val
-})
 const menuMain = reactive([
   {
     text: 'ที่อยู่ของฉัน',
@@ -99,8 +93,10 @@ const signOut = async () => {
   } else {
     // No error, continue with the sign in, e.g., by following the returned redirect:
     localStorage.removeItem('userInfo')
-    userName.value = ''
-    return navigateTo('/login')
+
+    userInfo.value = {}
+    // return navigateTo('/login')
+    router.push({ path: '/' })
   }
 }
 
@@ -147,7 +143,7 @@ const signOut = async () => {
                       color="primary"
                       v-bind="props"
                     >
-                      {{ userInfo?.name || userName }}
+                      {{ userInfo?.name }}
                     </v-btn>
                   </template>
                   <v-sheet rounded="md" width="200" elevation="10" class="mt-2">

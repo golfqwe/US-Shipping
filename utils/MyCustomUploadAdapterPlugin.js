@@ -1,11 +1,11 @@
-
+const config = useRuntimeConfig()
 class MyUploadAdapter {
   constructor (loader) {
     // CKEditor 5's FileLoader instance.
     this.loader = loader
 
     // URL where to send files.
-    this.url = '/api/upload/archive'
+    this.url = config.public.apiBase + '/api/upload/archive'
   }
 
   // Starts the upload process.
@@ -51,7 +51,7 @@ class MyUploadAdapter {
       // If the upload is successful, resolve the upload promise with an object containing
       // at least the "default" URL, pointing to the image on the server.
       resolve({
-        default: response.pathFile
+        default: config.public.apiBase + response.pathFile
       })
     })
 

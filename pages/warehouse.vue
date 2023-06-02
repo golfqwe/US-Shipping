@@ -19,7 +19,7 @@ const { data: listWarehouse } = await useFetch('/api/warehouse/', {
   baseURL: config.public.apiBase,
   method: 'GET',
   headers: {
-    authorization: 'Bearer ' + userInfo?.token
+    authorization: 'Bearer ' + userInfo?.value?.token
   },
   query: { status: 'active' },
   onResponseError ({ response }) {

@@ -6,11 +6,11 @@ definePageMeta({
 })
 
 const config = useRuntimeConfig()
-let userInfo = useUserStore()
+const userInfo = useUserStore()
 const router = useRouter()
 
-if (process.client) {
-  userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}')
+if (localStorage.getItem('userInfo')) {
+  userInfo.value = JSON.parse(localStorage.getItem('userInfo'))
 }
 
 const dialog = ref(false)
@@ -29,7 +29,7 @@ const { data: listItems, refresh } = await useLazyFetch('/api/trackings', {
   method: 'GET',
   query: { status: 'waitpayment,paymented' },
   headers: {
-    authorization: 'Bearer ' + userInfo?.token
+    authorization: 'Bearer ' + userInfo?.value?.token
   },
   onResponseError ({ response }) {
     if (response.status === 401) {
@@ -48,11 +48,11 @@ watch(dialog, (val) => {
 })
 
 const editItem = async (item: any) => {
-  const { data } = await useFetch(`/api/payment/${item.id}`, {
+  const { data } = await useFetch(`/api/payments/${item.id}`, {
     baseURL: config.public.apiBase,
     method: 'get',
     headers: {
-      authorization: 'Bearer ' + userInfo?.token
+      authorization: 'Bearer ' + userInfo?.value?.token
     }
   })
 
@@ -67,17 +67,17 @@ const close = async () => {
   })
 }
 const save = async () => {
-  const { error } = await useFetch(`/api/trackings/${editedItem.id}`, {
+  const { data } = await useFetch(`/api/trackings/${editedItem.id}`, {
     baseURL: config.public.apiBase,
     method: 'put',
     body: {
       status: 'waiting'
     },
     headers: {
-      authorization: 'Bearer ' + userInfo?.token
+      authorization: 'Bearer ' + userInfo?.value?.token
     }
   })
-  if (error.value) {
+  if (!data.value) {
     snackbar.text = 'Save data failed'
     snackbar.color = 'error'
   } else {
@@ -273,8 +273,8 @@ const save = async () => {
                 <v-img
                   class="bg-white"
                   :aspect-ratio="1"
-                  :src="peyment.slipImage"
-                  :lazy-src="peyment.slipImage"
+                  :src="`${config.public.apiBase}${peyment.slipImage}`"
+                  :lazy-src="`${config.public.apiBase}${peyment.slipImage}`"
                   cover
                 />
               </div>

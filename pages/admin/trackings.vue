@@ -6,11 +6,11 @@ definePageMeta({
 })
 
 const config = useRuntimeConfig()
-let userInfo = useUserStore()
+const userInfo = useUserStore()
 const router = useRouter()
 
-if (process.client) {
-  userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}')
+if (localStorage.getItem('userInfo')) {
+  userInfo.value = JSON.parse(localStorage.getItem('userInfo'))
 }
 
 const dialog = ref(false)
@@ -75,7 +75,7 @@ const { data: listItems, refresh } = await useLazyFetch('/api/trackings', {
   method: 'GET',
   query: { status: 'pending' },
   headers: {
-    authorization: 'Bearer ' + userInfo?.token
+    authorization: 'Bearer ' + userInfo?.value?.token
   },
   onResponseError ({ response }) {
     if (response.status === 401) {
@@ -85,6 +85,7 @@ const { data: listItems, refresh } = await useLazyFetch('/api/trackings', {
 })
 
 watch(listItems, (val) => {
+  console.log('🚀 ~ file: trackings.vue:88 ~ watch ~ val:', val)
   items.slice(0)
   Object.assign(items, val)
 })
@@ -116,7 +117,7 @@ const save = async () => {
     baseURL: config.public.apiBase,
     method: 'post',
     headers: {
-      authorization: 'Bearer ' + userInfo?.token
+      authorization: 'Bearer ' + userInfo?.value?.token
     },
     body: {
       trackingId: editedItem?.id,

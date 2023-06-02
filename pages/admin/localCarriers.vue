@@ -5,11 +5,11 @@ definePageMeta({
 })
 
 const config = useRuntimeConfig()
-let userInfo = useUserStore()
+const userInfo = useUserStore()
 const router = useRouter()
 
-if (process.client) {
-  userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}')
+if (localStorage.getItem('userInfo')) {
+  userInfo.value = JSON.parse(localStorage.getItem('userInfo'))
 }
 
 const dialog = ref(false)
@@ -35,7 +35,7 @@ const { data: listItems, refresh } = await useLazyFetch('/api/localcarriers', {
   method: 'GET',
   baseURL: config.public.apiBase,
   headers: {
-    authorization: 'Bearer ' + userInfo?.token
+    authorization: 'Bearer ' + userInfo?.value?.token
   },
   onResponseError ({ response }) {
     if (response.status === 401) {
@@ -78,7 +78,7 @@ const save = async () => {
         baseURL: config.public.apiBase,
         method: 'put',
         headers: {
-          authorization: 'Bearer ' + userInfo?.token
+          authorization: 'Bearer ' + userInfo?.value?.token
         },
         body: {
           ...editedItem,
@@ -99,7 +99,7 @@ const save = async () => {
       baseURL: config.public.apiBase,
       method: 'post',
       headers: {
-        authorization: 'Bearer ' + userInfo?.token
+        authorization: 'Bearer ' + userInfo?.value?.token
       },
       body: {
         name: editedItem.name,
