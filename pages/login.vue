@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 
-const config = useRuntimeConfig()
+// const config = useRuntimeConfig()
 
 definePageMeta({
   layout: 'guest'
@@ -34,7 +34,7 @@ const mySignInHandler = async () => {
   // const { error } = await signIn('credentials', { ...formData, redirect: false })
 
   const { data } = await useFetch('/api/auth/signIn', {
-    baseURL: config.public.apiBase,
+
     method: 'post',
     body: {
       ...formData

@@ -14,6 +14,16 @@ export default defineNuxtConfig({
       BASE_URL: process.env.BASE_URL,
       apiBase: process.env.API_URL || '/api'
     }
+  },
+  vite: {
+    server: {
+      proxy: {
+        '^/api': {
+          target: process.env.BASE_URL,
+          changeOrigin: true
+        }
+      }
+    }
   }
 
 })

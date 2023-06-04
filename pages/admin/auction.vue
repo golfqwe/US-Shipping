@@ -172,7 +172,7 @@ const save = async () => {
                 </p>
               </td>
               <td>
-                <div v-html="item.content" />
+                <div class="customImageView" v-html="item.content" />
               </td>
 
               <td class="text-center">

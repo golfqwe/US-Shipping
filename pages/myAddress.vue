@@ -88,7 +88,7 @@ const save = async () => {
       method: 'put',
 
       headers: {
-        authorization: 'Bearer ' + userInfo?.token
+        authorization: 'Bearer ' + userInfo?.value?.token
       },
       body: {
         ...editedItem,
@@ -109,7 +109,7 @@ const save = async () => {
       baseURL: config.public.apiBase,
       method: 'post',
       headers: {
-        authorization: 'Bearer ' + userInfo?.token
+        authorization: 'Bearer ' + userInfo?.value?.token
       },
       body: {
         contact: editedItem.contact,

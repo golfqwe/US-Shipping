@@ -39,7 +39,8 @@ const { data: listItems, refresh } = await useLazyFetch('/api/trackings', {
 })
 
 watch(listItems, (val) => {
-  items.slice(0)
+  console.log('🚀 ~ file: payment.vue:42 ~ watch ~ val:', val)
+  items.length = 0
   Object.assign(items, val)
 })
 
@@ -77,10 +78,7 @@ const save = async () => {
       authorization: 'Bearer ' + userInfo?.value?.token
     }
   })
-  if (!data.value) {
-    snackbar.text = 'Save data failed'
-    snackbar.color = 'error'
-  } else {
+  if (data.value) {
     snackbar.text = 'Save data successfully'
     snackbar.color = 'success'
   }

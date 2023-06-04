@@ -12,12 +12,11 @@ definePageMeta({
 </script>
 
 <template>
-  <v-content>
+  <div>
     <section>
-      <h2>WWF History</h2>
       <p>
         <!-- {{ userInfo }} -->
       </p>
     </section>
-  </v-content>
+  </div>
 </template>

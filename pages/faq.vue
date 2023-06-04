@@ -16,7 +16,7 @@ Object.assign(items, listAddress.value)
 </script>
 
 <template>
-  <v-content>
+  <div>
     <v-sheet class="pa-6" color="white" rounded>
       <h5 class="text-h5 font-weight-bold mb-4 text-darkprimary">
         คำถามที่พบบ่อย
@@ -27,5 +27,5 @@ Object.assign(items, listAddress.value)
         </v-col>
       </v-row>
     </v-sheet>
-  </v-content>
+  </div>
 </template>
