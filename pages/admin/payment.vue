@@ -147,9 +147,7 @@ const save = async () => {
               <td>
                 <h6 class="text-body-1 text-muted">
                   {{
-                    new Date(item?.createdAt).toLocaleString("en-US", {
-                      timeZone: "UTC",
-                    })
+                    new Date(item?.createdAt).toLocaleString("en-US")
                   }}
                 </h6>
               </td>
@@ -254,9 +252,7 @@ const save = async () => {
                 </v-col>
                 <v-col cols="7">
                   {{
-                    peyment?.payDate ? new Date(peyment?.payDate).toLocaleString("th-TH", {
-                      timeZone: "UTC",
-                    }) : '-'
+                    peyment?.payDate ? new Date(peyment?.payDate).toLocaleString("th-TH") : '-'
                   }}
                 </v-col>
               </v-row>

@@ -55,7 +55,7 @@ const { data: listItems, refresh } = await useLazyFetch('/api/archives/', {
 })
 
 watch(listItems, (val) => {
-  items.slice(0)
+  items.length = 0
   Object.assign(items, val)
 })
 

@@ -45,7 +45,7 @@ const { data: listItems, refresh } = await useLazyFetch('/api/localcarriers', {
 })
 
 watch(listItems, (val) => {
-  items.slice(0)
+  items.length = 0
   Object.assign(items, val)
 })
 

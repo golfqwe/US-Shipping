@@ -73,7 +73,7 @@ let editedItem = reactive({})
 const { data: listItems, refresh } = await useLazyFetch('/api/trackings', {
   baseURL: config.public.apiBase,
   method: 'GET',
-  query: { status: 'pending' },
+  query: { status: 'success' },
   headers: {
     authorization: 'Bearer ' + userInfo?.value?.token
   },
@@ -86,7 +86,7 @@ const { data: listItems, refresh } = await useLazyFetch('/api/trackings', {
 
 watch(listItems, (val) => {
   console.log('🚀 ~ file: trackings.vue:88 ~ watch ~ val:', val)
-  items.slice(0)
+  items.length = 0
   Object.assign(items, val)
 })
 
@@ -201,9 +201,7 @@ const toggleActive = (item: invoiceItem) => {
               <td>
                 <h6 class="text-body-1 text-muted">
                   {{
-                    item?.createdAt ? new Date(item?.createdAt).toLocaleString("th-TH", {
-                      timeZone: "UTC",
-                    }) : '-'
+                    item?.createdAt ? new Date(item?.createdAt).toLocaleString("th-TH") : '-'
                   }}
                 </h6>
               </td>
@@ -229,14 +227,10 @@ const toggleActive = (item: invoiceItem) => {
                 <v-chip
                   :color="`${
                     item?.status?.code === 'waitpayment'
-                      ? 'secondary'
-                      : item?.status?.code === 'paymented'
-                        ? 'info'
-                        : item?.status?.code === 'waiting'
-                          ? 'warning'
-                          : item?.status?.code === 'success'
-                            ? 'success'
-                            : ''
+                      ? 'info'
+                      : item?.status?.code === 'success'
+                        ? 'success'
+                        : ''
                   }`"
                 >
                   {{ item?.status?.desc }}

@@ -394,9 +394,7 @@ watch(itemsTrack, (val) => {
                 <h6 class="text-subtitle-1 font-weight-bold">
                   {{
                     item?.createdAt
-                      ? new Date(item?.createdAt).toLocaleString("th-TH", {
-                        timeZone: "UTC",
-                      })
+                      ? new Date(item?.createdAt).toLocaleString("th-TH")
                       : "-"
                   }}
                 </h6>

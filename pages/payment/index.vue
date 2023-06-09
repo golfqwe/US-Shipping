@@ -6,7 +6,7 @@ import { payment } from '@/types/payment/index'
 import { MyAddress } from '@/types/myAddress/index'
 import { BookBank } from '@/types/bookbank/index'
 
-const route = useRoute()
+// const route = useRoute()
 const config = useRuntimeConfig()
 const router = useRouter()
 const userInfo = useUserStore()
@@ -33,7 +33,7 @@ const snackbar = reactive({
   color: 'success'
 })
 
-const { data: invoiceList } = await useFetch(`/api/invoices/${route.params.id}`, {
+const { data: invoiceList } = await useFetch('/api/invoices/', {
   method: 'GET',
   baseURL: config.public.apiBase,
   headers: {

@@ -27,7 +27,7 @@ let editedTracking = reactive({})
 const { data: listItems, refresh } = await useLazyFetch('/api/trackings/', {
   baseURL: config.public.apiBase,
   method: 'GET',
-  query: { status: 'waiting,success' },
+  query: { status: 'pending,waitpayment' },
   headers: {
     authorization: 'Bearer ' + userInfo?.value?.token
   },
@@ -39,7 +39,7 @@ const { data: listItems, refresh } = await useLazyFetch('/api/trackings/', {
 })
 
 watch(listItems, (val) => {
-  items.slice(0)
+  items.length = 0
   Object.assign(items, val)
 })
 
@@ -150,18 +150,14 @@ const save = async () => {
               <td>
                 <h6 class="text-body-1 text-muted">
                   {{
-                    new Date(item?.createdAt).toLocaleString("th-TH", {
-                      timeZone: "UTC",
-                    })
+                    new Date(item?.createdAt).toLocaleString("th-TH")
                   }}
                 </h6>
               </td>
               <td>
                 <h6 class="text-body-1 text-muted">
                   {{
-                    item?.receiveDate ? new Date(item?.receiveDate).toLocaleString("th-TH", {
-                      timeZone: "UTC",
-                    }) : '-'
+                    item?.receiveDate ? new Date(item?.receiveDate).toLocaleString("th-TH") : '-'
                   }}
                 </h6>
               </td>
@@ -186,14 +182,10 @@ const save = async () => {
                 <v-chip
                   :color="`${
                     item?.status?.code === 'waitpayment'
-                      ? 'secondary'
-                      : item?.status?.code === 'paymented'
-                        ? 'info'
-                        : item?.status?.code === 'waiting'
-                          ? 'warning'
-                          : item?.status?.code === 'success'
-                            ? 'success'
-                            : ''
+                      ? 'info'
+                      : item?.status?.code === 'success'
+                        ? 'success'
+                        : ''
                   }`"
                 >
                   {{ item?.status?.desc }}
@@ -202,7 +194,7 @@ const save = async () => {
 
               <td class="text-right">
                 <v-btn
-                  v-show=" item?.status?.code === 'waiting'"
+                  v-show=" item?.status?.code === 'pending'"
                   size="small"
                   rounded="lg"
                   color="info"
@@ -213,7 +205,7 @@ const save = async () => {
                   </v-icon> อัปโหลด
                 </v-btn>
                 <v-btn
-                  v-show=" item?.status?.code === 'success'"
+                  v-show=" item?.status?.code === 'waitpayment'"
                   size="small"
                   rounded="lg"
                   color="success"

@@ -53,7 +53,7 @@ const { data: listWarehouse, refresh } = await useLazyFetch('/api/warehouse/', {
 })
 
 watch(listWarehouse, (val) => {
-  items.slice(0)
+  items.length = 0
   Object.assign(items, val)
 })
 

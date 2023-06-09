@@ -30,7 +30,7 @@ const { data: listTracking } = await useLazyFetch('/api/trackings', {
 })
 
 watch(listTracking, (val) => {
-  items.slice(0)
+  items.length = 0
   Object.assign(items, val)
 })
 
@@ -87,18 +87,14 @@ const selectItem = (item: any) => {
           <td>
             <h6 class="text-body-1 text-muted">
               {{
-                new Date(item?.createdAt).toLocaleString("th-TH", {
-                  timeZone: "UTC",
-                })
+                new Date(item?.createdAt).toLocaleString("th-TH")
               }}
             </h6>
           </td>
           <td>
             <h6 class="text-body-1 text-muted">
               {{
-                item?.receiveDate ? new Date(item?.receiveDate).toLocaleString("th-TH", {
-                  timeZone: "UTC",
-                }) : '-'
+                item?.receiveDate ? new Date(item?.receiveDate).toLocaleString("th-TH") : '-'
               }}
             </h6>
           </td>

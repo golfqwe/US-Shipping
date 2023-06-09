@@ -1,6 +1,26 @@
 <script setup lang="ts">
-// import { UserIcon, MailIcon, ListCheckIcon } from 'vue-tabler-icons'
-// const { signOut } = useSession()
+const router = useRouter()
+const config = useRuntimeConfig()
+
+const userInfo = useUserStore()
+
+const signOut = async () => {
+  const { data } = await useFetch('/api/auth/signOut', {
+    baseURL: config.public.apiBase,
+    method: 'post'
+  })
+
+  if (!data.value) {
+    console.log(' :>> error ')
+  } else {
+    // No error, continue with the sign in, e.g., by following the returned redirect:
+    localStorage.removeItem('userInfo')
+
+    userInfo.value = {}
+    // return navigateTo('/login')
+    router.push({ path: '/' })
+  }
+}
 </script>
 
 <template>
@@ -43,7 +63,7 @@
         </v-list-item>
       </v-list> -->
       <div class="pt-4 pb-4 px-5 text-center">
-        <v-btn color="primary" variant="outlined" block>
+        <v-btn color="primary" variant="outlined" block @click="signOut">
           Logout
         </v-btn>
       </div>

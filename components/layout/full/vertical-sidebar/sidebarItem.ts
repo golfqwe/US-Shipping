@@ -35,14 +35,14 @@ const sidebarItem: menu[] = [
   },
   { header: 'Customer' },
   {
+    title: 'แจ้งชำระบิล',
+    icon: FileInvoiceIcon,
+    to: '/admin/createBill'
+  },
+  {
     title: 'Tracking',
     icon: TicketIcon,
     to: '/admin/trackings'
-  },
-  {
-    title: 'แจ้งชำระบิล',
-    icon: FileInvoiceIcon,
-    to: '/admin/payment'
   },
   {
     title: 'บันทึกรูปสินค้า',

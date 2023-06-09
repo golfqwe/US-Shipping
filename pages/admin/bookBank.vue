@@ -53,7 +53,7 @@ const { data: listItems, refresh } = await useFetch('/api/bookBank/', {
 })
 
 watch(listItems, (val) => {
-  items.slice(0)
+  items.length = 0
   Object.assign(items, val)
 })
 
