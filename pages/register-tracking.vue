@@ -15,6 +15,7 @@ if (localStorage.getItem('userInfo')) {
   userInfo.value = JSON.parse(localStorage.getItem('userInfo'))
 }
 const formRegisterTracking = ref()
+const formUpdateTracking = ref()
 const editedItem: tracking = reactive({
   userId: userInfo?.value?.id, // data.value?.user?.id,
   carrierId: null,
@@ -25,15 +26,18 @@ const editedItem: tracking = reactive({
   carrier: 'Air',
   status: 'pending'
 })
-
+const editedIndex = ref(-1)
 const snackbar = reactive({
   status: false,
   text: '',
   color: 'success'
 })
+const dialogDelete = ref(false)
+const dialogEdit = ref(false)
 
 const itemsWareHouse: wareHouse[] = reactive([])
 const itemsLocalCarrier: localCarrier[] = reactive([])
+const itemsTracking: tracking[] = reactive([])
 
 watch(() => editedItem.carrier, (carrier) => {
   fetchListWareHouse(carrier as string)
@@ -79,6 +83,96 @@ const save = async () => {
     snackbar.text = 'Save data successfully'
     snackbar.color = 'success'
     formRegisterTracking.value.reset()
+    refresh()
+  }
+  snackbar.status = true
+}
+const update = async () => {
+  const { valid } = await formUpdateTracking.value.validate()
+
+  if (!valid) {
+    return
+  }
+
+  const { error } = await useFetch(`/api/trackings/${editedIndex.value}`, {
+    baseURL: config.public.apiBase,
+    method: 'put',
+    body: {
+      ...editedItem
+    },
+    headers: {
+      authorization: 'Bearer ' + userInfo?.value.token
+    },
+    onResponseError ({ response }) {
+      if (response.status === 401) {
+        router.push({ path: '/login' })
+      }
+    }
+  })
+
+  if (error.value) {
+    snackbar.text = 'Update data failed'
+    snackbar.color = 'error'
+  } else {
+    snackbar.text = 'Update data successfully'
+    snackbar.color = 'success'
+    formUpdateTracking.value.reset()
+    refresh()
+  }
+  dialogEdit.value = false
+  snackbar.status = true
+}
+
+const editItem = (item: tracking) => {
+  editedIndex.value = Number(item.id)
+  Object.assign(editedItem, item)
+  dialogEdit.value = true
+}
+const close = () => {
+  dialogEdit.value = false
+  nextTick(() => {
+    Object.assign(editedItem, {
+      userId: userInfo?.value?.id, // data.value?.user?.id,
+      carrierId: null,
+      wareHouseId: null,
+      trackingNumber: '',
+      website: '',
+      description: '',
+      carrier: 'Air',
+      status: 'pending'
+    })
+    editedIndex.value = -1
+  })
+}
+
+const deleteItem = (item: tracking) => {
+  editedIndex.value = Number(item.id)
+  // this.editedItem = Object.assign({}, item)
+  dialogDelete.value = true
+}
+
+const deleteItemConfirm = async () => {
+  const { error } = await useFetch(`/api/trackings/${editedIndex.value}`, {
+    baseURL: config.public.apiBase,
+    method: 'delete',
+    headers: {
+      authorization: 'Bearer ' + userInfo?.value.token
+    },
+    onResponseError ({ response }) {
+      if (response.status === 401) {
+        router.push({ path: '/login' })
+      }
+    }
+  })
+
+  if (error.value) {
+    snackbar.text = 'Save data failed'
+    snackbar.color = 'error'
+  } else {
+    snackbar.text = 'Save data successfully'
+    snackbar.color = 'success'
+    refresh()
+    dialogDelete.value = false
   }
   snackbar.status = true
 }
@@ -90,6 +184,25 @@ const { data: listItems } = await useFetch('/api/localcarriers', {
 })
 Object.assign(itemsLocalCarrier, listItems.value)
 fetchListWareHouse(editedItem.carrier || 'Air')
+
+const { data: itemsTrack, refresh } = await useLazyFetch('/api/trackings', {
+  baseURL: config.public.apiBase,
+  method: 'GET',
+  headers: {
+    authorization: 'Bearer ' + userInfo?.value?.token
+  },
+  onResponseError ({ response }) {
+    if (response.status === 401) {
+      router.push({ path: '/login' })
+    }
+  }
+})
+
+watch(itemsTrack, (val) => {
+  console.log('🚀 ~ file: register-tracking.vue:143 ~ watch ~ val:', val)
+  itemsTracking.length = 0
+  Object.assign(itemsTracking, val)
+})
 
 </script>
 
@@ -142,7 +255,7 @@ fetchListWareHouse(editedItem.carrier || 'Air')
       <v-row align="center">
         <v-col cols="3">
           <v-label class="font-weight-bold mb-1">
-            Website
+            Website (ถ้ามี)
           </v-label>
         </v-col>
         <v-col>
@@ -150,15 +263,18 @@ fetchListWareHouse(editedItem.carrier || 'Air')
             v-model="editedItem.website"
             :rules="[(v) => !!v || 'Website is required']"
             variant="outlined"
-            hide-details="auto"
             color="primary"
+            type="url"
+            persistent-hint
+            placeholder="www.ebay.com"
+            hint="Example: www.ebay.com"
           />
         </v-col>
       </v-row>
       <v-row align="center">
         <v-col cols="3">
           <v-label class="font-weight-bold mb-1">
-            Description
+            Description (ถ้ามี)
           </v-label>
         </v-col>
         <v-col cols="6">
@@ -166,6 +282,7 @@ fetchListWareHouse(editedItem.carrier || 'Air')
             v-model="editedItem.description"
             hide-details="auto"
             variant="outlined"
+            placeholder="ข้อมูลของสินค้า (ถ้ามี)"
             color="primary"
           />
         </v-col>
@@ -208,7 +325,7 @@ fetchListWareHouse(editedItem.carrier || 'Air')
       <v-row align="center">
         <v-col cols="3">
           <v-label class="font-weight-bold mb-1">
-            Warehouse
+            Warehouse (โกดังต้นทาง)
           </v-label>
         </v-col>
         <v-col cols="4">
@@ -224,14 +341,306 @@ fetchListWareHouse(editedItem.carrier || 'Air')
           />
         </v-col>
       </v-row>
-      <v-row>
-        <v-col cols="12">
+      <v-row justify="end">
+        <v-col cols="9">
           <v-btn color="primary" size="large" block @click="save">
             Register Tracking
           </v-btn>
         </v-col>
       </v-row>
     </v-form>
+
+    <v-row>
+      <v-col>
+        <v-table class="month-table">
+          <thead>
+            <tr>
+              <th class="text-subtitle-1 font-weight-bold">
+                ::
+              </th>
+              <th class="text-subtitle-1 font-weight-bold">
+                Add On
+              </th>
+              <th class="text-subtitle-1 font-weight-bold">
+                Local Carrier
+              </th>
+              <th class="text-subtitle-1 font-weight-bold">
+                Warehouse
+              </th>
+              <th class="text-subtitle-1 font-weight-bold">
+                Tracking
+              </th>
+
+              <th class="text-subtitle-1 font-weight-bold text-center">
+                Description
+              </th>
+              <th class="text-subtitle-1 font-weight-bold text-right">
+                Action
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              v-for="(item, id) in itemsTracking"
+              :key="id"
+              class="month-item"
+            >
+              <td>
+                <p class="text-15 font-weight-medium">
+                  {{ item?.id }}
+                </p>
+              </td>
+              <td>
+                <h6 class="text-subtitle-1 font-weight-bold">
+                  {{
+                    item?.createdAt
+                      ? new Date(item?.createdAt).toLocaleString("th-TH", {
+                        timeZone: "UTC",
+                      })
+                      : "-"
+                  }}
+                </h6>
+              </td>
+              <td>
+                <h6 class="text-body-1 text-muted text-center">
+                  <v-icon
+                    start
+                    size="x-large"
+                    :color="item?.carrier === 'Air' ? 'success' : 'blue'"
+                  >
+                    {{
+                      item?.carrier === "Air"
+                        ? "  mdi-airplane"
+                        : "   mdi-sail-boat"
+                    }}
+                  </v-icon>
+                  {{ item?.carrier }}
+                </h6>
+              </td>
+              <td>
+                {{ item?.wareHouseId }}
+              </td>
+              <td>
+                <div class="">
+                  <h6 class="text-subtitle-1 font-weight-bold">
+                    {{ item?.trackingNumber }}
+                  </h6>
+                  <div class="text-13 mt-1 text-muted">
+                    {{ item?.website }}
+                  </div>
+                </div>
+              </td>
+              <td>
+                <h6 class="text-subtitle-1 font-weight-bold">
+                  {{ item?.description }}
+                </h6>
+              </td>
+
+              <td class="text-right">
+                <v-btn
+                  size="small"
+                  rounded="lg"
+                  color="info"
+                  @click="editItem(item)"
+                >
+                  <v-icon start dark>
+                    mdi-pencil
+                  </v-icon> edit
+                </v-btn>
+                <v-btn
+                  size="small"
+                  rounded="lg"
+                  color="error"
+                  @click="deleteItem(item)"
+                >
+                  <v-icon start dark>
+                    mdi-delete
+                  </v-icon> delete
+                </v-btn>
+              </td>
+            </tr>
+          </tbody>
+        </v-table>
+      </v-col>
+    </v-row>
+
+    <v-dialog v-model="dialogDelete" max-width="500px">
+      <v-card>
+        <v-card-title class="text-h5">
+          Are you sure you want to delete this item?
+        </v-card-title>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn color="blue darken-1" text @click="dialogDelete = false">
+            Cancel
+          </v-btn>
+          <v-btn color="blue darken-1" text @click="deleteItemConfirm">
+            OK
+          </v-btn>
+          <v-spacer />
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <v-dialog
+      v-model="dialogEdit"
+      max-width="800px"
+    >
+      <v-card>
+        <v-card-title>
+          <span class="text-h5">{{ formTitle }}</span>
+        </v-card-title>
+
+        <v-card-text>
+          <v-container>
+            <v-form ref="formUpdateTracking">
+              <v-row align="center">
+                <v-col cols="3">
+                  <v-label class="font-weight-bold mb-1">
+                    Local Carrier
+                  </v-label>
+                </v-col>
+                <v-col cols="4">
+                  <v-select
+                    v-model="editedItem.carrierId"
+                    :items="itemsLocalCarrier"
+                    :rules="[(v) => !!v || 'Local Carrier is required']"
+                    item-title="name"
+                    item-value="id"
+                    variant="outlined"
+                    hide-details="auto"
+                    color="primary"
+                  />
+                </v-col>
+              </v-row>
+              <v-row align="center">
+                <v-col cols="3">
+                  <v-label class="font-weight-bold mb-1">
+                    Traking Number #
+                  </v-label>
+                </v-col>
+                <v-col cols="4">
+                  <v-text-field
+                    v-model="editedItem.trackingNumber"
+                    :rules="[(v) => !!v || 'Traking Number is required']"
+                    hide-details="auto"
+                    variant="outlined"
+                    color="primary"
+                  />
+                </v-col>
+              </v-row>
+              <v-row align="center">
+                <v-col cols="3">
+                  <v-label class="font-weight-bold mb-1">
+                    Website (ถ้ามี)
+                  </v-label>
+                </v-col>
+                <v-col>
+                  <v-text-field
+                    v-model="editedItem.website"
+                    :rules="[(v) => !!v || 'Website is required']"
+                    variant="outlined"
+                    color="primary"
+                    type="url"
+                    persistent-hint
+                    placeholder="www.ebay.com"
+                    hint="Example: www.ebay.com"
+                  />
+                </v-col>
+              </v-row>
+              <v-row align="center">
+                <v-col cols="3">
+                  <v-label class="font-weight-bold mb-1">
+                    Description (ถ้ามี)
+                  </v-label>
+                </v-col>
+                <v-col cols="6">
+                  <v-textarea
+                    v-model="editedItem.description"
+                    hide-details="auto"
+                    variant="outlined"
+                    placeholder="ข้อมูลของสินค้า (ถ้ามี)"
+                    color="primary"
+                  />
+                </v-col>
+              </v-row>
+              <v-row align="center">
+                <v-col cols="3">
+                  <v-label class="font-weight-bold mb-1">
+                    Carrier
+                  </v-label>
+                </v-col>
+                <v-col cols="6">
+                  <v-radio-group
+                    v-model="editedItem.carrier"
+                    inline
+                    :rules="[(v) => !!v || 'Carrier is required']"
+                  >
+                    <v-radio label="Air Freight" value="Air">
+                      <template #label>
+                        <div>
+                          <v-icon start size="x-large" color="success">
+                            mdi-airplane
+                          </v-icon>
+                          <span>Air Freight</span>
+                        </div>
+                      </template>
+                    </v-radio>
+                    <v-radio value="Ocean">
+                      <template #label>
+                        <div>
+                          <v-icon start size="x-large" color="blue">
+                            mdi-sail-boat
+                          </v-icon>
+                          <span>Ocean Freight</span>
+                        </div>
+                      </template>
+                    </v-radio>
+                  </v-radio-group>
+                </v-col>
+              </v-row>
+              <v-row align="center">
+                <v-col cols="3">
+                  <v-label class="font-weight-bold mb-1">
+                    Warehouse (โกดังต้นทาง)
+                  </v-label>
+                </v-col>
+                <v-col cols="4">
+                  <v-select
+                    v-model="editedItem.wareHouseId"
+                    :rules="[(v) => !!v || 'Warehouse is required']"
+                    :items="itemsWareHouse"
+                    item-title="country"
+                    item-value="id"
+                    variant="outlined"
+                    hide-details="auto"
+                    color="primary"
+                  />
+                </v-col>
+              </v-row>
+            </v-form>
+          </v-container>
+        </v-card-text>
+
+        <v-card-actions>
+          <v-spacer />
+          <v-btn
+            color="blue darken-1"
+            text
+            @click="close"
+          >
+            Cancel
+          </v-btn>
+          <v-btn
+            color="blue darken-1"
+            text
+            @click="update"
+          >
+            Save
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
 
     <v-snackbar
       v-model="snackbar.status"

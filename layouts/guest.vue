@@ -19,50 +19,50 @@ const userInfo = useUserStore()
 const menuMain = reactive([
   {
     text: 'ที่อยู่ของฉัน',
-    icon: 'shop.png',
+    icon: '1_1.png',
     link: '/myAddress'
   },
   {
     text: 'ที่อยู่โกดังสินค้า',
-    icon: 'shop.png',
+    icon: '1_3.png',
     link: '/warehouse'
   },
   {
     text: 'Register Tracking',
-    icon: 'invoice.png',
+    icon: '1_2.png',
     link: '/register-tracking'
   },
   {
-    text: 'บิลค่าขนส่ง',
-    icon: 'payment.png',
+    text: 'เช็ครูปสินค้า',
+    icon: '1_4.png',
     link: '/trackings'
+  },
+  {
+    text: 'บิลค่าขนส่ง',
+    icon: '1_5.png',
+    link: '/payment'
   }
-  // {
-  //   text: 'บิลค่าขนส่ง',
-  //   icon: 'icon1.png',
-  //   link: '/payment'
-  // }
 ])
 
 const menuSub = reactive([
   {
     text: 'รอบนำเข้าสินค้า',
-    icon: 'package.png',
+    icon: '2_1.png',
     link: '/nextDayService'
   },
   {
     text: 'บริการรับกดสั่งสินค้า ประมูลสินค้า',
-    icon: 'package.png',
+    icon: '2_3.png',
     link: '/auction'
   },
   {
     text: 'คำถามที่พบบ่อย สินค้าต้องห้าม',
-    icon: 'faq.png',
+    icon: '2_4.png',
     link: '/faq'
   },
   {
     text: 'ติดต่อเจ้าหน้าที่',
-    icon: 'customerService.png',
+    icon: '2_5.png',
     link: '/customService'
   }
 ])
