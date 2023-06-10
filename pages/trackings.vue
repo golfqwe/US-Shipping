@@ -19,6 +19,7 @@ let editedTracking = reactive({})
 const { data: listTracking } = await useLazyFetch('/api/trackings', {
   baseURL: config.public.apiBase,
   method: 'GET',
+  query: { status: 'waitpayment' },
   headers: {
     authorization: 'Bearer ' + userInfo?.value?.token
   },
@@ -131,27 +132,7 @@ const selectItem = (item: any) => {
             </v-chip>
           </td>
           <td class="text-right">
-            <v-tooltip
-              location="bottom"
-            >
-              <template #activator="{ props }">
-                <v-btn
-                  v-show=" item?.status?.code === 'waitpayment'"
-                  icon
-                  v-bind="props"
-                  variant="text"
-                  :to="`/payment/${item.id}`"
-                >
-                  <v-icon color="info">
-                    mdi-cash
-                  </v-icon>
-                </v-btn>
-              </template>
-              <span>ชำละบิล</span>
-            </v-tooltip>
-
             <v-btn
-              v-show=" item?.status?.code === 'success'"
               size="small"
               rounded="lg"
               color="success"

@@ -10,6 +10,7 @@ if (localStorage.getItem('userInfo')) {
 const formInsertDesc = ref()
 const inputUser = ref()
 const dialogCreateBill = ref(false)
+const dialogSlip = ref(false)
 const snackbar = reactive({
   status: false,
   text: '',
@@ -26,6 +27,8 @@ const itemsUsers = reactive([])
 const selectUser = ref()
 const userAddress = ref({})
 const maxInvoice = ref(0)
+const selectInvId = ref(0)
+const peyment = reactive({})
 
 const editedItem = ref({
   packages: 1,
@@ -115,6 +118,42 @@ const save = async () => {
   refresh()
 }
 
+const checkSlip = async (item) => {
+  selectInvId.value = item?.id
+  const { data } = await useFetch(`/api/payments/${item.id}`, {
+    baseURL: config.public.apiBase,
+    method: 'get',
+    headers: {
+      authorization: 'Bearer ' + userInfo?.value?.token
+    }
+  })
+
+  Object.assign(peyment, data.value)
+  dialogSlip.value = true
+}
+
+const saveSlip = async () => {
+  const { data } = await useFetch(`/api/payments/${peyment.id}`, {
+    baseURL: config.public.apiBase,
+    method: 'put',
+    body: {
+      invoiceId: selectInvId.value,
+      status: 'success'
+    },
+    headers: {
+      authorization: 'Bearer ' + userInfo?.value?.token
+    }
+  })
+  if (data.value) {
+    snackbar.text = 'Save data successfully'
+    snackbar.color = 'success'
+  }
+  snackbar.status = true
+
+  dialogSlip.value = false
+  selectInvId.value = 0
+  refresh()
+}
 // on mounted
 const { data: listUsers } = await useFetch('/api/users', {
   baseURL: config.public.apiBase,
@@ -249,7 +288,7 @@ watch(listBills, (val) => {
               <td>
                 <v-chip
                   :color="`${
-                    item?.status?.code === 'waitpayment'
+                    item?.status?.code === 'waiting'
                       ? 'info'
                       : item?.status?.code === 'success'
                         ? 'success'
@@ -258,6 +297,20 @@ watch(listBills, (val) => {
                 >
                   {{ item?.status?.desc }}
                 </v-chip>
+              </td>
+
+              <td class="text-right">
+                <v-btn
+                  v-show=" item?.status?.code === 'waiting'"
+                  size="small"
+                  rounded="lg"
+                  color="info"
+                  @click="checkSlip(item)"
+                >
+                  <v-icon start dark>
+                    mdi-cash-check
+                  </v-icon> ตรวจสอบสลิป
+                </v-btn>
               </td>
             </tr>
           </tbody>
@@ -539,7 +592,86 @@ watch(listBills, (val) => {
         </v-card-text>
       </v-card>
     </v-dialog>
+    <v-dialog v-model="dialogSlip" max-width="850">
+      <v-card>
+        <v-card-title>
+          <span class="text-h5">ตรวจสอบสลิป</span>
+        </v-card-title>
+        <v-card-text>
+          <v-row>
+            <v-col>
+              <v-row>
+                <v-col cols="5" class="text-subtitle-1 font-weight-bold">
+                  Inovice No
+                </v-col>
+                <v-col cols="7">
+                  {{ peyment?.invoiceId }}
+                </v-col>
+                <v-col cols="5" class="text-subtitle-1 font-weight-bold">
+                  ชำระเงินเข้าบัญชี
+                </v-col>
+                <v-col cols="7">
+                  <v-list lines="three" class="mt-n5">
+                    <v-list-item class="pa-0">
+                      <v-list-item-title>{{ peyment?.bookbank?.accountName }}</v-list-item-title>
 
+                      <v-list-item-subtitle>
+                        {{ peyment?.bookbank?.bankName }}    {{ peyment?.bookbank?.branch }} {{ peyment?.bookbank?.accountType }}
+                      </v-list-item-subtitle>
+                      <v-list-item-subtitle>
+                        {{ peyment?.bookbank?.accountNumber }}
+                      </v-list-item-subtitle>
+                    </v-list-item>
+                  </v-list>
+                </v-col>
+                <v-col cols="5" class="text-subtitle-1 font-weight-bold">
+                  Amount Paid
+                </v-col>
+                <v-col cols="7">
+                  {{ peyment.amount.toLocaleString('th-TH', {
+                    style: 'currency',
+                    currency: 'THB',
+                  }) }}
+                </v-col>
+                <v-col cols="5" class="text-subtitle-1 font-weight-bold">
+                  วันเวลาที่ชำระเงิน
+                </v-col>
+                <v-col cols="7">
+                  {{
+                    peyment?.payDate ? new Date(peyment?.payDate).toLocaleString("th-TH") : '-'
+                  }}
+                </v-col>
+              </v-row>
+            </v-col>
+            <v-col
+              cols="6"
+            >
+              <div class="mx-4">
+                <div class="text-subtitle-1 pb-2">
+                  หลักฐานการโอนเงิน
+                </div>
+                <v-img
+                  class="bg-white"
+                  :aspect-ratio="1"
+                  :src="`${config.public.apiBase}${peyment.slipImage}`"
+                  :lazy-src="`${config.public.apiBase}${peyment.slipImage}`"
+                  cover
+                />
+              </div>
+            </v-col>
+          </v-row>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn color="error" variant="text" @click="dialog = false">
+            Close
+          </v-btn>
+          <v-btn color="success" variant="text" @click="saveSlip">
+            ข้อมูลถูกต้อง
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
     <v-snackbar
       v-model="snackbar.status"
       :timeout="2000"
