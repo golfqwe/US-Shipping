@@ -147,7 +147,7 @@ const signOut = async () => {
                     </v-btn>
                   </template>
                   <v-sheet rounded="md" width="200" elevation="10" class="mt-2">
-                    <v-list class="py-0" lines="one" density="compact">
+                    <v-list v-show="userInfo?.role === 'admin'" class="py-0" lines="one" density="compact">
                       <v-list-item active-color="primary" link to="/admin">
                         <template #prepend>
                           <FolderIcon stroke-width="1.5" size="20" />

@@ -265,8 +265,6 @@ const savePayment = async () => {
           </tbody>
         </v-table>
       </v-col>
-      <v-divider />
-      <v-col />
     </v-row>
 
     <v-dialog
@@ -289,7 +287,7 @@ const savePayment = async () => {
           >
             <v-icon>mdi-close</v-icon>
           </v-btn>
-          <v-toolbar-title>สร้างบิลค่าขนส่ง</v-toolbar-title>
+          <v-toolbar-title>รายละเอียดบิลค่าขนส่ง</v-toolbar-title>
           <v-spacer />
         </v-toolbar>
         <v-card-text class="py-0">
@@ -512,7 +510,7 @@ const savePayment = async () => {
             </v-row>
             <v-row justify="center">
               <v-col cols="auto">
-                <v-btn variant="text" text="Cancel" color="error" @click="dialogCreateBill = false" />
+                <v-btn variant="text" text="Cancel" color="error" @click="dialogBill = false" />
               </v-col>
               <v-col cols="2">
                 <v-btn block text="ชำระบิล" color="info" @click="dialogPayment = true" />

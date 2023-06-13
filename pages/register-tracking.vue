@@ -436,6 +436,7 @@ watch(itemsTrack, (val) => {
 
               <td class="text-right">
                 <v-btn
+                  v-show="item?.status?.code === 'pending' || item?.status?.code === 'waiting'"
                   size="small"
                   rounded="lg"
                   color="info"
@@ -446,6 +447,7 @@ watch(itemsTrack, (val) => {
                   </v-icon> edit
                 </v-btn>
                 <v-btn
+                  v-show="item?.status?.code === 'pending' || item?.status?.code === 'waiting'"
                   size="small"
                   rounded="lg"
                   color="error"

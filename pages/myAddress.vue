@@ -45,6 +45,7 @@ const editedItem: MyAddress = reactive({
 const { data: listAddress, refresh } = await useFetch('/api/myaddress', {
   baseURL: config.public.apiBase,
   method: 'GET',
+  query: { createBy: userInfo?.value?.id },
   headers: {
     authorization: 'Bearer ' + userInfo?.value.token
   },

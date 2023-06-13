@@ -19,7 +19,7 @@ let editedTracking = reactive({})
 const { data: listTracking } = await useLazyFetch('/api/trackings', {
   baseURL: config.public.apiBase,
   method: 'GET',
-  query: { status: 'waitpayment' },
+  query: { status: 'waiting,waitpayment' },
   headers: {
     authorization: 'Bearer ' + userInfo?.value?.token
   },
