@@ -261,7 +261,6 @@ watch(itemsTrack, (val) => {
         <v-col>
           <v-text-field
             v-model="editedItem.website"
-            :rules="[(v) => !!v || 'Website is required']"
             variant="outlined"
             color="primary"
             type="url"
@@ -283,6 +282,7 @@ watch(itemsTrack, (val) => {
             hide-details="auto"
             variant="outlined"
             placeholder="ข้อมูลของสินค้า (ถ้ามี)"
+            auto-grow
             color="primary"
           />
         </v-col>

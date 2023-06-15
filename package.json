@@ -9,6 +9,7 @@
     "deploy": "npx nuxi generate --dotenv .env.production && gh-pages --dotfiles -d .output/public"
   },
   "dependencies": {
+    "@blowstack/ckeditor5-full-free-build": "^27.0.1",
     "@ckeditor/ckeditor5-build-classic": "^38.0.1",
     "@ckeditor/ckeditor5-vue": "^5.1.0",
     "@mdi/font": "^6.5.95",
@@ -16,6 +17,7 @@
     "@tiptap/starter-kit": "2.0.0-beta.192",
     "@tiptap/vue-3": "2.0.0-beta.97",
     "apexcharts": "3.36.3",
+    "ckeditor5-custom-build": "file:plugins/ckeditor5",
     "mariadb": "^3.1.2",
     "sass": "^1.49.9",
     "sass-loader": "^10.0.0",

@@ -17,19 +17,15 @@ const config = useRuntimeConfig()
 const userInfo = useUserStore()
 
 const menuMain = reactive([
-  {
-    text: 'ที่อยู่ของฉัน',
-    icon: '1_1.png',
-    link: '/myAddress'
-  },
+
   {
     text: 'ที่อยู่โกดังสินค้า',
-    icon: '1_3.png',
+    icon: '1_2.png',
     link: '/warehouse'
   },
   {
     text: 'Register Tracking',
-    icon: '1_2.png',
+    icon: '1_3.png',
     link: '/register-tracking'
   },
   {
@@ -46,10 +42,21 @@ const menuMain = reactive([
 
 const menuSub = reactive([
   {
+    text: '“เรทค่านำเข้าสินค้า”',
+    icon: '2_1.png',
+    link: '/nextDayService'
+  },
+  {
+    text: 'ที่อยู่ของฉัน',
+    icon: '2_2.png',
+    link: '/myAddress'
+  },
+  {
     text: 'รอบนำเข้าสินค้า',
     icon: '2_1.png',
     link: '/nextDayService'
   },
+
   {
     text: 'บริการรับกดสั่งสินค้า ประมูลสินค้า',
     icon: '2_3.png',

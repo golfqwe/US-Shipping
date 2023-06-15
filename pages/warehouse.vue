@@ -74,7 +74,7 @@ Object.assign(items, groupBy(listWarehouse.value as [], 'country'))
         >
           <v-list lines="two">
             <v-list-subheader inset>
-              When you buy online. Please to below he and address for shipping to.
+              “รหัสอ้างอิงของลูกค้า และ ที่อยู่โกดัง สำหรับนำไปใช้สั่งซื้อสินค้าส่งมาลงที่คลัง”
             </v-list-subheader>
 
             <v-list-item

@@ -2,7 +2,7 @@
 </script>
 <script setup lang="ts">
 
-import ClassicEditor from '@ckeditor/ckeditor5-build-classic'
+import ClassicEditor from '@blowstack/ckeditor5-full-free-build'
 import MyCustomUploadAdapterPlugin from '~/utils/MyCustomUploadAdapterPlugin'
 
 import type { Archive } from '@/types/archive/index'
