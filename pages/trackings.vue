@@ -19,7 +19,7 @@ let editedTracking = reactive({})
 const { data: listTracking } = await useLazyFetch('/api/trackings', {
   baseURL: config.public.apiBase,
   method: 'GET',
-  query: { status: 'waiting,waitpayment' },
+  query: { status: 'pending,waiting,waitpayment' },
   headers: {
     authorization: 'Bearer ' + userInfo?.value?.token
   },
@@ -44,7 +44,7 @@ const selectItem = (item: any) => {
 <template>
   <v-sheet class="pa-6" color="white" rounded>
     <h5 class="text-h5 font-weight-bold mb-4 text-darkprimary">
-      บิลค่าขนส่ง
+      ระบบเช็ครูปสินค้า
     </h5>
 
     <v-table class="month-table">
@@ -119,13 +119,11 @@ const selectItem = (item: any) => {
               :color="`${
                 item?.status?.code === 'waitpayment'
                   ? 'secondary'
-                  : item?.status?.code === 'paymented'
-                    ? 'info'
-                    : item?.status?.code === 'waiting'
-                      ? 'warning'
-                      : item?.status?.code === 'success'
-                        ? 'success'
-                        : 'accent'
+                  : item?.status?.code === 'waiting'
+                    ? 'warning'
+                    : item?.status?.code === 'success'
+                      ? 'success'
+                      : 'accent'
               }`"
             >
               {{ item.status.desc }}
@@ -133,6 +131,7 @@ const selectItem = (item: any) => {
           </td>
           <td class="text-right">
             <v-btn
+              v-show="item?.status?.code !== 'pending'"
               size="small"
               rounded="lg"
               color="success"

@@ -44,7 +44,7 @@ const { data: bookbankData } = await useFetch('/api/bookbank/', {
 Object.assign(bookbankList, bookbankData.value)
 
 const calculateTotal = (it) => {
-  return ((it.fee * (it.weight === 0 || !it.weight ? 1 : it.weight)) * it.quantity)
+  return (it.fee * it.quantity)
 }
 const sumTotal = (array, key: string) => array.reduce((sum, acc) => sum + Number(acc[key]), 0)
 
@@ -145,7 +145,7 @@ const savePayment = async () => {
 <template>
   <v-sheet class="pa-6" color="white" rounded>
     <h5 class="text-h5 font-weight-bold mb-4 text-darkprimary">
-      ดำเนินการชำระเงิน
+      บิลนำเข้าสินค้า
     </h5>
 
     <v-row>
