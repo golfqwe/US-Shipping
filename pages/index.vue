@@ -1,22 +1,26 @@
 <script setup lang="ts">
-/* -For Set Blank Layout- */
+import { storeToRefs } from 'pinia'
+import { useFiltersStore } from '@/stores/count'
 
 definePageMeta({
   layout: 'guest'
 })
 
-// let userInfo = useUserStore()
-// if (process.client) {
-//   userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}')
-// }
+const inputVal = ref('')
+
+const filtersStore = useFiltersStore()
+const { addValueToFilterList } = filtersStore
+const { filtersList } = storeToRefs(filtersStore)
 </script>
 
 <template>
   <div>
     <section>
-      <p>
-        <!-- {{ userInfo }} -->
-      </p>
+      {{ filtersList }}
+      <input v-model="inputVal">
+      <button @click="addValueToFilterList(inputVal)">
+        +
+      </button>
     </section>
   </div>
 </template>

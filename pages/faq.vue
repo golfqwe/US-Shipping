@@ -21,7 +21,7 @@ Object.assign(items, listAddress.value)
       <h5 class="text-h5 font-weight-bold mb-4 text-darkprimary">
         คำถามที่พบบ่อย
       </h5>
-      <v-row v-for="(item, inx) in items" :key="inx" class="text-center">
+      <v-row v-for="(item, inx) in items" :key="inx">
         <v-col>
           <span class="customImage" v-html="item.content" />
         </v-col>

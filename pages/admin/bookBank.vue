@@ -39,7 +39,7 @@ const editedItem: BookBank = reactive({
   status: true
 })
 
-const { data: listItems, refresh } = await useFetch('/api/bookBank/', {
+const { data: listItems, refresh } = await useLazyFetch('/api/bookBank/', {
   method: 'GET',
   baseURL: config.public.apiBase,
   headers: {
