@@ -1,18 +1,18 @@
 <script lang="ts" setup>
+import { storeToRefs } from 'pinia'
 import type { MyAddress } from '@/types/myAddress/index'
+import { useUserStore } from '@/stores/user'
+
 definePageMeta({
   layout: 'guest',
   middleware: 'checkauth'
 })
 // const { data } = useSession()
 const config = useRuntimeConfig()
-const userInfo = useUserStore()
 const router = useRouter()
-const UserId = useUserId()
 
-if (localStorage.getItem('userInfo')) {
-  userInfo.value = JSON.parse(localStorage.getItem('userInfo'))
-}
+const userStore = useUserStore()
+const { userInfo } = storeToRefs(userStore)
 
 const dialog = ref(false)
 const snackbar = reactive({
@@ -117,7 +117,7 @@ const save = async () => {
         email: editedItem.email,
         phone: editedItem.phone,
         address: editedItem.address,
-        createBy: userInfo?.id || UserId, // data.value?.user?.id,
+        createBy: userInfo?.value?.id, // data.value?.user?.id,
         status: editedItem.status ? 'active' : 'inactive'
       }
     })

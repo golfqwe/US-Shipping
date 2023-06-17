@@ -1,7 +1,11 @@
 <script setup lang="ts">
+import { storeToRefs } from 'pinia'
 import type { wareHouse } from '@/types/wareHouse/index'
 import type { localCarrier } from '@/types/localCarrier/index'
 import type { tracking } from '@/types/tracking/index'
+
+import { useUserStore } from '@/stores/user'
+
 definePageMeta({
   layout: 'guest',
   middleware: 'checkauth'
@@ -10,10 +14,9 @@ definePageMeta({
 const config = useRuntimeConfig()
 const router = useRouter()
 
-const userInfo = useUserStore()
-if (localStorage.getItem('userInfo')) {
-  userInfo.value = JSON.parse(localStorage.getItem('userInfo'))
-}
+const userStore = useUserStore()
+const { userInfo } = storeToRefs(userStore)
+
 const formRegisterTracking = ref()
 const formUpdateTracking = ref()
 const editedItem: tracking = reactive({

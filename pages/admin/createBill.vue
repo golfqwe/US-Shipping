@@ -1,11 +1,11 @@
 <script setup>
-// import { invoiceItem } from '@/types/invoiceItem/index'
-const config = useRuntimeConfig()
-const userInfo = useUserStore()
+import { storeToRefs } from 'pinia'
+import { useUserStore } from '@/stores/user'
 
-if (localStorage.getItem('userInfo')) {
-  userInfo.value = JSON.parse(localStorage.getItem('userInfo'))
-}
+const config = useRuntimeConfig()
+
+const userStore = useUserStore()
+const { userInfo } = storeToRefs(userStore)
 
 const formInsertDesc = ref()
 const inputUser = ref()

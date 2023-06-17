@@ -1,5 +1,6 @@
-
 <script setup lang="ts">
+import { storeToRefs } from 'pinia'
+import { useUserStore } from '@/stores/user'
 
 const title = ref('Us-shipping ')
 useHead({
@@ -14,10 +15,19 @@ useHead({
 const router = useRouter()
 const config = useRuntimeConfig()
 
-const userInfo = useUserStore()
+// const userInfo = useUserStore()
+
+const userStore = useUserStore()
+const { userInfo } = storeToRefs(userStore)
+const { clearUserInfo } = userStore
 
 const menuMain = reactive([
 
+  {
+    text: 'ค่านำเข้าสินค้า',
+    icon: '1_1.png',
+    link: '/'
+  },
   {
     text: 'ที่อยู่โกดังสินค้า',
     icon: '1_2.png',
@@ -41,11 +51,7 @@ const menuMain = reactive([
 ])
 
 const menuSub = reactive([
-  {
-    text: '“เรทค่านำเข้าสินค้า”',
-    icon: '2_1.png',
-    link: '/nextDayService'
-  },
+
   {
     text: 'ที่อยู่ของฉัน',
     icon: '2_2.png',
@@ -99,9 +105,7 @@ const signOut = async () => {
     snackbar.status = true
   } else {
     // No error, continue with the sign in, e.g., by following the returned redirect:
-    localStorage.removeItem('userInfo')
-
-    userInfo.value = {}
+    clearUserInfo()
     // return navigateTo('/login')
     router.push({ path: '/' })
   }
@@ -232,7 +236,7 @@ const signOut = async () => {
         </div>
         <v-container>
           <!-- <v-sheet rounded color="accent" height="60" /> -->
-          <v-row v-if="userInfo?.name || userName" justify="center">
+          <v-row v-if="userInfo?.name" justify="center">
             <v-col>
               <v-sheet class="" color="white" rounded border>
                 <v-container>

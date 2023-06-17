@@ -1,17 +1,17 @@
 <script setup lang="ts">
+import { storeToRefs } from 'pinia'
 import type { wareHouse } from '@/types/wareHouse/index'
+import { useUserStore } from '@/stores/user'
 
 definePageMeta({
   middleware: 'checkauth'
 })
 
 const config = useRuntimeConfig()
-const userInfo = useUserStore()
 const router = useRouter()
 
-if (localStorage.getItem('userInfo')) {
-  userInfo.value = JSON.parse(localStorage.getItem('userInfo'))
-}
+const userStore = useUserStore()
+const { userInfo } = storeToRefs(userStore)
 
 const dialog = ref(false)
 const search = ref(null)

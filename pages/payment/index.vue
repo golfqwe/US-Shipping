@@ -1,5 +1,9 @@
 <script setup lang="ts">
+import { storeToRefs } from 'pinia'
 import { BookBank } from '@/types/bookbank/index'
+
+import { useUserStore } from '@/stores/user'
+
 definePageMeta({
   layout: 'guest',
   middleware: 'checkauth'
@@ -7,11 +11,9 @@ definePageMeta({
 
 const config = useRuntimeConfig()
 const router = useRouter()
-const userInfo = useUserStore()
 
-if (localStorage.getItem('userInfo')) {
-  userInfo.value = JSON.parse(localStorage.getItem('userInfo'))
-}
+const userStore = useUserStore()
+const { userInfo } = storeToRefs(userStore)
 
 const formPayment = ref()
 const itemsBill = reactive([])

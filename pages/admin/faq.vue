@@ -1,8 +1,7 @@
-<script>
-</script>
 <script setup lang="ts">
-
+import { storeToRefs } from 'pinia'
 import ClassicEditor from '@blowstack/ckeditor5-full-free-build'
+import { useUserStore } from '@/stores/user'
 import MyCustomUploadAdapterPlugin from '~/utils/MyCustomUploadAdapterPlugin'
 
 import type { Archive } from '@/types/archive/index'
@@ -12,12 +11,10 @@ definePageMeta({
 })
 
 const config = useRuntimeConfig()
-const userInfo = useUserStore()
 const router = useRouter()
 
-if (localStorage.getItem('userInfo')) {
-  userInfo.value = JSON.parse(localStorage.getItem('userInfo'))
-}
+const userStore = useUserStore()
+const { userInfo } = storeToRefs(userStore)
 
 const editorConfig = ref({
   extraPlugins: [MyCustomUploadAdapterPlugin]

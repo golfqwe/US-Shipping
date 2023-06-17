@@ -1,16 +1,16 @@
 <script lang="ts" setup>
-// import type { wareHouse } from '@/types/wareHouse/index'
+import { storeToRefs } from 'pinia'
+import { useUserStore } from '@/stores/user'
+
 definePageMeta({
   layout: 'guest',
   middleware: 'checkauth'
 })
 const config = useRuntimeConfig()
-let userInfo = useUserStore()
 const router = useRouter()
 
-if (process.client) {
-  userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}')
-}
+const userStore = useUserStore()
+const { userInfo } = storeToRefs(userStore)
 
 const items = reactive({})
 const currentItem = ref(Object.keys(items)[0])

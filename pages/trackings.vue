@@ -1,16 +1,16 @@
 <script lang="ts" setup>
+import { storeToRefs } from 'pinia'
 import type { tracking } from '@/types/tracking/index'
+import { useUserStore } from '@/stores/user'
+
 definePageMeta({
   layout: 'guest',
   middleware: 'checkauth'
 })
 const config = useRuntimeConfig()
 const router = useRouter()
-const userInfo = useUserStore()
-
-if (localStorage.getItem('userInfo')) {
-  userInfo.value = JSON.parse(localStorage.getItem('userInfo'))
-}
+const userStore = useUserStore()
+const { userInfo } = storeToRefs(userStore)
 
 const items: tracking[] = reactive([])
 const dialogImage = ref(false)
