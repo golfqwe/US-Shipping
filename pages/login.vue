@@ -8,6 +8,7 @@ definePageMeta({
   layout: 'guest'
 })
 
+const showPassword = ref(false)
 const snackbar = reactive({
   status: false,
   text: '',
@@ -112,10 +113,19 @@ if (localStorage.getItem('email')) {
                     v.length >= 8 || 'Password must be less than 8 characters',
                 ]"
                 variant="outlined"
-                type="password"
+                :type="showPassword ? 'text' : 'password'"
                 hide-details="auto"
                 color="primary"
-              />
+              >
+                <template #append-inner>
+                  <v-icon v-if="showPassword" class="pt-1" small @click="showPassword = !showPassword">
+                    mdi-eye
+                  </v-icon>
+                  <v-icon v-else small class="pt-1" @click="showPassword = !showPassword">
+                    mdi-eye-off
+                  </v-icon>
+                </template>
+              </v-text-field>
             </v-col>
             <v-col cols="12" class="pt-0">
               <div class="d-flex flex-wrap align-center ml-n2">

@@ -432,7 +432,7 @@ watch(listBills, (val) => {
                     MemberID:
                   </v-col>
                   <v-col cols="6" class="pl-4">
-                    <v-select
+                    <v-autocomplete
                       ref="inputUser"
                       v-model="selectUser"
                       :rules="[(v) => !!v || 'Member is required']"

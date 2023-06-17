@@ -21,7 +21,7 @@ const editedItem: user = reactive({
   password: '',
   confirmPassword: '',
   role: 'user',
-  status: true
+  status: false
 })
 
 const save = async () => {

@@ -120,29 +120,31 @@ const signOut = async () => {
         <!-- <span>Vuetify &nbsp;</span>
         <span class="font-weight-light">MATERIAL DESIGN</span> -->
         <v-row align="center" no-gutters>
-          <v-col class="pa-2  hidden-sm-and-down">
+          <v-col class="pa-2  ">
             <div class="d-flex flex-row ">
               <div class="d-inline-flex align-center  mx-4">
-                <img
+                <v-img
                   src="/images/main/logo.png"
-                  style="height: 65px; object-fit: contain"
-                >
+                  style="min-height: 45px; max-height: 65px; "
+                />
               </div>
-              <div class="d-flex flex-column">
-                <p class="text-left">
-                  บริการขนส่งสินค้าจากประเทศสหรัฐอเมริกากลับ
-                </p>
-                <p class="text-left">
-                  ประเทศไทยและประเทศลาว : บริการรวดเร็ว
-                </p>
-                <p class="text-left">
-                  ซื่อสัตย์ ราคาประหยัด ตรวจสอบออนไลน์ได้ 24 ชั่วโมง
-                </p>
+              <div class="hidden-sm-and-down">
+                <div class="d-flex flex-column ">
+                  <p class="text-left">
+                    บริการขนส่งสินค้าจากประเทศสหรัฐอเมริกากลับ
+                  </p>
+                  <p class="text-left">
+                    ประเทศไทยและประเทศลาว : บริการรวดเร็ว
+                  </p>
+                  <p class="text-left">
+                    ซื่อสัตย์ ราคาประหยัด ตรวจสอบออนไลน์ได้ 24 ชั่วโมง
+                  </p>
+                </div>
               </div>
             </div>
           </v-col>
 
-          <v-col cols="auto" class="ma-2 hidden-sm-and-down">
+          <v-col cols="auto" class="ma-2">
             <div class="d-flex flex-column text-right">
               <div v-if="userInfo?.name">
                 <v-menu
@@ -192,7 +194,7 @@ const signOut = async () => {
             </div>
           </v-col>
 
-          <v-col class=" hidden-md-and-up">
+          <!-- <v-col class=" hidden-md-and-up">
             <v-row no-gutters justify="center" align="center">
               <v-sheet
                 class="d-flex flex-column  align-center "
@@ -212,7 +214,7 @@ const signOut = async () => {
                 </div>
               </v-sheet>
             </v-row>
-          </v-col>
+          </v-col> -->
         </v-row>
       </v-app-bar>
 
@@ -236,7 +238,7 @@ const signOut = async () => {
         </div>
         <v-container>
           <!-- <v-sheet rounded color="accent" height="60" /> -->
-          <v-row v-if="userInfo?.name" justify="center">
+          <v-row justify="center">
             <v-col>
               <v-sheet class="" color="white" rounded border>
                 <v-container>
