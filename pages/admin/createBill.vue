@@ -16,12 +16,13 @@ const formInsertDesc = ref()
 const inputUser = ref()
 const dialogCreateBill = ref(false)
 const dialogSlip = ref(false)
+const dialogDelete = ref(false)
 const snackbar = reactive({
   status: false,
   text: '',
   color: 'success'
 })
-const listDescriptions = reactive([{
+let listDescriptions = reactive([{
   description: '',
   quantity: 1,
   weight: 0,
@@ -35,12 +36,15 @@ const search = ref(null)
 
 const itemsBill = reactive([])
 const itemsUsers = reactive([])
-const selectUser = ref()
+const selectUser = reactive({
+  user: null
+})
 const userAddress = ref({})
 const maxInvoice = ref(0)
 const selectInvId = ref(0)
 const peyment = reactive({})
 
+const editedIndex = ref(-1)
 const editedItem = ref({
   packages: 1,
   carrier: 'Air',
@@ -55,7 +59,8 @@ watch(pageSize, () => {
   fetchData()
 })
 
-watch(selectUser, async (val) => {
+watch(selectUser.user, async (val) => {
+  console.log('🚀 ~ file: createBill.vue:61 ~ watch ~ val:', val)
   if (val) {
     // on mounted
 
@@ -69,11 +74,20 @@ watch(selectUser, async (val) => {
 })
 watch(dialogCreateBill, async (val) => {
   if (val) {
-    const { data: tempmaxInvoice } = await useCustomFetch('/api/invoices/maxinvoice/', {
-      method: 'GET'
-    })
-    // userAddress.splice(0)
-    maxInvoice.value = tempmaxInvoice.value + 1
+    if (editedIndex.value > -1) {
+      maxInvoice.value = editedIndex.value
+    } else {
+      const { data: tempmaxInvoice } = await useCustomFetch('/api/invoices/maxinvoice/', {
+        method: 'GET'
+      })
+      maxInvoice.value = tempmaxInvoice.value + 1
+      editedItem.value.createdAt = ''
+
+      selectUser.user = null
+      nextTick(() => {
+        formInsertDesc.value.reset()
+      })
+    }
   }
 })
 
@@ -88,6 +102,15 @@ const addDescription = () => {
 }
 const close = () => {
   dialogCreateBill.value = false
+  editedIndex.value = -1
+  selectUser.user = null
+
+  // listDescriptions = [{
+  //   description: '',
+  //   quantity: 1,
+  //   weight: 0,
+  //   fee: 0
+  // }]
 }
 
 const save = async () => {
@@ -97,22 +120,37 @@ const save = async () => {
     return
   }
 
-  if (!selectUser.value) {
+  if (!selectUser.user) {
     inputUser.value.focus()
     return
   }
 
-  const { error } = await useCustomFetch('/api/invoices/', {
-    method: 'post',
-    body: {
-      saleId: userInfo?.value?.id,
-      userId: selectUser?.value?.id,
-      receiverId: userAddress?.value?.id,
-      items: listDescriptions,
-      ...editedItem.value
-    }
-  })
-  if (error.value) {
+  let err
+  if (editedIndex.value > -1) {
+    err = await useCustomFetch(`/api/invoices/${editedIndex.value}`, {
+      method: 'put',
+      body: {
+        saleId: userInfo?.value?.id,
+        userId: selectUser?.user?.id,
+        receiverId: userAddress?.value?.id,
+        items: listDescriptions,
+        ...editedItem.value
+      }
+    })
+  } else {
+    err = await useCustomFetch('/api/invoices/', {
+      method: 'post',
+      body: {
+        saleId: userInfo?.value?.id,
+        userId: selectUser?.user?.id,
+        receiverId: userAddress?.value?.id,
+        items: listDescriptions,
+        ...editedItem.value
+      }
+    })
+  }
+
+  if (err.error.value) {
     snackbar.text = 'Save data failed'
     snackbar.color = 'error'
   } else {
@@ -122,7 +160,7 @@ const save = async () => {
   snackbar.status = true
 
   close()
-  refresh()
+  fetchData()
 }
 
 const checkSlip = async (item) => {
@@ -165,6 +203,40 @@ const fetchData = async () => {
     totalCount.value = Math.ceil(val?.count / pageSize.value)
     Object.assign(itemsBill, val?.rows)
   })
+}
+const editItem = (item) => {
+  console.log('🚀 ~ file: createBill.vue:194 ~ editItem ~ item:', item)
+  editedIndex.value = Number(item.id)
+
+  editedItem.value.packages = item.packages
+  editedItem.value.carrier = item.carrier
+  editedItem.value.createdAt = item.createdAt
+
+  listDescriptions = item.invoiceItems
+  selectUser.user = item.user
+  dialogCreateBill.value = true
+}
+
+const deleteItem = (item) => {
+  editedIndex.value = Number(item.id)
+  dialogDelete.value = true
+}
+
+const deleteItemConfirm = async () => {
+  const { error } = await useCustomFetch(`/api/invoices/${editedIndex.value}`, {
+    method: 'delete'
+  })
+
+  if (error.value) {
+    snackbar.text = 'Save data failed'
+    snackbar.color = 'error'
+  } else {
+    snackbar.text = 'Save data successfully'
+    snackbar.color = 'success'
+    fetchData()
+    dialogDelete.value = false
+  }
+  snackbar.status = true
 }
 
 // on mounted
@@ -324,6 +396,28 @@ fetchData()
                     mdi-cash-check
                   </v-icon> ตรวจสอบสลิป
                 </v-btn>
+                <v-btn
+                  v-show="item?.status?.code === 'pending' "
+                  size="small"
+                  rounded="lg"
+                  color="info"
+                  @click="editItem(item)"
+                >
+                  <v-icon start dark>
+                    mdi-pencil
+                  </v-icon> edit
+                </v-btn>
+                <v-btn
+                  v-show="item?.status?.code === 'pending' "
+                  size="small"
+                  rounded="lg"
+                  color="error"
+                  @click="deleteItem(item)"
+                >
+                  <v-icon start dark>
+                    mdi-delete
+                  </v-icon> delete
+                </v-btn>
               </td>
             </tr>
           </tbody>
@@ -365,7 +459,7 @@ fetchData()
           <v-btn
             icon
             dark
-            @click="dialogCreateBill = false"
+            @click="close"
           >
             <v-icon>mdi-close</v-icon>
           </v-btn>
@@ -394,7 +488,7 @@ fetchData()
                   </v-col>
                   <v-col cols="6">
                     {{
-                      new Date().toLocaleString("th-TH")
+                      editedIndex > -1 ? new Date(editedIndex.createdAt).toLocaleString("th-TH") : new Date().toLocaleString("th-TH")
                     }}
                   </v-col>
                   <v-col cols="6" class="font-weight-bold">
@@ -465,7 +559,7 @@ fetchData()
                   <v-col cols="6" class="pl-4">
                     <v-autocomplete
                       ref="inputUser"
-                      v-model="selectUser"
+                      v-model="selectUser.user"
                       :rules="[(v) => !!v || 'Member is required']"
                       variant="outlined"
                       :items="itemsUsers"
@@ -479,19 +573,19 @@ fetchData()
                     Contact:
                   </v-col>
                   <v-col cols="6" class="pl-4">
-                    {{ selectUser?.name }}
+                    {{ selectUser.user?.name }}
                   </v-col>
                   <v-col cols="6" class="font-weight-bold text-right">
                     Email:
                   </v-col>
                   <v-col cols="6" class="pl-4">
-                    {{ selectUser?.email }}
+                    {{ selectUser.user?.email }}
                   </v-col>
                   <v-col cols="6" class="font-weight-bold text-right">
                     Phone:
                   </v-col>
                   <v-col cols="6" class="pl-4">
-                    {{ selectUser?.phone }}
+                    {{ selectUser.user?.phone }}
                   </v-col>
                   <v-col cols="6" class="font-weight-bold text-right mt-4">
                     Receiver:
@@ -613,7 +707,7 @@ fetchData()
             </v-row>
             <v-row justify="center">
               <v-col cols="auto">
-                <v-btn variant="text" text="Cancel" color="error" @click="dialogCreateBill = false" />
+                <v-btn variant="text" text="Cancel" color="error" @click="close" />
               </v-col>
               <v-col cols="2">
                 <v-btn block text="Save" color="info" @click="save" />
@@ -700,6 +794,23 @@ fetchData()
           <v-btn color="success" variant="text" @click="saveSlip">
             ข้อมูลถูกต้อง
           </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <v-dialog v-model="dialogDelete" max-width="500px">
+      <v-card>
+        <v-card-title class="text-h5">
+          Are you sure you want to delete this item?
+        </v-card-title>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn color="blue darken-1" text @click="dialogDelete = false">
+            Cancel
+          </v-btn>
+          <v-btn color="blue darken-1" text @click="deleteItemConfirm">
+            OK
+          </v-btn>
+          <v-spacer />
         </v-card-actions>
       </v-card>
     </v-dialog>

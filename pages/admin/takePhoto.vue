@@ -31,7 +31,7 @@ let editedTracking = reactive({})
 const fetchData = async () => {
   const { data: listItems } = await useCustomFetch('/api/trackings/', {
     method: 'GET',
-    query: { status: 'pending,waitpayment', page: page.value, pageSize: pageSize.value, search: search.value }
+    query: { status: 'pending,waiting,waitpayment', page: page.value, pageSize: pageSize.value, search: search.value }
 
   })
 

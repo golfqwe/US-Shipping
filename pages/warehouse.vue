@@ -1,36 +1,28 @@
 <script lang="ts" setup>
+import { storeToRefs } from 'pinia'
 import { useCustomFetch } from '@/composables/useCustomFetch'
+import { useUserStore } from '@/stores/user'
+import type { wareHouse } from '@/types/wareHouse/index'
+
+const userStore = useUserStore()
+const { userInfo } = storeToRefs(userStore)
 
 definePageMeta({
   layout: 'guest',
   middleware: 'checkauth'
 })
 
-const items = reactive({})
-const currentItem = ref(Object.keys(items)[0])
+const items:wareHouse[] = reactive([])
+const currentItem = ref(0)
 
 const { data: listWarehouse } = await useCustomFetch('/api/warehouse/', {
   method: 'GET'
 })
 
-const groupBy = (objectArray: [], groupKey: string) => {
-  if (!objectArray) { return }
-  return objectArray.sort((a, b) => {
-    if (a.country > b.country) {
-      return 1
-    }
-    if (b.country > a.country) {
-      return -1
-    }
-    return 0
-  }).reduce((acc, obj) => {
-    const key = obj[groupKey]
-    const curGroup = acc[key] ?? []
-    return { ...acc, [key]: [...curGroup, obj] }
-  }, {})
-}
-
-Object.assign(items, groupBy(listWarehouse.value as [], 'country'))
+watch(listWarehouse, (val) => {
+  items.length = 0
+  Object.assign(items, val)
+})
 
 </script>
 
@@ -50,7 +42,7 @@ Object.assign(items, groupBy(listWarehouse.value as [], 'country'))
           :key="ind"
           :value="ind"
         >
-          {{ ind }}
+          {{ it.country }}
         </v-tab>
       </v-tabs>
     </v-row>
@@ -61,11 +53,96 @@ Object.assign(items, groupBy(listWarehouse.value as [], 'country'))
           :key="ind"
           :value="ind"
         >
-          <v-list lines="two">
-            <v-list-subheader inset>
-              “รหัสอ้างอิงของลูกค้า และ ที่อยู่โกดัง สำหรับนำไปใช้สั่งซื้อสินค้าส่งมาลงที่คลัง”
-            </v-list-subheader>
+          <v-list-subheader inset>
+            “รหัสอ้างอิงของลูกค้า และ ที่อยู่โกดัง สำหรับนำไปใช้สั่งซื้อสินค้าส่งมาลงที่คลัง”
+          </v-list-subheader>
 
+          <v-row no-gutters align="end">
+            <v-col cols="2">
+              <h4 class=" text-grey">
+                Name :
+              </h4>
+            </v-col>
+            <v-col>
+              <h4 class=" font-weight-bold">
+                {{ it?.name }}
+              </h4>
+            </v-col>
+          </v-row>
+          <v-row no-gutters align="end">
+            <v-col cols="2">
+              <h4 class=" text-grey">
+                Last Name :
+              </h4>
+            </v-col>
+            <v-col>
+              <h4 class=" font-weight-bold">
+                {{ userInfo?.name }}
+              </h4>
+            </v-col>
+          </v-row>
+          <v-row no-gutters align="end">
+            <v-col cols="2">
+              <h4 class=" text-grey">
+                Address :
+              </h4>
+            </v-col>
+            <v-col>
+              <h4 class=" font-weight-bold">
+                {{ it?.address }}
+              </h4>
+            </v-col>
+          </v-row>
+          <v-row no-gutters align="end">
+            <v-col cols="2">
+              <h4 class=" text-grey">
+                City :
+              </h4>
+            </v-col>
+            <v-col>
+              <h4 class=" font-weight-bold">
+                {{ it?.city }}
+              </h4>
+            </v-col>
+          </v-row>
+          <v-row no-gutters align="end">
+            <v-col cols="2">
+              <h4 class=" text-grey">
+                State :
+              </h4>
+            </v-col>
+            <v-col>
+              <h4 class=" font-weight-bold">
+                {{ it?.state }}
+              </h4>
+            </v-col>
+          </v-row>
+          <v-row no-gutters align="end">
+            <v-col cols="2">
+              <h4 class=" text-grey">
+                Zip :
+              </h4>
+            </v-col>
+            <v-col>
+              <h4 class=" font-weight-bold">
+                {{ it?.zip }}
+              </h4>
+            </v-col>
+          </v-row>
+          <v-row no-gutters align="end">
+            <v-col cols="2">
+              <h4 class=" text-grey">
+                Tel :
+              </h4>
+            </v-col>
+            <v-col>
+              <h4 class=" font-weight-bold">
+                {{ it?.phone }}
+              </h4>
+            </v-col>
+          </v-row>
+
+          <!-- <v-list lines="two">
             <v-list-item
               v-for="(dataWarehouse, inW) in it"
               :key="inW"
@@ -79,7 +156,7 @@ Object.assign(items, groupBy(listWarehouse.value as [], 'country'))
                 </v-avatar>
               </template>
             </v-list-item>
-          </v-list>
+          </v-list> -->
         </v-window-item>
       </v-window>
     </v-container>
