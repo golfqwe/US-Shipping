@@ -124,7 +124,7 @@ const signOut = async () => {
         <span class="font-weight-light">MATERIAL DESIGN</span> -->
         <v-row align="center" no-gutters justify="space-between">
           <v-col xs="12" sm="6" md="6" class="pa-2  ">
-            <div class="d-flex flex-row justify-center">
+            <div class="d-flex flex-row justify-xs-center">
               <div class="d-inline-flex align-center  mx-4">
                 <v-img
                   src="/images/main/logo.png"
@@ -166,7 +166,7 @@ const signOut = async () => {
                   </template>
                   <v-sheet rounded="md" width="200" elevation="10" class="mt-2">
                     <v-list v-show="userInfo?.role === 'admin'" class="py-0" lines="one" density="compact">
-                      <v-list-item active-color="primary" link to="/admin">
+                      <v-list-item color="primary" link to="/admin">
                         <template #prepend>
                           <FolderIcon stroke-width="1.5" size="20" />
                         </template>

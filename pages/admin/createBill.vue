@@ -3,6 +3,10 @@ import { storeToRefs } from 'pinia'
 import { useUserStore } from '@/stores/user'
 import { useCustomFetch } from '@/composables/useCustomFetch'
 
+definePageMeta({
+  middleware: 'checkauth'
+})
+
 const config = useRuntimeConfig()
 
 const userStore = useUserStore()

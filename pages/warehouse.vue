@@ -14,6 +14,7 @@ const { data: listWarehouse } = await useCustomFetch('/api/warehouse/', {
 })
 
 const groupBy = (objectArray: [], groupKey: string) => {
+  if (!objectArray) { return }
   return objectArray.sort((a, b) => {
     if (a.country > b.country) {
       return 1
