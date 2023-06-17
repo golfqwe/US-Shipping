@@ -44,10 +44,10 @@ watch(dialog, (val) => {
   val || close()
 })
 
-watch(page, (p) => {
+watch(page, () => {
   fetchData()
 })
-watch(pageSize, (pz) => {
+watch(pageSize, () => {
   page.value = 1
   fetchData()
 })
@@ -132,10 +132,6 @@ const fetchData = async () => {
   })
 }
 
-const onClick = () => {
-  fetchData()
-}
-
 fetchData()
 
 </script>
@@ -159,8 +155,8 @@ fetchData()
                     append-inner-icon="mdi-magnify"
                     single-line
                     hide-details
-                    @keypress.prevent.enter="onClick"
-                    @click:append-inner="onClick"
+                    @keypress.prevent.enter=" fetchData"
+                    @click:append-inner=" fetchData"
                   />
                 </v-col>
                 <v-col cols="auto">
@@ -308,8 +304,7 @@ fetchData()
                 </v-label>
                 <v-text-field
                   v-model="editedItem.password"
-                  :rules="[(v) => !!v || 'Password is required',
-                           v => ( v.length >= 8) || 'Password must be less than 8 characters',]"
+                  :rules="[v => !!v ? ( v.length >= 8) || 'Password must be less than 8 characters' : true]"
                   variant="outlined"
                   hide-details="auto"
                   color="primary"

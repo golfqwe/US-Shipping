@@ -16,24 +16,42 @@ const snackbar = reactive({
   color: 'success'
 })
 
+const pageSize = ref(10)
+const page = ref(1)
+const totalCount = ref(0)
+
+const loading = ref(false)
+const search = ref(null)
+
 const items: tracking[] = reactive([])
 const files = ref([])
 
 let editedTracking = reactive({})
 
-const { data: listItems, refresh } = await useCustomFetch('/api/trackings/', {
-  method: 'GET',
-  query: { status: 'pending,waitpayment' }
+const fetchData = async () => {
+  const { data: listItems } = await useCustomFetch('/api/trackings/', {
+    method: 'GET',
+    query: { status: 'pending,waitpayment', page: page.value, pageSize: pageSize.value, search: search.value }
 
-})
+  })
 
-watch(listItems, (val) => {
-  items.length = 0
-  Object.assign(items, val)
-})
+  watch(listItems, (val) => {
+    items.length = 0
+    totalCount.value = Math.ceil(val?.count / pageSize.value)
+    Object.assign(items, val?.rows)
+  })
+}
 
 watch(dialog, (val) => {
   val || close()
+})
+
+watch(page, () => {
+  fetchData()
+})
+watch(pageSize, () => {
+  page.value = 1
+  fetchData()
 })
 
 const editItem = (item: any) => {
@@ -75,8 +93,10 @@ const save = async () => {
   snackbar.status = true
 
   close()
-  refresh()
+  fetchData()
 }
+
+fetchData()
 
 </script>
 <template>
@@ -86,6 +106,20 @@ const save = async () => {
         <v-card-title class="text-h5 pt-sm-2 pb-7">
           <v-row justify="space-between">
             <v-col> บันทึกรูปพัสดุ </v-col>
+            <v-col cols="4">
+              <v-text-field
+                v-model="search"
+                :loading="loading"
+                density="compact"
+                variant="solo"
+                label="Search ..."
+                append-inner-icon="mdi-magnify"
+                single-line
+                hide-details
+                @keypress.prevent.enter=" fetchData"
+                @click:append-inner=" fetchData"
+              />
+            </v-col>
           </v-row>
         </v-card-title>
         <v-table class="month-table">
@@ -208,6 +242,24 @@ const save = async () => {
         </v-table>
       </v-card-item>
     </v-card>
+
+    <v-row justify="end" class="mt-2">
+      <v-col cols="auto">
+        <v-select
+          v-model="pageSize"
+          :items="[10, 25, 100, 250]"
+          density="compact"
+          variant="solo"
+        />
+      </v-col>
+      <v-col cols="auto">
+        <v-pagination
+          v-model="page"
+          :length="totalCount"
+          :total-visible="7"
+        />
+      </v-col>
+    </v-row>
 
     <v-dialog v-model="dialog" persistent max-width="450">
       <v-card>

@@ -27,7 +27,7 @@ const { data: listItems, refresh } = await useCustomFetch('/api/trackings', {
 
 watch(listItems, (val) => {
   items.length = 0
-  Object.assign(items, val)
+  Object.assign(items, val?.rows)
 })
 
 watch(dialog, (val) => {

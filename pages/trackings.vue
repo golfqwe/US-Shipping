@@ -1,6 +1,11 @@
 <script lang="ts" setup>
+import { storeToRefs } from 'pinia'
 import type { tracking } from '@/types/tracking/index'
 import { useCustomFetch } from '@/composables/useCustomFetch'
+import { useUserStore } from '@/stores/user'
+
+const userStore = useUserStore()
+const { userInfo } = storeToRefs(userStore)
 
 definePageMeta({
   layout: 'guest',
@@ -14,13 +19,13 @@ let editedTracking = reactive({})
 
 const { data: listTracking } = await useCustomFetch('/api/trackings', {
   method: 'GET',
-  query: { status: 'pending,waiting,waitpayment' }
+  query: { status: 'pending,waiting,waitpayment', userId: userInfo?.value.id }
 
 })
 
 watch(listTracking, (val) => {
   items.length = 0
-  Object.assign(items, val)
+  Object.assign(items, val?.rows)
 })
 
 const selectItem = (item: any) => {

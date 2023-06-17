@@ -27,6 +27,12 @@ const listDescriptions = reactive([{
   weight: 0,
   fee: 0
 }])
+const pageSize = ref(10)
+const page = ref(1)
+const totalCount = ref(0)
+const loading = ref(false)
+const search = ref(null)
+
 const itemsBill = reactive([])
 const itemsUsers = reactive([])
 const selectUser = ref()
@@ -39,6 +45,14 @@ const editedItem = ref({
   packages: 1,
   carrier: 'Air',
   status: 'pending'
+})
+
+watch(page, () => {
+  fetchData()
+})
+watch(pageSize, () => {
+  page.value = 1
+  fetchData()
 })
 
 watch(selectUser, async (val) => {
@@ -138,22 +152,28 @@ const saveSlip = async () => {
 
   dialogSlip.value = false
   selectInvId.value = 0
-  refresh()
+  fetchData()
 }
+const fetchData = async () => {
+  const { data: listBills } = await useCustomFetch('/api/invoices', {
+    method: 'GET',
+    query: { page: page.value, pageSize: pageSize.value, search: search.value }
+  })
+
+  watch(listBills, (val) => {
+    itemsBill.length = 0
+    totalCount.value = Math.ceil(val?.count / pageSize.value)
+    Object.assign(itemsBill, val?.rows)
+  })
+}
+
 // on mounted
 const { data: listUsers } = await useCustomFetch('/api/users', {
   method: 'GET'
 })
 Object.assign(itemsUsers, listUsers?.value?.rows)
 
-const { data: listBills, refresh } = await useCustomFetch('/api/invoices', {
-  method: 'GET'
-})
-
-watch(listBills, (val) => {
-  itemsBill.length = 0
-  Object.assign(itemsBill, val)
-})
+fetchData()
 </script>
 
 <template>
@@ -163,13 +183,31 @@ watch(listBills, (val) => {
         <v-card-title class="text-h5 pt-sm-2 pb-7">
           <v-row justify="space-between">
             <v-col>  สร้างบิล / ตรวจสอบสลิป </v-col>
-            <v-col cols="auto">
-              <v-btn color="info" @click.stop="dialogCreateBill = true">
-                <v-icon start>
-                  mdi-plus
-                </v-icon>
-                สร้างบิลค่าขนส่ง
-              </v-btn>
+            <v-col>
+              <v-row justify="end">
+                <v-col cols="8">
+                  <v-text-field
+                    v-model="search"
+                    :loading="loading"
+                    density="compact"
+                    variant="solo"
+                    label="Search ..."
+                    append-inner-icon="mdi-magnify"
+                    single-line
+                    hide-details
+                    @keypress.prevent.enter="fetchData"
+                    @click:append-inner="fetchData"
+                  />
+                </v-col>
+                <v-col cols="auto">
+                  <v-btn color="info" @click.stop="dialogCreateBill = true">
+                    <v-icon start>
+                      mdi-plus
+                    </v-icon>
+                    สร้างบิลค่าขนส่ง
+                  </v-btn>
+                </v-col>
+              </v-row>
             </v-col>
           </v-row>
         </v-card-title>
@@ -292,6 +330,24 @@ watch(listBills, (val) => {
         </v-table>
       </v-card-item>
     </v-card>
+
+    <v-row justify="end" class="mt-2">
+      <v-col cols="auto">
+        <v-select
+          v-model="pageSize"
+          :items="[10, 25, 100, 250]"
+          density="compact"
+          variant="solo"
+        />
+      </v-col>
+      <v-col cols="auto">
+        <v-pagination
+          v-model="page"
+          :length="totalCount"
+          :total-visible="7"
+        />
+      </v-col>
+    </v-row>
 
     <v-dialog
       v-model="dialogCreateBill"

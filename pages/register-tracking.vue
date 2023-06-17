@@ -94,7 +94,7 @@ const update = async () => {
   } else {
     snackbar.text = 'Update data successfully'
     snackbar.color = 'success'
-    formUpdateTracking.value.reset()
+
     refresh()
   }
   dialogEdit.value = false
@@ -109,16 +109,17 @@ const editItem = (item: tracking) => {
 const close = () => {
   dialogEdit.value = false
   nextTick(() => {
-    Object.assign(editedItem, {
-      userId: userInfo?.value?.id, // data.value?.user?.id,
-      carrierId: null,
-      wareHouseId: null,
-      trackingNumber: '',
-      website: '',
-      description: '',
-      carrier: 'Air',
-      status: 'pending'
-    })
+    formUpdateTracking.value.reset()
+    // Object.assign(editedItem, {
+    //   userId: userInfo?.value?.id, // data.value?.user?.id,
+    //   carrierId: null,
+    //   wareHouseId: null,
+    //   trackingNumber: '',
+    //   website: '',
+    //   description: '',
+    //   carrier: 'Air',
+    //   status: 'pending'
+    // })
     editedIndex.value = -1
   })
 }
@@ -160,12 +161,13 @@ watch(listItems, (val) => {
 fetchListWareHouse()
 
 const { data: itemsTrack, refresh } = await useCustomFetch('/api/trackings', {
-  method: 'GET'
+  method: 'GET',
+  query: { userId: userInfo?.value.id }
 })
 
 watch(itemsTrack, (val) => {
   itemsTracking.length = 0
-  Object.assign(itemsTracking, val)
+  Object.assign(itemsTracking, val?.rows)
 })
 
 </script>
