@@ -36,6 +36,10 @@ Object.assign(items, groupBy(listWarehouse.value as [], 'country'))
 
 <template>
   <v-sheet class="pa-6" color="white" rounded>
+    <h5 class="text-h5 font-weight-bold mb-4 text-darkprimary">
+      ที่อยู่โกดัง
+    </h5>
+
     <v-row no-gutters>
       <v-tabs
         v-model="currentItem"

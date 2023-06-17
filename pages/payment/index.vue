@@ -130,7 +130,7 @@ const savePayment = async () => {
 <template>
   <v-sheet class="pa-6" color="white" rounded>
     <h5 class="text-h5 font-weight-bold mb-4 text-darkprimary">
-      บิลนำเข้าสินค้า
+      บิลค่าขนส่ง
     </h5>
 
     <v-row>

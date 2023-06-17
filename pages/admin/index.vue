@@ -19,6 +19,31 @@ const items: user[] = reactive([])
 const loading = ref(false)
 const search = ref(null)
 
+const showPassword = ref(false)
+const dialog = ref(false)
+const formInput = ref()
+const editedIndex = ref(-1)
+const defaultItem: user = reactive({
+  name: '',
+  email: '',
+  password: '',
+  phone: '',
+  role: '',
+  status: true
+})
+const editedItem: user = reactive({
+  name: '',
+  email: '',
+  password: '',
+  phone: '',
+  role: '',
+  status: true
+})
+
+watch(dialog, (val) => {
+  val || close()
+})
+
 watch(page, (p) => {
   fetchData()
 })
@@ -26,6 +51,73 @@ watch(pageSize, (pz) => {
   page.value = 1
   fetchData()
 })
+
+const editItem = (item: any) => {
+  editedIndex.value = item.id
+  Object.assign(editedItem, { ...item, status: item.status === 'active', password: '' })
+  dialog.value = true
+}
+const close = async () => {
+  dialog.value = false
+  await nextTick(() => {
+    Object.assign(editedItem, defaultItem)
+    editedIndex.value = -1
+  })
+}
+
+const save = async () => {
+  const { valid } = await formInput.value.validate()
+
+  if (!valid) {
+    return
+  }
+  if (editedIndex.value > -1) {
+    const buffer = {
+      name: editedItem.name,
+      email: editedItem.email,
+      phone: editedItem.phone,
+      role: editedItem.role,
+      status: editedItem.status ? 'active' : 'inactive'
+    }
+    if (editedItem.password) {
+      buffer.password = editedItem.password
+    }
+    const { error } = await useCustomFetch('/api/users/' + editedIndex.value, {
+      method: 'put',
+      body: buffer
+    })
+    if (error.value) {
+      snackbar.text = 'Save data failed'
+      snackbar.color = 'error'
+    } else {
+      snackbar.text = 'Save data successfully'
+      snackbar.color = 'success'
+    }
+    snackbar.status = true
+  } else {
+    const { error } = await useCustomFetch('/api/users/', {
+      method: 'post',
+      body: {
+        name: editedItem.name,
+        email: editedItem.email,
+        password: editedItem.password,
+        phone: editedItem.phone,
+        role: editedItem.role,
+        status: editedItem.status ? 'active' : 'inactive'
+      }
+    })
+    if (error.value) {
+      snackbar.text = 'Save data failed'
+      snackbar.color = 'error'
+    } else {
+      snackbar.text = 'Save data successfully'
+      snackbar.color = 'success'
+    }
+    snackbar.status = true
+  }
+  close()
+  fetchData()
+}
 
 const fetchData = async () => {
   const { data: listItems } = await useCustomFetch('/api/users/', {
@@ -182,6 +274,127 @@ fetchData()
         />
       </v-col>
     </v-row>
+
+    <v-dialog v-model="dialog" persistent width="800">
+      <v-card>
+        <v-card-title>
+          <span class="text-h5">{{
+            editedIndex > -1 ? "แก้ไข" : "เพิ่ม"
+          }}ข้อมูลผู้ใช้งาน</span>
+        </v-card-title>
+        <v-card-text>
+          <v-form ref="formInput">
+            <v-row class="">
+              <v-col cols="12">
+                <v-label class="font-weight-bold mb-1">
+                  อีเมล์ (ใช้ล็อคอิน) *
+                </v-label>
+                <v-text-field
+                  v-model="editedItem.email"
+                  :rules="[ v => !!v || 'E-mail is required',
+                            v => /.+@.+\..+/.test(v) || 'E-mail must be valid',]"
+                  variant="outlined"
+                  type="email"
+                  hide-details="auto"
+                  color="primary"
+                  density="compact"
+                  persistent-hint
+                  hint="กรุณากรอกอีเมล์จริงที่ตรวจสอบได้ เพื่อใช้ยืนยันการสมัครสมาชิก"
+                />
+              </v-col>
+              <v-col cols="12">
+                <v-label class="font-weight-bold mb-1">
+                  รหัสผ่าน *
+                </v-label>
+                <v-text-field
+                  v-model="editedItem.password"
+                  :rules="[(v) => !!v || 'Password is required',
+                           v => ( v.length >= 8) || 'Password must be less than 8 characters',]"
+                  variant="outlined"
+                  hide-details="auto"
+                  color="primary"
+                  density="compact"
+                  :type="showPassword ? 'text' : 'password'"
+                >
+                  <template #append-inner>
+                    <v-icon v-if="showPassword" class="pt-1" small @click="showPassword = !showPassword">
+                      mdi-eye
+                    </v-icon>
+                    <v-icon v-else small class="pt-1" @click="showPassword = !showPassword">
+                      mdi-eye-off
+                    </v-icon>
+                  </template>
+                </v-text-field>
+              </v-col>
+
+              <v-col cols="12">
+                <v-label class="font-weight-bold mb-1">
+                  ชื่อ - สกุล (English Only)
+                </v-label>
+                <v-text-field
+                  v-model="editedItem.name"
+                  variant="outlined"
+                  hide-details="auto"
+                  density="compact"
+                  :rules="[(v) => !!v ? /^[a-zA-Z0-9 .!?-]+$/.test(v) || 'Full Name has Englist Only' : true]"
+                  color="primary"
+                />
+              </v-col>
+              <v-col cols="12">
+                <v-label class="font-weight-bold mb-1">
+                  เบอร์โทร
+                </v-label>
+                <v-text-field
+                  v-model="editedItem.phone"
+                  variant="outlined"
+                  :rules="[(v) => !!v ? (v.length > 10) || 'Telephone must be less than 10 characters' : true]"
+                  type="tel"
+                  hide-details="auto"
+                  density="compact"
+                  color="primary"
+                />
+              </v-col>
+              <v-col cols="4">
+                <v-label class="font-weight-bold mb-1">
+                  Role
+                </v-label>
+                <v-select
+                  v-model="editedItem.role"
+                  :items="['admin', 'user']"
+                  color="success"
+                  variant="outlined"
+                  density="compact"
+                  hide-details
+                />
+              </v-col>
+
+              <v-col v-show="editedIndex > -1" cols="4">
+                <v-label class="font-weight-bold mb-1">
+                  Status
+                </v-label>
+                <v-switch
+                  v-model="editedItem.status"
+                  color="success"
+                  hide-details
+                  inset
+                  :label="`${editedItem.status ? 'active' : 'inactive'}`"
+                />
+              </v-col>
+            </v-row>
+          </v-form>
+        </v-card-text>
+        <v-card-actions>
+          <small class="text-red">*indicates required field</small>
+          <v-spacer />
+          <v-btn color="error" variant="text" @click="dialog = false">
+            Close
+          </v-btn>
+          <v-btn color="info" @click="save">
+            Save
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
 
     <v-snackbar
       v-model="snackbar.status"

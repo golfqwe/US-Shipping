@@ -97,6 +97,7 @@ if (localStorage.getItem('email')) {
                 variant="outlined"
                 hide-details="auto"
                 color="primary"
+                density="compact"
               />
             </v-col>
             <v-col cols="12">
@@ -114,6 +115,7 @@ if (localStorage.getItem('email')) {
                 :type="showPassword ? 'text' : 'password'"
                 hide-details="auto"
                 color="primary"
+                density="compact"
               >
                 <template #append-inner>
                   <v-icon v-if="showPassword" class="pt-1" small @click="showPassword = !showPassword">

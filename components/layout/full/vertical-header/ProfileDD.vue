@@ -19,7 +19,7 @@ const signOut = async () => {
   } else {
     clearUserInfo()
     // return navigateTo('/login')
-    router.push({ path: '/' })
+    router.push({ path: '/login' })
   }
 }
 </script>

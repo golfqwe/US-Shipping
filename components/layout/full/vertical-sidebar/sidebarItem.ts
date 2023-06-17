@@ -27,13 +27,13 @@ export interface menu {
 }
 
 const sidebarItem: menu[] = [
-  { header: 'Home' },
+  { header: 'Customer' },
   {
     title: 'จัดการผู้ใช้งาน',
     icon: LayoutDashboardIcon,
     to: '/admin/'
   },
-  { header: 'Customer' },
+  { header: 'Trackings' },
   {
     title: 'แจ้งชำระบิล',
     icon: FileInvoiceIcon,

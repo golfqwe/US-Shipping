@@ -197,6 +197,7 @@ watch(itemsTrack, (val) => {
             :rules="[(v) => !!v || 'Local Carrier is required']"
             item-title="name"
             item-value="id"
+            density="compact"
             variant="outlined"
             hide-details="auto"
             color="primary"
@@ -214,6 +215,7 @@ watch(itemsTrack, (val) => {
             v-model="editedItem.trackingNumber"
             :rules="[(v) => !!v || 'Traking Number is required']"
             hide-details="auto"
+            density="compact"
             variant="outlined"
             color="primary"
           />
@@ -230,6 +232,7 @@ watch(itemsTrack, (val) => {
             v-model="editedItem.website"
             variant="outlined"
             color="primary"
+            density="compact"
             type="url"
             persistent-hint
             placeholder="www.ebay.com"
@@ -248,6 +251,7 @@ watch(itemsTrack, (val) => {
             v-model="editedItem.description"
             hide-details="auto"
             variant="outlined"
+            density="compact"
             placeholder="ข้อมูลของสินค้า (ถ้ามี)"
             auto-grow
             color="primary"
@@ -298,6 +302,7 @@ watch(itemsTrack, (val) => {
         <v-col cols="4">
           <v-select
             v-model="editedItem.wareHouseId"
+            density="compact"
             :rules="[(v) => !!v || 'Warehouse is required']"
             :items="itemsWareHouse"
             item-title="country"
