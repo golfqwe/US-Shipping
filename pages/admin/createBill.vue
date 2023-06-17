@@ -634,7 +634,7 @@ watch(listBills, (val) => {
         </v-card-text>
         <v-card-actions>
           <v-spacer />
-          <v-btn color="error" variant="text" @click="dialog = false">
+          <v-btn color="error" variant="text" @click="dialogSlip = false">
             Close
           </v-btn>
           <v-btn color="success" variant="text" @click="saveSlip">

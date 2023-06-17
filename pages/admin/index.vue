@@ -67,6 +67,7 @@ fetchData()
                     append-inner-icon="mdi-magnify"
                     single-line
                     hide-details
+                    @keypress.prevent.enter="onClick"
                     @click:append-inner="onClick"
                   />
                 </v-col>

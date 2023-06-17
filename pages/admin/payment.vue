@@ -256,7 +256,7 @@ const save = async () => {
         </v-card-text>
         <v-card-actions>
           <v-spacer />
-          <v-btn color="error" variant="text" @click="dialog = false">
+          <v-btn color="error" variant="text" @click="close">
             Close
           </v-btn>
           <v-btn color="success" variant="text" @click="save">
