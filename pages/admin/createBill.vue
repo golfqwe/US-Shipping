@@ -162,7 +162,7 @@ watch(listBills, (val) => {
       <v-card-item class="pa-6">
         <v-card-title class="text-h5 pt-sm-2 pb-7">
           <v-row justify="space-between">
-            <v-col>  Tracking </v-col>
+            <v-col>  สร้างบิล / ตรวจสอบสลิป </v-col>
             <v-col cols="auto">
               <v-btn color="info" @click.stop="dialogCreateBill = true">
                 <v-icon start>

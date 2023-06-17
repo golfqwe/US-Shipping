@@ -7,10 +7,7 @@ definePageMeta({
 })
 
 const dialog = ref(false)
-const search = ref(null)
-const loading = ref(false)
 const formWarehouse = ref()
-const itemsCountry = reactive([])
 const items: wareHouse[] = reactive([])
 
 const snackbar = reactive({
@@ -20,15 +17,23 @@ const snackbar = reactive({
 })
 const defaultItem: wareHouse = reactive({
   country: '',
-  carrier: 'Air',
+  name: '',
   address: '',
+  city: '',
+  state: '',
+  zip: '',
+  phone: '',
   status: true
 })
 const editedIndex = ref(-1)
 const editedItem: wareHouse = reactive({
   country: '',
-  carrier: '',
+  name: '',
   address: '',
+  city: '',
+  state: '',
+  zip: '',
+  phone: '',
   status: true
 })
 
@@ -41,25 +46,9 @@ watch(listWarehouse, (val) => {
   Object.assign(items, val)
 })
 
-watch(search, (val) => {
-  val && val !== editedItem.country && querySelections(val)
-})
 watch(dialog, (val) => {
   val || close()
 })
-
-const querySelections = async (v: string) => {
-  loading.value = true
-  // Simulated ajax query
-  const { data: countries } = await useLazyFetch(
-    `https://restcountries.com/v3.1/name/${v}`,
-    {
-      transform: cty => cty
-    }
-  )
-  Object.assign(itemsCountry, toRaw(countries.value))
-  loading.value = false
-}
 
 const editItem = (item: any) => {
   editedIndex.value = item.id
@@ -102,8 +91,12 @@ const save = async () => {
       method: 'post',
       body: {
         country: editedItem.country,
-        carrier: editedItem.carrier,
+        name: editedItem.name,
         address: editedItem.address,
+        city: editedItem.city,
+        state: editedItem.state,
+        zip: editedItem.zip,
+        phone: editedItem.phone,
         status: editedItem.status ? 'active' : 'inactive'
       }
     })
@@ -147,7 +140,7 @@ const save = async () => {
                 Country
               </th>
               <th class="text-subtitle-1 font-weight-bold">
-                Carrier
+                Name
               </th>
               <th class="text-subtitle-1 font-weight-bold">
                 Address
@@ -174,25 +167,23 @@ const save = async () => {
               </td>
               <td>
                 <h6 class="text-body-1 text-muted">
-                  <v-icon
-                    start
-                    size="x-large"
-                    :color="item.carrier === 'Air' ? 'success' : 'blue'"
-                  >
-                    {{
-                      item.carrier === "Air"
-                        ? "  mdi-airplane"
-                        : "   mdi-sail-boat"
-                    }}
-                  </v-icon>
-                  {{ item.carrier }}
+                  {{ item.name }}
                 </h6>
               </td>
               <td>
-                <h6 class="text-body-1 text-muted">
-                  {{ item.address }}
-                </h6>
+                <div class="">
+                  <h6 class="text-subtitle-1 font-weight-bold">
+                    {{ item?.address }}
+                  </h6>
+                  <div class="text-13 mt-1 text-muted">
+                    {{ item?.city }} {{ item?.state }} {{ item?.zip }}
+                  </div>
+                  <div class="text-13 mt-1 ">
+                    {{ item?.phone }}
+                  </div>
+                </div>
               </td>
+
               <td class="text-center">
                 <v-chip
                   :class="{
@@ -237,55 +228,29 @@ const save = async () => {
                   <v-label class="font-weight-bold mb-1">
                     Country <span class="text-red">*</span>
                   </v-label>
-                  <v-autocomplete
+                  <v-text-field
                     v-model="editedItem.country"
-                    v-model:search="search"
-                    :loading="loading"
-                    :rules="[(v) => !!v || 'Country is required']"
-                    :items="itemsCountry"
-                    density="comfortable"
-                    hide-no-data
-                    item-title="name.common"
-                    item-value="name.common"
-                    color="primary"
+                    :rules="[(v) => !!v || 'country is required']"
                     hide-details="auto"
-                    clearable
                     variant="outlined"
+                    density="compact"
+                    color="primary"
+                  />
+                </v-col>
+                <v-col cols="12">
+                  <v-label class="font-weight-bold mb-1">
+                    Name <span class="text-red">*</span>
+                  </v-label>
+                  <v-text-field
+                    v-model="editedItem.name"
+                    :rules="[(v) => !!v || 'Name is required']"
+                    hide-details="auto"
+                    variant="outlined"
+                    density="compact"
+                    color="primary"
                   />
                 </v-col>
 
-                <v-col cols="12">
-                  <v-label class="font-weight-bold mb-1">
-                    Carrier<span class="text-red">*</span>
-                  </v-label>
-                  <v-radio-group
-                    v-model="editedItem.carrier"
-                    inline
-                    hide-details="auto"
-                    :rules="[(v) => !!v || 'Carrier is required']"
-                  >
-                    <v-radio label="Air Freight" value="Air">
-                      <template #label>
-                        <div>
-                          <v-icon start size="x-large" color="success">
-                            mdi-airplane
-                          </v-icon>
-                          <span>Air Freight</span>
-                        </div>
-                      </template>
-                    </v-radio>
-                    <v-radio value="Ocean">
-                      <template #label>
-                        <div>
-                          <v-icon start size="x-large" color="blue">
-                            mdi-sail-boat
-                          </v-icon>
-                          <span>Ocean Freight</span>
-                        </div>
-                      </template>
-                    </v-radio>
-                  </v-radio-group>
-                </v-col>
                 <v-col cols="12">
                   <v-label class="font-weight-bold mb-1">
                     Address<span class="text-red">*</span>
@@ -295,6 +260,56 @@ const save = async () => {
                     :rules="[(v) => !!v || 'Address is required']"
                     hide-details
                     variant="outlined"
+                    auto-grow
+                    density="compact"
+                    color="primary"
+                  />
+                </v-col>
+                <v-col cols="6">
+                  <v-label class="font-weight-bold mb-1">
+                    City
+                  </v-label>
+                  <v-text-field
+                    v-model="editedItem.city"
+                    hide-details="auto"
+                    variant="outlined"
+                    density="compact"
+                    color="primary"
+                  />
+                </v-col>
+                <v-col cols="6">
+                  <v-label class="font-weight-bold mb-1">
+                    State
+                  </v-label>
+                  <v-text-field
+                    v-model="editedItem.state"
+                    hide-details="auto"
+                    variant="outlined"
+                    density="compact"
+                    color="primary"
+                  />
+                </v-col>
+                <v-col cols="6">
+                  <v-label class="font-weight-bold mb-1">
+                    Zip
+                  </v-label>
+                  <v-text-field
+                    v-model="editedItem.zip"
+                    hide-details="auto"
+                    variant="outlined"
+                    density="compact"
+                    color="primary"
+                  />
+                </v-col>
+                <v-col cols="6">
+                  <v-label class="font-weight-bold mb-1">
+                    Telephone
+                  </v-label>
+                  <v-text-field
+                    v-model="editedItem.phone"
+                    hide-details="auto"
+                    variant="outlined"
+                    density="compact"
                     color="primary"
                   />
                 </v-col>

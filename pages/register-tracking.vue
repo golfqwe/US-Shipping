@@ -40,14 +40,10 @@ const itemsWareHouse: wareHouse[] = reactive([])
 const itemsLocalCarrier: localCarrier[] = reactive([])
 const itemsTracking: tracking[] = reactive([])
 
-watch(() => editedItem.carrier, (carrier) => {
-  fetchListWareHouse(carrier as string)
-})
-
-const fetchListWareHouse = async (carrier: string) => {
+const fetchListWareHouse = async () => {
   const { data: listWarehouse } = await useCustomFetch('/api/warehouse', {
     method: 'GET',
-    params: { carrier }
+    query: { status: 'active' }
   })
   itemsWareHouse.splice(0)
   editedItem.wareHouseId = null
@@ -152,7 +148,8 @@ const deleteItemConfirm = async () => {
 
 // on mounted
 const { data: listItems } = await useCustomFetch('/api/localcarriers', {
-  method: 'GET'
+  method: 'GET',
+  query: { status: 'active' }
 })
 
 watch(listItems, (val) => {
@@ -160,7 +157,7 @@ watch(listItems, (val) => {
   Object.assign(itemsLocalCarrier, val)
 })
 
-fetchListWareHouse(editedItem.carrier || 'Air')
+fetchListWareHouse()
 
 const { data: itemsTrack, refresh } = await useCustomFetch('/api/trackings', {
   method: 'GET'

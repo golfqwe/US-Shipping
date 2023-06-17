@@ -2,8 +2,12 @@
 type wareHouse = {
   id?: string;
   country?: string;
-  carrier?: string;
+  name?: string;
   address?: string;
+  city?: string;
+  state?: string;
+  zip?: string;
+  phone?: string;
   status?: string|boolean;
 };
 

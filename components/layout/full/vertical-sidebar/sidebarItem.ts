@@ -35,7 +35,7 @@ const sidebarItem: menu[] = [
   },
   { header: 'Trackings' },
   {
-    title: 'แจ้งชำระบิล',
+    title: 'บิลค่าขนส่ง',
     icon: FileInvoiceIcon,
     to: '/admin/createBill'
   },
