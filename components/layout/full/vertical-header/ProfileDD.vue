@@ -1,8 +1,12 @@
 <script setup lang="ts">
+import { storeToRefs } from 'pinia'
+import { useUserStore } from '@/stores/user'
+
 const router = useRouter()
 const config = useRuntimeConfig()
 
-const userInfo = useUserStore()
+const userStore = useUserStore()
+const { clearUserInfo } = userStore
 
 const signOut = async () => {
   const { data } = await useFetch('/api/auth/signOut', {
@@ -13,10 +17,7 @@ const signOut = async () => {
   if (!data.value) {
     console.log(' :>> error ')
   } else {
-    // No error, continue with the sign in, e.g., by following the returned redirect:
-    localStorage.removeItem('userInfo')
-
-    userInfo.value = {}
+    clearUserInfo()
     // return navigateTo('/login')
     router.push({ path: '/' })
   }

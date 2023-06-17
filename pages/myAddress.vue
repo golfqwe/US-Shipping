@@ -2,14 +2,12 @@
 import { storeToRefs } from 'pinia'
 import type { MyAddress } from '@/types/myAddress/index'
 import { useUserStore } from '@/stores/user'
+import { useCustomFetch } from '@/composables/useCustomFetch'
 
 definePageMeta({
   layout: 'guest',
   middleware: 'checkauth'
 })
-// const { data } = useSession()
-const config = useRuntimeConfig()
-const router = useRouter()
 
 const userStore = useUserStore()
 const { userInfo } = storeToRefs(userStore)
@@ -42,24 +40,14 @@ const editedItem: MyAddress = reactive({
   status: true
 })
 
-const { data: listAddress, refresh } = await useFetch('/api/myaddress', {
-  baseURL: config.public.apiBase,
+const { data: listAddress, refresh } = await useCustomFetch('/api/myaddress', {
   method: 'GET',
-  query: { createBy: userInfo?.value?.id },
-  headers: {
-    authorization: 'Bearer ' + userInfo?.value.token
-  },
-  onResponseError ({ response }) {
-    if (response.status === 401) {
-      router.push({ path: '/login' })
-    }
-  }
+  query: { createBy: userInfo?.value?.id }
 })
 
-Object.assign(items, listAddress.value)
-
-watch(listAddress, () => {
-  Object.assign(items, listAddress.value)
+watch(listAddress, (val) => {
+  items.length = 0
+  Object.assign(items, val)
 })
 watch(dialog, (val) => {
   val || close()
@@ -84,13 +72,8 @@ const save = async () => {
     return
   }
   if (editedIndex.value > -1) {
-    const { error } = await useFetch('/api/myAddress/' + editedIndex.value, {
-      baseURL: config.public.apiBase,
+    const { error } = await useCustomFetch('/api/myAddress/' + editedIndex.value, {
       method: 'put',
-
-      headers: {
-        authorization: 'Bearer ' + userInfo?.value?.token
-      },
       body: {
         ...editedItem,
         status: editedItem.status ? 'active' : 'inactive'
@@ -106,12 +89,8 @@ const save = async () => {
     }
     snackbar.status = true
   } else {
-    const { error } = await useFetch('/api/myAddress/', {
-      baseURL: config.public.apiBase,
+    const { error } = await useCustomFetch('/api/myAddress/', {
       method: 'post',
-      headers: {
-        authorization: 'Bearer ' + userInfo?.value?.token
-      },
       body: {
         contact: editedItem.contact,
         email: editedItem.email,

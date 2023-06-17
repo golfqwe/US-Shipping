@@ -1,17 +1,21 @@
 <script setup lang="ts">
 import type { Archive } from '@/types/archive/index'
+import { useCustomFetch } from '@/composables/useCustomFetch'
+
 definePageMeta({
   layout: 'guest'
 })
-const config = useRuntimeConfig()
 const items: Archive[] = reactive([])
 
-const { data: listAddress } = await useFetch('/api/archives/', {
-  baseURL: config.public.apiBase,
+const { data: listAddress } = await useCustomFetch('/api/archives/', {
   method: 'GET',
   params: { type: 'auction' }
 })
-Object.assign(items, listAddress.value)
+
+watch(listAddress, (val) => {
+  items.length = 0
+  Object.assign(items, val)
+})
 </script>
 
 <template>

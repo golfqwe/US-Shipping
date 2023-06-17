@@ -1,17 +1,10 @@
 <script setup lang="ts">
-import { storeToRefs } from 'pinia'
+import { useCustomFetch } from '@/composables/useCustomFetch'
 import type { localCarrier } from '@/types/localCarrier/index'
-import { useUserStore } from '@/stores/user'
 
 definePageMeta({
   middleware: 'checkauth'
 })
-
-const config = useRuntimeConfig()
-const router = useRouter()
-
-const userStore = useUserStore()
-const { userInfo } = storeToRefs(userStore)
 
 const dialog = ref(false)
 const snackbar = reactive({
@@ -32,17 +25,8 @@ const editedItem = reactive({
   status: true
 })
 
-const { data: listItems, refresh } = await useLazyFetch('/api/localcarriers', {
-  method: 'GET',
-  baseURL: config.public.apiBase,
-  headers: {
-    authorization: 'Bearer ' + userInfo?.value?.token
-  },
-  onResponseError ({ response }) {
-    if (response.status === 401) {
-      router.push({ path: '/login' })
-    }
-  }
+const { data: listItems, refresh } = await useCustomFetch('/api/localcarriers', {
+  method: 'GET'
 })
 
 watch(listItems, (val) => {
@@ -73,14 +57,10 @@ const save = async () => {
     return
   }
   if (editedIndex.value > -1) {
-    const { error } = await useFetch(
+    const { error } = await useCustomFetch(
       '/api/localcarriers/' + editedIndex.value,
       {
-        baseURL: config.public.apiBase,
         method: 'put',
-        headers: {
-          authorization: 'Bearer ' + userInfo?.value?.token
-        },
         body: {
           ...editedItem,
           status: editedItem.status ? 'active' : 'inactive'
@@ -96,12 +76,8 @@ const save = async () => {
     }
     snackbar.status = true
   } else {
-    const { error } = await useFetch('/api/localcarriers/', {
-      baseURL: config.public.apiBase,
+    const { error } = await useCustomFetch('/api/localcarriers/', {
       method: 'post',
-      headers: {
-        authorization: 'Bearer ' + userInfo?.value?.token
-      },
       body: {
         name: editedItem.name,
         status: editedItem.status ? 'active' : 'inactive'

@@ -1,17 +1,12 @@
 <script setup lang="ts">
-import { storeToRefs } from 'pinia'
+import { useCustomFetch } from '@/composables/useCustomFetch'
 import type { tracking } from '@/types/tracking/index'
-import { useUserStore } from '@/stores/user'
 
 definePageMeta({
   middleware: 'checkauth'
 })
 
 const config = useRuntimeConfig()
-const router = useRouter()
-
-const userStore = useUserStore()
-const { userInfo } = storeToRefs(userStore)
 
 const dialog = ref(false)
 const snackbar = reactive({
@@ -24,22 +19,13 @@ const items: tracking[] = reactive([])
 const editedItem = reactive({})
 const peyment = reactive({})
 
-const { data: listItems, refresh } = await useLazyFetch('/api/trackings', {
-  baseURL: config.public.apiBase,
+const { data: listItems, refresh } = await useCustomFetch('/api/trackings', {
   method: 'GET',
-  query: { status: 'waitpayment,paymented' },
-  headers: {
-    authorization: 'Bearer ' + userInfo?.value?.token
-  },
-  onResponseError ({ response }) {
-    if (response.status === 401) {
-      router.push({ path: '/login' })
-    }
-  }
+  query: { status: 'waitpayment,paymented' }
+
 })
 
 watch(listItems, (val) => {
-  console.log('🚀 ~ file: payment.vue:42 ~ watch ~ val:', val)
   items.length = 0
   Object.assign(items, val)
 })
@@ -49,12 +35,8 @@ watch(dialog, (val) => {
 })
 
 const editItem = async (item: any) => {
-  const { data } = await useFetch(`/api/payments/${item.id}`, {
-    baseURL: config.public.apiBase,
-    method: 'get',
-    headers: {
-      authorization: 'Bearer ' + userInfo?.value?.token
-    }
+  const { data } = await useCustomFetch(`/api/payments/${item.id}`, {
+    method: 'get'
   })
 
   Object.assign(peyment, data.value)
@@ -68,15 +50,12 @@ const close = async () => {
   })
 }
 const save = async () => {
-  const { data } = await useFetch(`/api/trackings/${editedItem.id}`, {
-    baseURL: config.public.apiBase,
+  const { data } = await useCustomFetch(`/api/trackings/${editedItem.id}`, {
     method: 'put',
     body: {
       status: 'waiting'
-    },
-    headers: {
-      authorization: 'Bearer ' + userInfo?.value?.token
     }
+
   })
   if (data.value) {
     snackbar.text = 'Save data successfully'

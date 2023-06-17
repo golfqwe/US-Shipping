@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { storeToRefs } from 'pinia'
 import ClassicEditor from '@blowstack/ckeditor5-full-free-build'
-import { useUserStore } from '@/stores/user'
+import { useCustomFetch } from '@/composables/useCustomFetch'
 
 import MyCustomUploadAdapterPlugin from '~/utils/MyCustomUploadAdapterPlugin'
 
@@ -10,12 +9,6 @@ import type { Archive } from '@/types/archive/index'
 definePageMeta({
   middleware: 'checkauth'
 })
-
-const config = useRuntimeConfig()
-const router = useRouter()
-
-const userStore = useUserStore()
-const { userInfo } = storeToRefs(userStore)
 
 const editorConfig = ref({
   extraPlugins: [MyCustomUploadAdapterPlugin]
@@ -40,18 +33,9 @@ const editedItem = reactive({
   status: true
 })
 
-const { data: listItems, refresh } = await useLazyFetch('/api/archives', {
+const { data: listItems, refresh } = await useCustomFetch('/api/archives', {
   method: 'GET',
-  params: { type: 'auction' },
-  baseURL: config.public.apiBase,
-  headers: {
-    authorization: 'Bearer ' + userInfo?.value?.token
-  },
-  onResponseError ({ response }) {
-    if (response.status === 401) {
-      router.push({ path: '/login' })
-    }
-  }
+  params: { type: 'auction' }
 })
 
 watch(listItems, (val) => {
@@ -82,14 +66,10 @@ const save = async () => {
     return
   }
   if (editedIndex.value > -1) {
-    const { error } = await useFetch(
+    const { error } = await useCustomFetch(
       '/api/archives/' + editedIndex.value,
       {
         method: 'put',
-        baseURL: config.public.apiBase,
-        headers: {
-          authorization: 'Bearer ' + userInfo?.value?.token
-        },
         body: {
           ...editedItem,
           status: editedItem.status ? 'active' : 'inactive'
@@ -105,12 +85,8 @@ const save = async () => {
     }
     snackbar.status = true
   } else {
-    const { error } = await useFetch('/api/archives/', {
+    const { error } = await useCustomFetch('/api/archives/', {
       method: 'post',
-      baseURL: config.public.apiBase,
-      headers: {
-        authorization: 'Bearer ' + userInfo?.value?.token
-      },
       body: {
         content: editedItem.content,
         type: 'auction',

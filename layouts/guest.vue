@@ -1,8 +1,12 @@
 <script setup lang="ts">
+import { useDisplay } from 'vuetify'
 import { storeToRefs } from 'pinia'
 import { useUserStore } from '@/stores/user'
+import { useCustomFetch } from '@/composables/useCustomFetch'
 
 const title = ref('Us-shipping ')
+const { xs } = useDisplay()
+
 useHead({
   meta: [{ content: title }],
   titleTemplate: (titleChunk) => {
@@ -92,8 +96,7 @@ function useAsset (path: string): string {
 }
 
 const signOut = async () => {
-  const { data } = await useFetch('/api/auth/signOut', {
-    baseURL: config.public.apiBase,
+  const { data } = await useCustomFetch('/api/auth/signOut', {
     method: 'post'
   })
 
@@ -116,19 +119,21 @@ const signOut = async () => {
 <template>
   <ClientOnly>
     <v-app>
-      <v-app-bar height="90" :elevation="0" color="white">
+      <v-app-bar :height="xs ? 150 : 90" :elevation="0" color="white">
         <!-- <span>Vuetify &nbsp;</span>
         <span class="font-weight-light">MATERIAL DESIGN</span> -->
-        <v-row align="center" no-gutters>
-          <v-col class="pa-2  ">
-            <div class="d-flex flex-row ">
+        <v-row align="center" no-gutters justify="space-between">
+          <v-col xs="12" sm="6" md="6" class="pa-2  ">
+            <div class="d-flex flex-row justify-center">
               <div class="d-inline-flex align-center  mx-4">
                 <v-img
                   src="/images/main/logo.png"
-                  style="min-height: 45px; max-height: 65px; "
+                  style="min-width: 120px; max-width: 150px; "
+                  width="230"
+                  max-width="250"
                 />
               </div>
-              <div class="hidden-sm-and-down">
+              <div class="d-none d-sm-flex">
                 <div class="d-flex flex-column ">
                   <p class="text-left">
                     บริการขนส่งสินค้าจากประเทศสหรัฐอเมริกากลับ
@@ -144,7 +149,7 @@ const signOut = async () => {
             </div>
           </v-col>
 
-          <v-col cols="auto" class="ma-2">
+          <v-col xs="12" sm="6" md="6" class="pa-2">
             <div class="d-flex flex-column text-right">
               <div v-if="userInfo?.name">
                 <v-menu
@@ -220,19 +225,9 @@ const signOut = async () => {
 
       <v-main class="mx-0 bg-grey-lighten-4">
         <div>
-          <v-carousel hide-delimiter-background height="350">
+          <v-carousel hide-delimiter-background>
             <v-carousel-item
-              src="https://ali-static-asset-internal.flashexpress.com/commonFile/1679657859-ccdb1c4d55a2425baeb63ad5c01bc1a2.jpg"
-              cover
-            />
-            <v-carousel-item
-              src="http://www.shopandshipus.com/images/banner/home_banner_thai_3.jpg"
-              cover
-            />
-
-            <v-carousel-item
-              src="http://www.shopandshipus.com/images/banner/home_banner_thai_2n.jpg"
-              cover
+              src="/images/main/slide1.png"
             />
           </v-carousel>
         </div>

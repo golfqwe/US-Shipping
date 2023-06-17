@@ -1,17 +1,10 @@
 <script setup lang="ts">
-import { storeToRefs } from 'pinia'
+import { useCustomFetch } from '@/composables/useCustomFetch'
 import type { wareHouse } from '@/types/wareHouse/index'
-import { useUserStore } from '@/stores/user'
 
 definePageMeta({
   middleware: 'checkauth'
 })
-
-const config = useRuntimeConfig()
-const router = useRouter()
-
-const userStore = useUserStore()
-const { userInfo } = storeToRefs(userStore)
 
 const dialog = ref(false)
 const search = ref(null)
@@ -39,17 +32,8 @@ const editedItem: wareHouse = reactive({
   status: true
 })
 
-const { data: listWarehouse, refresh } = await useLazyFetch('/api/warehouse/', {
-  method: 'GET',
-  baseURL: config.public.apiBase,
-  headers: {
-    authorization: 'Bearer ' + userInfo?.value?.token
-  },
-  onResponseError ({ response }) {
-    if (response.status === 401) {
-      router.push({ path: '/login' })
-    }
-  }
+const { data: listWarehouse, refresh } = await useCustomFetch('/api/warehouse/', {
+  method: 'GET'
 })
 
 watch(listWarehouse, (val) => {
@@ -97,12 +81,8 @@ const save = async () => {
     return
   }
   if (editedIndex.value > -1) {
-    const { error } = await useFetch('/api/warehouse/' + editedIndex.value, {
+    const { error } = await useCustomFetch('/api/warehouse/' + editedIndex.value, {
       method: 'put',
-      baseURL: config.public.apiBase,
-      headers: {
-        authorization: 'Bearer ' + userInfo?.value?.token
-      },
       body: {
         ...editedItem,
         status: editedItem.status ? 'active' : 'inactive'
@@ -118,12 +98,8 @@ const save = async () => {
     }
     snackbar.status = true
   } else {
-    const { error } = await useFetch('/api/warehouse/', {
+    const { error } = await useCustomFetch('/api/warehouse/', {
       method: 'post',
-      baseURL: config.public.apiBase,
-      headers: {
-        authorization: 'Bearer ' + userInfo?.value?.token
-      },
       body: {
         country: editedItem.country,
         carrier: editedItem.carrier,

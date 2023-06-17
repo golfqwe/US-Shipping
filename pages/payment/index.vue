@@ -3,6 +3,7 @@ import { storeToRefs } from 'pinia'
 import { BookBank } from '@/types/bookbank/index'
 
 import { useUserStore } from '@/stores/user'
+import { useCustomFetch } from '@/composables/useCustomFetch'
 
 definePageMeta({
   layout: 'guest',
@@ -10,7 +11,6 @@ definePageMeta({
 })
 
 const config = useRuntimeConfig()
-const router = useRouter()
 
 const userStore = useUserStore()
 const { userInfo } = storeToRefs(userStore)
@@ -36,12 +36,8 @@ const paymentData = reactive({
   slipImage: []
 })
 
-const { data: bookbankData } = await useFetch('/api/bookbank/', {
-  method: 'GET',
-  baseURL: config.public.apiBase,
-  headers: {
-    authorization: 'Bearer ' + userInfo?.value?.token
-  }
+const { data: bookbankData } = await useCustomFetch('/api/bookbank/', {
+  method: 'GET'
 })
 Object.assign(bookbankList, bookbankData.value)
 
@@ -67,17 +63,8 @@ const editItem = async (item: any) => {
   dialogBill.value = true
 }
 
-const { data: listBills, refresh } = await useLazyFetch('/api/invoices/user/', {
-  baseURL: config.public.apiBase,
-  method: 'GET',
-  headers: {
-    authorization: 'Bearer ' + userInfo?.value?.token
-  },
-  onResponseError ({ response }) {
-    if (response.status === 401) {
-      router.push({ path: '/login' })
-    }
-  }
+const { data: listBills, refresh } = await useCustomFetch('/api/invoices/user/', {
+  method: 'GET'
 })
 
 watch(listBills, (val) => {
@@ -99,12 +86,8 @@ const savePayment = async () => {
   })
 
   try {
-    const { data: resFile } = await useFetch('/api/upload/slip/', {
+    const { data: resFile } = await useCustomFetch('/api/upload/slip/', {
       method: 'post',
-      baseURL: config.public.apiBase,
-      headers: {
-        authorization: 'Bearer ' + userInfo?.value?.token
-      },
       body: formData
     })
 

@@ -1,6 +1,7 @@
 <script setup>
 import { storeToRefs } from 'pinia'
 import { useUserStore } from '@/stores/user'
+import { useCustomFetch } from '@/composables/useCustomFetch'
 
 const config = useRuntimeConfig()
 
@@ -40,12 +41,8 @@ watch(selectUser, async (val) => {
   if (val) {
     // on mounted
 
-    const { data: listAddress } = await useFetch(`/api/myaddress/active/${val.id}`, {
-      baseURL: config.public.apiBase,
-      method: 'GET',
-      headers: {
-        authorization: 'Bearer ' + userInfo?.value?.token
-      }
+    const { data: listAddress } = await useCustomFetch(`/api/myaddress/active/${val.id}`, {
+      method: 'GET'
     })
     // userAddress.splice(0)
     userAddress.value = {}
@@ -54,12 +51,8 @@ watch(selectUser, async (val) => {
 })
 watch(dialogCreateBill, async (val) => {
   if (val) {
-    const { data: tempmaxInvoice } = await useFetch('/api/invoices/maxinvoice/', {
-      baseURL: config.public.apiBase,
-      method: 'GET',
-      headers: {
-        authorization: 'Bearer ' + userInfo?.value?.token
-      }
+    const { data: tempmaxInvoice } = await useCustomFetch('/api/invoices/maxinvoice/', {
+      method: 'GET'
     })
     // userAddress.splice(0)
     maxInvoice.value = tempmaxInvoice.value + 1
@@ -91,12 +84,8 @@ const save = async () => {
     return
   }
 
-  const { error } = await useFetch('/api/invoices/', {
-    baseURL: config.public.apiBase,
+  const { error } = await useCustomFetch('/api/invoices/', {
     method: 'post',
-    headers: {
-      authorization: 'Bearer ' + userInfo?.value?.token
-    },
     body: {
       saleId: userInfo?.value?.id,
       userId: selectUser?.value?.id,
@@ -120,12 +109,8 @@ const save = async () => {
 
 const checkSlip = async (item) => {
   selectInvId.value = item?.id
-  const { data } = await useFetch(`/api/payments/${item.id}`, {
-    baseURL: config.public.apiBase,
-    method: 'get',
-    headers: {
-      authorization: 'Bearer ' + userInfo?.value?.token
-    }
+  const { data } = await useCustomFetch(`/api/payments/${item.id}`, {
+    method: 'get'
   })
 
   Object.assign(peyment, data.value)
@@ -133,16 +118,13 @@ const checkSlip = async (item) => {
 }
 
 const saveSlip = async () => {
-  const { data } = await useFetch(`/api/payments/${peyment.id}`, {
-    baseURL: config.public.apiBase,
+  const { data } = await useCustomFetch(`/api/payments/${peyment.id}`, {
     method: 'put',
     body: {
       invoiceId: selectInvId.value,
       status: 'success'
-    },
-    headers: {
-      authorization: 'Bearer ' + userInfo?.value?.token
     }
+
   })
   if (data.value) {
     snackbar.text = 'Save data successfully'
@@ -155,27 +137,16 @@ const saveSlip = async () => {
   refresh()
 }
 // on mounted
-const { data: listUsers } = await useFetch('/api/users', {
-  baseURL: config.public.apiBase,
+const { data: listUsers } = await useCustomFetch('/api/users', {
   method: 'GET'
 })
-Object.assign(itemsUsers, listUsers.value)
+Object.assign(itemsUsers, listUsers?.value?.rows)
 
-const { data: listBills, refresh } = await useLazyFetch('/api/invoices', {
-  baseURL: config.public.apiBase,
-  method: 'GET',
-  headers: {
-    authorization: 'Bearer ' + userInfo?.value?.token
-  },
-  onResponseError ({ response }) {
-    if (response.status === 401) {
-      router.push({ path: '/login' })
-    }
-  }
+const { data: listBills, refresh } = await useCustomFetch('/api/invoices', {
+  method: 'GET'
 })
 
 watch(listBills, (val) => {
-  console.log('🚀 ~ file: register-tracking.vue:143 ~ watch ~ val:', val)
   itemsBill.length = 0
   Object.assign(itemsBill, val)
 })

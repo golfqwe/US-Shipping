@@ -1,32 +1,16 @@
 <script lang="ts" setup>
-import { storeToRefs } from 'pinia'
-import { useUserStore } from '@/stores/user'
+import { useCustomFetch } from '@/composables/useCustomFetch'
 
 definePageMeta({
   layout: 'guest',
   middleware: 'checkauth'
 })
-const config = useRuntimeConfig()
-const router = useRouter()
-
-const userStore = useUserStore()
-const { userInfo } = storeToRefs(userStore)
 
 const items = reactive({})
 const currentItem = ref(Object.keys(items)[0])
 
-const { data: listWarehouse } = await useFetch('/api/warehouse/', {
-  baseURL: config.public.apiBase,
-  method: 'GET',
-  headers: {
-    authorization: 'Bearer ' + userInfo?.value?.token
-  },
-  query: { status: 'active' },
-  onResponseError ({ response }) {
-    if (response.status === 401) {
-      router.push({ path: '/login' })
-    }
-  }
+const { data: listWarehouse } = await useCustomFetch('/api/warehouse/', {
+  method: 'GET'
 })
 
 const groupBy = (objectArray: [], groupKey: string) => {

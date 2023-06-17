@@ -1,16 +1,10 @@
 <script setup lang="ts">
-import { storeToRefs } from 'pinia'
-import { useUserStore } from '@/stores/user'
 import type { BookBank } from '@/types/bookbank/index'
+import { useCustomFetch } from '@/composables/useCustomFetch'
+
 definePageMeta({
   middleware: 'checkauth'
 })
-
-const config = useRuntimeConfig()
-const router = useRouter()
-
-const userStore = useUserStore()
-const { userInfo } = storeToRefs(userStore)
 
 const dialog = ref(false)
 const snackbar = reactive({
@@ -39,17 +33,8 @@ const editedItem: BookBank = reactive({
   status: true
 })
 
-const { data: listItems, refresh } = await useLazyFetch('/api/bookBank/', {
-  method: 'GET',
-  baseURL: config.public.apiBase,
-  headers: {
-    authorization: 'Bearer ' + userInfo?.value?.token
-  },
-  onResponseError ({ response }) {
-    if (response.status === 401) {
-      router.push({ path: '/login' })
-    }
-  }
+const { data: listItems, refresh } = await useCustomFetch('/api/bookBank/', {
+  method: 'GET'
 })
 
 watch(listItems, (val) => {
@@ -80,12 +65,8 @@ const save = async () => {
     return
   }
   if (editedIndex.value > -1) {
-    const { error } = await useFetch('/api/bookBank/' + editedIndex.value, {
+    const { error } = await useCustomFetch('/api/bookBank/' + editedIndex.value, {
       method: 'put',
-      baseURL: config.public.apiBase,
-      headers: {
-        authorization: 'Bearer ' + userInfo?.value?.token
-      },
       body: {
         ...editedItem,
         status: editedItem.status ? 'active' : 'inactive'
@@ -100,12 +81,8 @@ const save = async () => {
     }
     snackbar.status = true
   } else {
-    const { error } = await useFetch('/api/bookBank/', {
+    const { error } = await useCustomFetch('/api/bookBank/', {
       method: 'post',
-      baseURL: config.public.apiBase,
-      headers: {
-        authorization: 'Bearer ' + userInfo?.value?.token
-      },
       body: {
         accountName: editedItem.accountName,
         bankName: editedItem.bankName,

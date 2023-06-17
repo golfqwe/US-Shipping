@@ -1,33 +1,21 @@
 <script lang="ts" setup>
-import { storeToRefs } from 'pinia'
 import type { tracking } from '@/types/tracking/index'
-import { useUserStore } from '@/stores/user'
+import { useCustomFetch } from '@/composables/useCustomFetch'
 
 definePageMeta({
   layout: 'guest',
   middleware: 'checkauth'
 })
 const config = useRuntimeConfig()
-const router = useRouter()
-const userStore = useUserStore()
-const { userInfo } = storeToRefs(userStore)
 
 const items: tracking[] = reactive([])
 const dialogImage = ref(false)
 let editedTracking = reactive({})
 
-const { data: listTracking } = await useLazyFetch('/api/trackings', {
-  baseURL: config.public.apiBase,
+const { data: listTracking } = await useCustomFetch('/api/trackings', {
   method: 'GET',
-  query: { status: 'pending,waiting,waitpayment' },
-  headers: {
-    authorization: 'Bearer ' + userInfo?.value?.token
-  },
-  onResponseError ({ response }) {
-    if (response.status === 401) {
-      router.push({ path: '/login' })
-    }
-  }
+  query: { status: 'pending,waiting,waitpayment' }
+
 })
 
 watch(listTracking, (val) => {

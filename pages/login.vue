@@ -1,9 +1,8 @@
 <script lang="ts" setup>
 import { useUserStore } from '@/stores/user'
+import { useCustomFetch } from '@/composables/useCustomFetch'
+
 const userStore = useUserStore()
-
-const config = useRuntimeConfig()
-
 definePageMeta({
   layout: 'guest'
 })
@@ -32,8 +31,7 @@ const mySignInHandler = async () => {
   rememberMe()
   // const { error } = await signIn('credentials', { ...formData, redirect: false })
 
-  const { data } = await useFetch('/api/auth/signIn', {
-    baseURL: config.public.apiBase,
+  const { data } = await useCustomFetch('/api/auth/signIn', {
     method: 'post',
     body: {
       ...formData

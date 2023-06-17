@@ -1,16 +1,12 @@
 <script setup lang="ts">
-import { storeToRefs } from 'pinia'
+import { useCustomFetch } from '@/composables/useCustomFetch'
 import type { tracking } from '@/types/tracking/index'
-import { useUserStore } from '@/stores/user'
+
 definePageMeta({
   middleware: 'checkauth'
 })
 
 const config = useRuntimeConfig()
-const router = useRouter()
-
-const userStore = useUserStore()
-const { userInfo } = storeToRefs(userStore)
 
 const dialog = ref(false)
 const dialogImage = ref(false)
@@ -25,18 +21,10 @@ const files = ref([])
 
 let editedTracking = reactive({})
 
-const { data: listItems, refresh } = await useLazyFetch('/api/trackings/', {
-  baseURL: config.public.apiBase,
+const { data: listItems, refresh } = await useCustomFetch('/api/trackings/', {
   method: 'GET',
-  query: { status: 'pending,waitpayment' },
-  headers: {
-    authorization: 'Bearer ' + userInfo?.value?.token
-  },
-  onResponseError ({ response }) {
-    if (response.status === 401) {
-      router.push({ path: '/login' })
-    }
-  }
+  query: { status: 'pending,waitpayment' }
+
 })
 
 watch(listItems, (val) => {
@@ -70,13 +58,11 @@ const save = async () => {
     formData.append('photo' + inx, it, it.name)
   })
 
-  const { error } = await useFetch('/api/upload/trackings', {
-    baseURL: config.public.apiBase,
+  const { error } = await useCustomFetch('/api/upload/trackings', {
+
     method: 'post',
-    body: formData,
-    headers: {
-      authorization: 'Bearer ' + userInfo?.value?.token
-    }
+    body: formData
+
   })
 
   if (error.value) {

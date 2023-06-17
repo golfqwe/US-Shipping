@@ -5,14 +5,12 @@ import type { localCarrier } from '@/types/localCarrier/index'
 import type { tracking } from '@/types/tracking/index'
 
 import { useUserStore } from '@/stores/user'
+import { useCustomFetch } from '@/composables/useCustomFetch'
 
 definePageMeta({
   layout: 'guest',
   middleware: 'checkauth'
 })
-// const { data } = useSession()
-const config = useRuntimeConfig()
-const router = useRouter()
 
 const userStore = useUserStore()
 const { userInfo } = storeToRefs(userStore)
@@ -47,8 +45,7 @@ watch(() => editedItem.carrier, (carrier) => {
 })
 
 const fetchListWareHouse = async (carrier: string) => {
-  const { data: listWarehouse } = await useFetch('/api/warehouse', {
-    baseURL: config.public.apiBase,
+  const { data: listWarehouse } = await useCustomFetch('/api/warehouse', {
     method: 'GET',
     params: { carrier }
   })
@@ -63,19 +60,10 @@ const save = async () => {
     return
   }
 
-  const { error } = await useFetch('/api/trackings', {
-    baseURL: config.public.apiBase,
+  const { error } = await useCustomFetch('/api/trackings', {
     method: 'post',
     body: {
       ...editedItem
-    },
-    headers: {
-      authorization: 'Bearer ' + userInfo?.value.token
-    },
-    onResponseError ({ response }) {
-      if (response.status === 401) {
-        router.push({ path: '/login' })
-      }
     }
   })
 
@@ -97,19 +85,10 @@ const update = async () => {
     return
   }
 
-  const { error } = await useFetch(`/api/trackings/${editedIndex.value}`, {
-    baseURL: config.public.apiBase,
+  const { error } = await useCustomFetch(`/api/trackings/${editedIndex.value}`, {
     method: 'put',
     body: {
       ...editedItem
-    },
-    headers: {
-      authorization: 'Bearer ' + userInfo?.value.token
-    },
-    onResponseError ({ response }) {
-      if (response.status === 401) {
-        router.push({ path: '/login' })
-      }
     }
   })
 
@@ -155,17 +134,8 @@ const deleteItem = (item: tracking) => {
 }
 
 const deleteItemConfirm = async () => {
-  const { error } = await useFetch(`/api/trackings/${editedIndex.value}`, {
-    baseURL: config.public.apiBase,
-    method: 'delete',
-    headers: {
-      authorization: 'Bearer ' + userInfo?.value.token
-    },
-    onResponseError ({ response }) {
-      if (response.status === 401) {
-        router.push({ path: '/login' })
-      }
-    }
+  const { error } = await useCustomFetch(`/api/trackings/${editedIndex.value}`, {
+    method: 'delete'
   })
 
   if (error.value) {
@@ -181,28 +151,22 @@ const deleteItemConfirm = async () => {
 }
 
 // on mounted
-const { data: listItems } = await useFetch('/api/localcarriers', {
-  baseURL: config.public.apiBase,
+const { data: listItems } = await useCustomFetch('/api/localcarriers', {
   method: 'GET'
 })
-Object.assign(itemsLocalCarrier, listItems.value)
+
+watch(listItems, (val) => {
+  itemsLocalCarrier.length = 0
+  Object.assign(itemsLocalCarrier, val)
+})
+
 fetchListWareHouse(editedItem.carrier || 'Air')
 
-const { data: itemsTrack, refresh } = await useLazyFetch('/api/trackings', {
-  baseURL: config.public.apiBase,
-  method: 'GET',
-  headers: {
-    authorization: 'Bearer ' + userInfo?.value?.token
-  },
-  onResponseError ({ response }) {
-    if (response.status === 401) {
-      router.push({ path: '/login' })
-    }
-  }
+const { data: itemsTrack, refresh } = await useCustomFetch('/api/trackings', {
+  method: 'GET'
 })
 
 watch(itemsTrack, (val) => {
-  console.log('🚀 ~ file: register-tracking.vue:143 ~ watch ~ val:', val)
   itemsTracking.length = 0
   Object.assign(itemsTracking, val)
 })
