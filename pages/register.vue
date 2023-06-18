@@ -40,7 +40,7 @@ const save = async () => {
   })
 
   if (error.value) {
-    snackbar.text = 'Save data failed'
+    snackbar.text = error.value.response?._data.message || 'Save data failed'
     snackbar.color = 'error'
   } else {
     snackbar.text = 'Save data successfully'
