@@ -9,7 +9,7 @@ definePageMeta({
 const config = useRuntimeConfig()
 
 const dialog = ref(false)
-const dialogImage = ref(false)
+const dialogDelete = ref(false)
 const snackbar = reactive({
   status: false,
   text: '',
@@ -25,8 +25,11 @@ const search = ref(null)
 
 const items: tracking[] = reactive([])
 const files = ref([])
+const tempfiles = ref([])
+const typeFile = ref('local')
 
 let editedTracking = reactive({})
+let deleteTracking = reactive({})
 
 const fetchData = async () => {
   const { data: listItems } = await useCustomFetch('/api/trackings/', {
@@ -42,8 +45,15 @@ const fetchData = async () => {
   })
 }
 
-watch(dialog, (val) => {
-  val || close()
+watch(files, (val) => {
+  val.forEach(async (it) => {
+    const img = await readFlie(it)
+    tempfiles.value.push(img)
+  })
+})
+watch(pageSize, () => {
+  page.value = 1
+  fetchData()
 })
 
 watch(page, () => {
@@ -55,12 +65,50 @@ watch(pageSize, () => {
 })
 
 const editItem = (item: any) => {
+  files.value = []
+  tempfiles.value = []
   editedTracking = item
   dialog.value = true
 }
-const selectItem = (item: any) => {
-  editedTracking = item
-  dialogImage.value = true
+const deleteItem = (item: any, type: string) => {
+  deleteTracking = item
+  typeFile.value = type
+  dialogDelete.value = true
+}
+const deleteItemConfirm = async () => {
+  if (typeFile.value === 'local') {
+    const ind = tempfiles.value.indexOf(deleteTracking)
+    tempfiles.value.splice(ind, 1)
+    files.value.splice(ind, 1)
+  } else {
+    const dataUpdate = editedTracking?.images ? editedTracking?.images.split(',') : []
+    const ind = dataUpdate.indexOf(deleteTracking)
+    dataUpdate.splice(ind, 1)
+    console.log('🚀 ~ file: takePhoto.vue:87 ~ deleteItemConfirm ~ dataUpdate:', dataUpdate)
+    const { error } = await useCustomFetch('/api/upload/', {
+
+      method: 'delete',
+      body: {
+        path: deleteTracking,
+        items: dataUpdate,
+        id: editedTracking.id
+      }
+    })
+
+    if (error.value) {
+      snackbar.text = 'Save data failed'
+      snackbar.color = 'error'
+    } else {
+      snackbar.text = 'Save data successfully'
+      snackbar.color = 'success'
+    }
+    snackbar.status = true
+
+    close()
+    fetchData()
+  }
+
+  dialogDelete.value = false
 }
 const close = async () => {
   dialog.value = false
@@ -94,6 +142,22 @@ const save = async () => {
 
   close()
   fetchData()
+}
+
+const readFlie = (file: any) => {
+  return new Promise((resolve) => {
+    const reader = new FileReader()
+
+    reader.addEventListener(
+      'load',
+      function () {
+        resolve(this.result)
+      },
+      false
+    )
+
+    reader.readAsDataURL(file)
+  })
 }
 
 fetchData()
@@ -215,7 +279,6 @@ fetchData()
 
               <td class="text-right">
                 <v-btn
-                  v-show=" item?.status?.code === 'pending'"
                   size="small"
                   rounded="lg"
                   color="info"
@@ -224,17 +287,6 @@ fetchData()
                   <v-icon start dark>
                     mdi-upload
                   </v-icon> อัปโหลด
-                </v-btn>
-                <v-btn
-                  v-show=" item?.status?.code === 'waitpayment'"
-                  size="small"
-                  rounded="lg"
-                  color="success"
-                  @click="selectItem(item)"
-                >
-                  <v-icon start dark>
-                    mdi-eye
-                  </v-icon> ดูรูป
                 </v-btn>
               </td>
             </tr>
@@ -261,7 +313,7 @@ fetchData()
       </v-col>
     </v-row>
 
-    <v-dialog v-model="dialog" persistent max-width="450">
+    <v-dialog v-model="dialog" persistent max-width="950">
       <v-card>
         <v-card-title>
           <span class="text-h5">รูปพัสดุ</span>
@@ -288,6 +340,103 @@ fetchData()
               </template>
             </template>
           </v-file-input>
+
+          <v-row>
+            <v-col
+              v-for="(item,inx) in editedTracking?.images ? editedTracking?.images.split(',') : []"
+              :key="inx"
+              cols="3"
+            >
+              <v-hover v-slot="{ isHovering, props }">
+                <v-card
+                  class="mx-auto"
+                  max-width="344"
+                  v-bind="props"
+                >
+                  <v-img
+                    :src="`${config.public.apiBase}${item}`"
+                    :lazy-src="`${config.public.apiBase}${item}`"
+                    cover
+                    width="100%"
+                    class="bg-grey-lighten-2"
+                  >
+                    <template #placeholder>
+                      <v-row
+                        class="fill-height ma-0"
+                        align="center"
+                        justify="center"
+                      >
+                        <v-progress-circular
+                          indeterminate
+                          color="grey-lighten-5"
+                        />
+                      </v-row>
+                    </template>
+                  </v-img>
+                  <v-overlay
+                    :model-value="isHovering"
+                    contained
+                    scrim="#036358"
+                    class="align-center justify-center"
+                  >
+                    <v-btn color="error" @click="deleteItem(item, 'api')">
+                      <v-icon start>
+                        mdi-delete
+                      </v-icon>
+                      delete
+                    </v-btn>
+                  </v-overlay>
+                </v-card>
+              </v-hover>
+            </v-col>
+            <v-col
+              v-for="(item,inx) in tempfiles"
+              :key="inx"
+              cols="3"
+            >
+              <v-hover v-slot="{ isHovering, props }">
+                <v-card
+                  class="mx-auto"
+                  max-width="344"
+                  v-bind="props"
+                >
+                  <v-img
+                    :src="item"
+                    :lazy-src="item"
+                    cover
+                    width="100%"
+                    class="bg-grey-lighten-2"
+                  >
+                    <template #placeholder>
+                      <v-row
+                        class="fill-height ma-0"
+                        align="center"
+                        justify="center"
+                      >
+                        <v-progress-circular
+                          indeterminate
+                          color="grey-lighten-5"
+                        />
+                      </v-row>
+                    </template>
+                  </v-img>
+                  <v-overlay
+                    :model-value="isHovering"
+                    contained
+                    scrim="#036358"
+                    class="align-center justify-center"
+                  >
+                    <v-btn color="error" @click="deleteItem(item, 'local')">
+                      <v-icon start>
+                        mdi-delete
+                      </v-icon>
+                      delete
+                    </v-btn>
+                  </v-overlay>
+                </v-card>
+              </v-hover>
+            </v-col>
+          </v-row>
         </v-card-text>
         <v-card-actions>
           <v-spacer />
@@ -301,40 +450,21 @@ fetchData()
       </v-card>
     </v-dialog>
 
-    <v-dialog v-model="dialogImage" max-width="750">
+    <v-dialog v-model="dialogDelete" max-width="500px">
       <v-card>
-        <v-card-title>
-          <span class="text-h5">รูปพัสดุ</span>
+        <v-card-title class="text-h5">
+          Are you sure you want to delete this item?
         </v-card-title>
-        <v-card-text>
-          <v-row>
-            <v-col
-              v-for="(item,inx) in editedTracking.images.split(',')"
-              :key="inx"
-            >
-              <v-img
-                :src="`${config.public.apiBase}${item}`"
-                :lazy-src="`${config.public.apiBase}${item}`"
-                cover
-                width="100%"
-                class="bg-grey-lighten-2"
-              >
-                <template #placeholder>
-                  <v-row
-                    class="fill-height ma-0"
-                    align="center"
-                    justify="center"
-                  >
-                    <v-progress-circular
-                      indeterminate
-                      color="grey-lighten-5"
-                    />
-                  </v-row>
-                </template>
-              </v-img>
-            </v-col>
-          </v-row>
-        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn color="blue darken-1" text @click="dialogDelete = false">
+            Cancel
+          </v-btn>
+          <v-btn color="blue darken-1" text @click="deleteItemConfirm">
+            OK
+          </v-btn>
+          <v-spacer />
+        </v-card-actions>
       </v-card>
     </v-dialog>
 

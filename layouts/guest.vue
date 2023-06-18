@@ -119,12 +119,12 @@ const signOut = async () => {
 <template>
   <ClientOnly>
     <v-app>
-      <v-app-bar :height="xs ? 150 : 90" :elevation="0" color="white">
+      <v-app-bar :height="xs ? 140 : 90" :elevation="0" color="white">
         <!-- <span>Vuetify &nbsp;</span>
         <span class="font-weight-light">MATERIAL DESIGN</span> -->
         <v-row align="center" no-gutters justify="space-between">
           <v-col xs="12" sm="6" md="6" class="pa-2  ">
-            <div class="d-flex flex-row justify-xs-center">
+            <div class="d-flex flex-row justify-center">
               <div class="d-inline-flex align-center  mx-4">
                 <v-img
                   src="/images/main/logo.png"

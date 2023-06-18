@@ -1,14 +1,14 @@
 import {
   TicketIcon,
   FileInvoiceIcon,
-  LayoutDashboardIcon,
   MapPinIcon,
   TruckIcon,
   BuildingBankIcon,
   CalendarIcon,
   QuestionMarkIcon,
   HeadsetIcon,
-  ShoppingCartIcon
+  ShoppingCartIcon,
+  UserPlusIcon
 } from 'vue-tabler-icons'
 
 export interface menu {
@@ -30,7 +30,7 @@ const sidebarItem: menu[] = [
   { header: 'Customer' },
   {
     title: 'จัดการผู้ใช้งาน',
-    icon: LayoutDashboardIcon,
+    icon: UserPlusIcon,
     to: '/admin/'
   },
   { header: 'Trackings' },

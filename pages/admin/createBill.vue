@@ -59,8 +59,7 @@ watch(pageSize, () => {
   fetchData()
 })
 
-watch(selectUser.user, async (val) => {
-  console.log('🚀 ~ file: createBill.vue:61 ~ watch ~ val:', val)
+watch(() => selectUser.user, async (val) => {
   if (val) {
     // on mounted
 
@@ -205,7 +204,6 @@ const fetchData = async () => {
   })
 }
 const editItem = (item) => {
-  console.log('🚀 ~ file: createBill.vue:194 ~ editItem ~ item:', item)
   editedIndex.value = Number(item.id)
 
   editedItem.value.packages = item.packages
@@ -243,7 +241,10 @@ const deleteItemConfirm = async () => {
 const { data: listUsers } = await useCustomFetch('/api/users', {
   method: 'GET'
 })
-Object.assign(itemsUsers, listUsers?.value?.rows)
+watch(listUsers, (val) => {
+  listUsers.length = 0
+  Object.assign(itemsUsers, val?.rows)
+})
 
 fetchData()
 </script>
