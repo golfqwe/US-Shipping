@@ -15,6 +15,7 @@ const snackbar = reactive({
 })
 const router = useRouter()
 
+const loading = ref(false)
 const formLogin = ref()
 const rmCheck = ref(false)
 const formData = reactive({
@@ -30,7 +31,7 @@ const mySignInHandler = async () => {
   }
   rememberMe()
   // const { error } = await signIn('credentials', { ...formData, redirect: false })
-
+  loading.value = true
   const { data } = await useCustomFetch('/api/auth/signIn', {
     method: 'post',
     body: {
@@ -38,6 +39,7 @@ const mySignInHandler = async () => {
     }
   })
 
+  loading.value = false
   if (!data.value) {
     // Do your custom error handling here
     snackbar.text = 'You have made a terrible mistake while entering your credentials'
@@ -48,6 +50,7 @@ const mySignInHandler = async () => {
     // if (process.client) {
     //   localStorage.setItem('userInfo', JSON.stringify(data?.value?.data))
     // }
+
     userStore.setUserInfo(data?.value?.data)
     // No error, continue with the sign in, e.g., by following the returned redirect:
 
@@ -145,7 +148,14 @@ if (localStorage.getItem('email')) {
               </div>
             </v-col>
             <v-col cols="12" class="pt-0">
-              <v-btn color="primary" size="large" block flat @click="mySignInHandler">
+              <v-btn
+                color="primary"
+                :loading="loading"
+                size="large"
+                block
+                flat
+                @click="mySignInHandler"
+              >
                 Sign in
               </v-btn>
             </v-col>

@@ -8,7 +8,8 @@ import {
   QuestionMarkIcon,
   HeadsetIcon,
   ShoppingCartIcon,
-  UserPlusIcon
+  UserPlusIcon,
+  CurrencyDollarIcon
 } from 'vue-tabler-icons'
 
 export interface menu {
@@ -62,6 +63,11 @@ const sidebarItem: menu[] = [
     to: '/admin/bookBank'
   },
   { header: 'utilities' },
+  {
+    title: 'ค่านำเข้าสินค้า',
+    icon: CurrencyDollarIcon,
+    to: '/admin/freight'
+  },
   {
     title: 'ตารางรอบนำเข้า',
     icon: CalendarIcon,

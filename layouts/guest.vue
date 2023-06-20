@@ -30,7 +30,7 @@ const menuMain = reactive([
   {
     text: 'ค่านำเข้าสินค้า',
     icon: '1_1.png',
-    link: '/'
+    link: '/freight'
   },
   {
     text: 'ที่อยู่โกดังสินค้า',
