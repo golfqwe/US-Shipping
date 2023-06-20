@@ -123,18 +123,17 @@ const signOut = async () => {
         <!-- <span>Vuetify &nbsp;</span>
         <span class="font-weight-light">MATERIAL DESIGN</span> -->
         <v-row align="center" no-gutters justify="space-between">
-          <v-col xs="12" sm="6" md="6" class="pa-2  ">
+          <v-col xs="12" sm="6" md="3" class="pa-2  ">
             <div class="d-flex flex-row justify-center">
               <div class="d-inline-flex align-center  mx-4">
                 <v-img
                   src="/images/main/logo.png"
-                  style="min-width: 120px; max-width: 150px; "
                   width="230"
                   max-width="250"
                 />
               </div>
               <div class="d-none d-sm-flex">
-                <div class="d-flex flex-column ">
+                <!-- <div class="d-flex flex-column ">
                   <p class="text-left">
                     บริการขนส่งสินค้าจากประเทศสหรัฐอเมริกากลับ
                   </p>
@@ -144,7 +143,7 @@ const signOut = async () => {
                   <p class="text-left">
                     ซื่อสัตย์ ราคาประหยัด ตรวจสอบออนไลน์ได้ 24 ชั่วโมง
                   </p>
-                </div>
+                </div> -->
               </div>
             </div>
           </v-col>
@@ -190,12 +189,12 @@ const signOut = async () => {
                   สมัครสมาชิก
                 </NuxtLink>
               </div>
-              <p>
+              <div class="text-subtitle-1">
                 ฝ่ายบริการลูกค้า : 088-888-8888
-              </p>
-              <p>
+              </div>
+              <div class="text-subtitle-1">
                 LINE @ USAUKJPANTOTHAI
-              </p>
+              </div>
             </div>
           </v-col>
 

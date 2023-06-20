@@ -19,7 +19,7 @@ export default defineNuxtConfig({
     server: {
       proxy: {
         '^/api': {
-          target: process.env.BASE_URL,
+          target: process.env.API_URL,
           changeOrigin: true
         }
       }

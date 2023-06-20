@@ -85,6 +85,13 @@ watch(dialogCreateBill, async (val) => {
       selectUser.user = null
       nextTick(() => {
         formInsertDesc.value.reset()
+        listDescriptions.length = 0
+        listDescriptions.push({
+          description: '',
+          quantity: 1,
+          weight: 0,
+          fee: 0
+        })
       })
     }
   }
@@ -684,7 +691,14 @@ fetchData()
                             color="primary"
                           />
                         </td>
-                        <td />
+                        <td class="font-weight-bold text-right">
+                          {{ item.quantity&& item.fee ?
+                            (+item.fee * +item.quantity).toLocaleString('th-TH', {
+                              style: 'currency',
+                              currency: 'THB',
+                            })
+                            : '-' }}
+                        </td>
                         <td>
                           <v-btn v-show="listDescriptions.length > 1" icon="mdi-minus" color="error" density="compact" @click=" listDescriptions.splice(id, 1)" />
                         </td>
@@ -699,6 +713,17 @@ fetchData()
                             </v-icon>
                             เพิ่มรายการ
                           </v-btn>
+                        </td>
+                        <td />
+                        <td />
+                        <td />
+                        <td class="font-weight-bold text-right">
+                          {{
+                            listDescriptions.reduce((acc, curr) => acc += (+curr.fee * +curr.quantity) ,0).toLocaleString('th-TH', {
+                              style: 'currency',
+                              currency: 'THB',
+                            })
+                          }}
                         </td>
                       </tr>
                     </tfoot>

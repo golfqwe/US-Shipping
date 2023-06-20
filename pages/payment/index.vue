@@ -39,7 +39,11 @@ const paymentData = reactive({
 const { data: bookbankData } = await useCustomFetch('/api/bookbank/', {
   method: 'GET'
 })
-Object.assign(bookbankList, bookbankData.value)
+
+watch(bookbankData, (val) => {
+  bookbankList.length = 0
+  Object.assign(bookbankList, val)
+})
 
 const calculateTotal = (it) => {
   return (it.fee * it.quantity)

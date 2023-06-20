@@ -40,15 +40,6 @@ const itemsWareHouse: wareHouse[] = reactive([])
 const itemsLocalCarrier: localCarrier[] = reactive([])
 const itemsTracking: tracking[] = reactive([])
 
-const fetchListWareHouse = async () => {
-  const { data: listWarehouse } = await useCustomFetch('/api/warehouse', {
-    method: 'GET',
-    query: { status: 'active' }
-  })
-  itemsWareHouse.splice(0)
-  editedItem.wareHouseId = null
-  Object.assign(itemsWareHouse, listWarehouse.value)
-}
 const save = async () => {
   const { valid } = await formRegisterTracking.value.validate()
 
@@ -158,7 +149,16 @@ watch(listItems, (val) => {
   Object.assign(itemsLocalCarrier, val)
 })
 
-fetchListWareHouse()
+const { data: listWarehouse } = await useCustomFetch('/api/warehouse', {
+  method: 'GET',
+  query: { status: 'active' }
+})
+
+watch(listWarehouse, (val) => {
+  itemsWareHouse.length = 0
+  editedItem.wareHouseId = null
+  Object.assign(itemsWareHouse, val)
+})
 
 const { data: itemsTrack, refresh } = await useCustomFetch('/api/trackings', {
   method: 'GET',
