@@ -85,7 +85,6 @@ const deleteItemConfirm = async () => {
     const ind = dataUpdate.indexOf(deleteTracking)
     dataUpdate.splice(ind, 1)
     const { error } = await useCustomFetch('/api/upload/', {
-
       method: 'delete',
       body: {
         path: deleteTracking,
