@@ -239,8 +239,5 @@ const save = async () => {
 </template>
 
 <style>
-.customImageView img {
-  width: 30% !important;
-}
 
 </style>

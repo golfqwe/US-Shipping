@@ -33,8 +33,5 @@ watch(listAddress, (val) => {
 </template>
 
 <style>
-.customImage img {
-  width: 100% !important;
-}
 
 </style>

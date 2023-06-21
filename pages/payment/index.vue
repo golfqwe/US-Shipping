@@ -46,7 +46,7 @@ watch(bookbankData, (val) => {
 })
 
 const calculateTotal = (it) => {
-  return (it.fee * it.quantity)
+  return (it.fee * +(it.weight || 1))
 }
 const sumTotal = (array, key: string) => array.reduce((sum, acc) => sum + Number(acc[key]), 0)
 

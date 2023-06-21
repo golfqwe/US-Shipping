@@ -692,8 +692,8 @@ fetchData()
                           />
                         </td>
                         <td class="font-weight-bold text-right">
-                          {{ item.quantity&& item.fee ?
-                            (+item.fee * +item.quantity).toLocaleString('th-TH', {
+                          {{ item.fee ?
+                            (+(item.weight || 1) * +item.fee).toLocaleString('th-TH', {
                               style: 'currency',
                               currency: 'THB',
                             })
@@ -719,7 +719,7 @@ fetchData()
                         <td />
                         <td class="font-weight-bold text-right">
                           {{
-                            listDescriptions.reduce((acc, curr) => acc += (+curr.fee * +curr.quantity) ,0).toLocaleString('th-TH', {
+                            listDescriptions.reduce((acc, curr) => acc += (+curr.fee * +(curr.weight?? 1)) ,0).toLocaleString('th-TH', {
                               style: 'currency',
                               currency: 'THB',
                             })
