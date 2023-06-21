@@ -9,7 +9,10 @@ import {
   HeadsetIcon,
   ShoppingCartIcon,
   UserPlusIcon,
-  CurrencyDollarIcon
+  CurrencyDollarIcon,
+  BadgeIcon,
+  RectangleIcon,
+  AddressBookIcon
 } from 'vue-tabler-icons'
 
 export interface menu {
@@ -62,7 +65,7 @@ const sidebarItem: menu[] = [
     icon: BuildingBankIcon,
     to: '/admin/bookBank'
   },
-  { header: 'utilities' },
+  { header: 'pages' },
   {
     title: 'ค่านำเข้าสินค้า',
     icon: CurrencyDollarIcon,
@@ -87,18 +90,23 @@ const sidebarItem: menu[] = [
     title: 'ติดต่อเจ้าหน้าที่',
     icon: HeadsetIcon,
     to: '/admin/customService'
+  },
+  { header: 'utilities' },
+  {
+    title: 'Logo',
+    icon: BadgeIcon,
+    to: '/admin/logo'
+  },
+  {
+    title: 'Banner',
+    icon: RectangleIcon,
+    to: '/admin/banner'
+  },
+  {
+    title: 'Contact',
+    icon: AddressBookIcon,
+    to: '/admin/contact'
   }
-//   { header: 'utilities' },
-//   {
-//     title: 'Typography',
-//     icon: TypographyIcon,
-//     to: '/admin/ui/typography'
-//   },
-//   {
-//     title: 'Shadow',
-//     icon: CopyIcon,
-//     to: '/admin/ui/shadow'
-//   },
 //   { header: 'auth' },
 //   {
 //     title: 'Login',

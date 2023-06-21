@@ -4,7 +4,7 @@ import { useCustomFetch } from '@/composables/useCustomFetch'
 
 import MyCustomUploadAdapterPlugin from '~/utils/MyCustomUploadAdapterPlugin'
 
-import type { Archive } from '@/types/archive/index'
+import type { utils } from '@/types/utils/index'
 
 definePageMeta({
   middleware: 'checkauth'
@@ -13,6 +13,7 @@ definePageMeta({
 const editorConfig = ref({
   extraPlugins: [MyCustomUploadAdapterPlugin],
   removePlugins: ['Title']
+
 })
 const editor = ClassicEditor
 const dialog = ref(false)
@@ -22,21 +23,25 @@ const snackbar = reactive({
   color: 'success'
 })
 const formInput = ref()
-const items: Archive[] = reactive([])
+const items: utils[] = reactive([])
 
 const defaultItem = reactive({
-  content: '',
+  contact: '',
+  image: '',
+  type: 'contact',
   status: true
 })
 const editedIndex = ref(-1)
 const editedItem = reactive({
-  content: '',
+  contact: '',
+  image: '',
+  type: 'contact',
   status: true
 })
 
-const { data: listItems, refresh } = await useCustomFetch('/api/archives/', {
+const { data: listItems, refresh } = await useCustomFetch('/api/utils/', {
   method: 'GET',
-  params: { type: 'faq' }
+  params: { type: 'contact' }
 })
 
 watch(listItems, (val) => {
@@ -68,7 +73,7 @@ const save = async () => {
   }
   if (editedIndex.value > -1) {
     const { error } = await useCustomFetch(
-      '/api/archives/' + editedIndex.value,
+      '/api/utils/' + editedIndex.value,
       {
         method: 'put',
         body: {
@@ -86,11 +91,12 @@ const save = async () => {
     }
     snackbar.status = true
   } else {
-    const { error } = await useCustomFetch('/api/archives/', {
+    const { error } = await useCustomFetch('/api/utils/', {
       method: 'post',
       body: {
-        content: editedItem.content,
-        type: 'faq',
+        contact: editedItem.contact,
+        image: editedItem.image,
+        type: 'contact',
         status: editedItem.status ? 'active' : 'inactive'
       }
     })
@@ -113,7 +119,7 @@ const save = async () => {
       <v-card-item class="pa-6">
         <v-card-title class="text-h5 pt-sm-2 pb-7">
           <v-row justify="space-between">
-            <v-col> คำถามที่พบบ่อย สินค้าต้องห้าม </v-col>
+            <v-col> contact </v-col>
             <v-col cols="auto">
               <v-btn color="info" @click="dialog = true">
                 <v-icon start>
@@ -149,7 +155,7 @@ const save = async () => {
                 </p>
               </td>
               <td>
-                <div class="customImageView" v-html="item.content" />
+                <div class="customImageView" v-html="item.contact" />
               </td>
 
               <td class="text-center">
@@ -194,9 +200,9 @@ const save = async () => {
               <v-row>
                 <v-col cols="12">
                   <v-label class="font-weight-bold mb-1">
-                    Content<span class="text-red">*</span>
+                    contact<span class="text-red">*</span>
                   </v-label>
-                  <ckeditor v-model="editedItem.content" :editor="editor" :config="editorConfig" />
+                  <ckeditor v-model="editedItem.contact" :editor="editor" :config="editorConfig" />
                 </v-col>
                 <v-col v-show="editedIndex > -1" cols="4">
                   <v-label class="font-weight-bold mb-1">

@@ -84,7 +84,6 @@ const deleteItemConfirm = async () => {
     const dataUpdate = editedTracking?.images ? editedTracking?.images.split(',') : []
     const ind = dataUpdate.indexOf(deleteTracking)
     dataUpdate.splice(ind, 1)
-    console.log('🚀 ~ file: takePhoto.vue:87 ~ deleteItemConfirm ~ dataUpdate:', dataUpdate)
     const { error } = await useCustomFetch('/api/upload/', {
 
       method: 'delete',

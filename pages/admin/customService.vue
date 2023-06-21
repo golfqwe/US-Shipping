@@ -12,7 +12,8 @@ definePageMeta({
 })
 
 const editorConfig = ref({
-  extraPlugins: [MyCustomUploadAdapterPlugin]
+  extraPlugins: [MyCustomUploadAdapterPlugin],
+  removePlugins: ['Title']
 })
 const editor = ClassicEditor
 const dialog = ref(false)

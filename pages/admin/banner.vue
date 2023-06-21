@@ -1,20 +1,14 @@
 <script setup lang="ts">
-import ClassicEditor from '@blowstack/ckeditor5-full-free-build'
 import { useCustomFetch } from '@/composables/useCustomFetch'
 
-import MyCustomUploadAdapterPlugin from '~/utils/MyCustomUploadAdapterPlugin'
-
-import type { Archive } from '@/types/archive/index'
+import type { utils } from '@/types/utils/index'
 
 definePageMeta({
   middleware: 'checkauth'
 })
 
-const editorConfig = ref({
-  extraPlugins: [MyCustomUploadAdapterPlugin],
-  removePlugins: ['Title']
-})
-const editor = ClassicEditor
+const config = useRuntimeConfig()
+
 const dialog = ref(false)
 const snackbar = reactive({
   status: false,
@@ -22,21 +16,26 @@ const snackbar = reactive({
   color: 'success'
 })
 const formInput = ref()
-const items: Archive[] = reactive([])
+const items: utils[] = reactive([])
+const files = ref([])
 
 const defaultItem = reactive({
   content: '',
+  image: '',
+  type: 'banner',
   status: true
 })
 const editedIndex = ref(-1)
 const editedItem = reactive({
   content: '',
+  image: '',
+  type: 'banner',
   status: true
 })
 
-const { data: listItems, refresh } = await useCustomFetch('/api/archives/', {
+const { data: listItems, refresh } = await useCustomFetch('/api/utils/', {
   method: 'GET',
-  params: { type: 'faq' }
+  params: { type: 'banner' }
 })
 
 watch(listItems, (val) => {
@@ -57,6 +56,7 @@ const close = async () => {
   dialog.value = false
   await nextTick(() => {
     Object.assign(editedItem, defaultItem)
+    files.value = []
     editedIndex.value = -1
   })
 }
@@ -66,45 +66,78 @@ const save = async () => {
   if (!valid) {
     return
   }
+  const formData = new FormData()
+  formData.append('path', 'banner')
+  files.value.forEach((it, inx) => {
+    formData.append('photo' + inx, it, it.name)
+  })
+
   if (editedIndex.value > -1) {
-    const { error } = await useCustomFetch(
-      '/api/archives/' + editedIndex.value,
-      {
-        method: 'put',
-        body: {
-          ...editedItem,
-          status: editedItem.status ? 'active' : 'inactive'
-        }
-      }
-    )
-    if (error.value) {
-      snackbar.text = 'Save data failed'
-      snackbar.color = 'error'
-    } else {
-      snackbar.text = 'Save data successfully'
-      snackbar.color = 'success'
-    }
-    snackbar.status = true
-  } else {
-    const { error } = await useCustomFetch('/api/archives/', {
-      method: 'post',
-      body: {
-        content: editedItem.content,
-        type: 'faq',
+    try {
+      let buffer = {
+        type: 'banner',
         status: editedItem.status ? 'active' : 'inactive'
       }
-    })
-    if (error.value) {
-      snackbar.text = 'Save data failed'
-      snackbar.color = 'error'
-    } else {
+      if (files.value.length) {
+        const { data } = await useCustomFetch('/api/upload/utils', {
+          method: 'post',
+          body: formData
+        })
+        buffer = {
+          ...buffer,
+          image: data?.value?.pathFile
+        }
+      }
+      await useCustomFetch(
+        '/api/utils/' + editedIndex.value,
+        {
+          method: 'put',
+          body: buffer
+        }
+      )
+      await useCustomFetch('/api/upload/image', {
+        method: 'delete',
+        body: {
+          path: editedItem.image
+        }
+      })
       snackbar.text = 'Save data successfully'
       snackbar.color = 'success'
+    } catch (error) {
+      snackbar.text = 'Save data failed'
+      snackbar.color = 'error'
+    }
+
+    snackbar.status = true
+    close()
+    refresh()
+  } else {
+    try {
+      const { data } = await useCustomFetch('/api/upload/utils', {
+        method: 'post',
+        body: formData
+      })
+
+      await useCustomFetch('/api/utils/', {
+        method: 'post',
+        body: {
+          image: data?.value?.pathFile,
+          type: 'banner',
+          status: 'active'
+        }
+      })
+
+      snackbar.text = 'Save data successfully'
+      snackbar.color = 'success'
+    } catch (error) {
+      snackbar.text = 'Save data failed'
+      snackbar.color = 'error'
     }
     snackbar.status = true
+
+    close()
+    refresh()
   }
-  close()
-  refresh()
 }
 </script>
 <template>
@@ -113,7 +146,7 @@ const save = async () => {
       <v-card-item class="pa-6">
         <v-card-title class="text-h5 pt-sm-2 pb-7">
           <v-row justify="space-between">
-            <v-col> คำถามที่พบบ่อย สินค้าต้องห้าม </v-col>
+            <v-col> Banner </v-col>
             <v-col cols="auto">
               <v-btn color="info" @click="dialog = true">
                 <v-icon start>
@@ -130,7 +163,7 @@ const save = async () => {
                 ::
               </th>
               <th class="text-subtitle-1 font-weight-bold">
-                Content
+                image
               </th>
 
               <th class="text-subtitle-1 font-weight-bold text-center">
@@ -149,7 +182,25 @@ const save = async () => {
                 </p>
               </td>
               <td>
-                <div class="customImageView" v-html="item.content" />
+                <v-img
+                  :src="`${config.public.apiBase}${item.image}`"
+                  :lazy-src="`${config.public.apiBase}${item.image}`"
+                  height="100%"
+                  max-height="350px"
+                >
+                  <template #placeholder>
+                    <v-row
+                      class="fill-height ma-0"
+                      align="center"
+                      justify="center"
+                    >
+                      <v-progress-circular
+                        indeterminate
+                        color="grey-lighten-5"
+                      />
+                    </v-row>
+                  </template>
+                </v-img>
               </td>
 
               <td class="text-center">
@@ -186,17 +237,35 @@ const save = async () => {
     <v-dialog v-model="dialog" persistent width="800">
       <v-card>
         <v-card-title>
-          <span class="text-h5">{{ editedIndex > -1 ? "แก้ไข" : "เพิ่ม" }}คำถามที่พบบ่อย สินค้าต้องห้าม</span>
+          <span class="text-h5">{{ editedIndex > -1 ? "แก้ไข" : "เพิ่ม" }}Banner</span>
         </v-card-title>
         <v-card-text>
           <v-container>
             <v-form ref="formInput">
               <v-row>
                 <v-col cols="12">
-                  <v-label class="font-weight-bold mb-1">
-                    Content<span class="text-red">*</span>
-                  </v-label>
-                  <ckeditor v-model="editedItem.content" :editor="editor" :config="editorConfig" />
+                  <v-file-input
+                    v-model="files"
+                    variant="outlined"
+                    density="compact"
+                    accept="image/*"
+                    color="primary"
+                    prepend-icon="mdi-paperclip"
+                    hint="* 970 x 250 pixels,  970 x 450 pixels"
+                    persistent-hint
+                  >
+                    <template #selection="{ fileNames }">
+                      <template v-for="fileName in fileNames" :key="fileName">
+                        <v-chip
+                          size="small"
+                          label
+                          class="me-2"
+                        >
+                          {{ fileName }}
+                        </v-chip>
+                      </template>
+                    </template>
+                  </v-file-input>
                 </v-col>
                 <v-col v-show="editedIndex > -1" cols="4">
                   <v-label class="font-weight-bold mb-1">

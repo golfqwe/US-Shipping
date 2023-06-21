@@ -89,6 +89,10 @@ const snackbar = reactive({
   text: '',
   color: 'success'
 })
+const imageLogo = ref('')
+const contact = ref('')
+const slidIndex = ref(0)
+const banner = reactive([])
 
 function useAsset (path: string): string {
   // @ts-expect-error: wrong type info
@@ -114,6 +118,31 @@ const signOut = async () => {
   }
 }
 
+const { data: dataLogo } = await useCustomFetch('/api/utils/type/logo', {
+  method: 'get'
+})
+watch(dataLogo, (val) => {
+  imageLogo.value = ''
+  imageLogo.value = val?.image
+})
+
+const { data: dataContact } = await useCustomFetch('/api/utils/type/contact', {
+  method: 'get'
+})
+watch(dataContact, (val) => {
+  contact.value = ''
+  contact.value = val?.contact
+})
+
+const { data: dataBanner } = await useCustomFetch('/api/utils/', {
+  method: 'get',
+  query: { type: 'banner' }
+})
+watch(dataBanner, (val) => {
+  banner.length = 0
+  banner.push(...val.map(it => it.image))
+})
+
 </script>
 
 <template>
@@ -127,7 +156,8 @@ const signOut = async () => {
             <div class="d-flex flex-row justify-center">
               <div class="d-inline-flex align-center  mx-4">
                 <v-img
-                  src="/images/main/logo.png"
+                  :src="`${config.public.apiBase}${imageLogo}`"
+                  :lazy-src="`${config.public.apiBase}${imageLogo}`"
                   width="230"
                   max-width="250"
                 />
@@ -189,11 +219,11 @@ const signOut = async () => {
                   สมัครสมาชิก
                 </NuxtLink>
               </div>
-              <div class="text-subtitle-1">
-                ฝ่ายบริการลูกค้า : 088-888-8888
-              </div>
-              <div class="text-subtitle-1">
-                LINE @ USAUKJPANTOTHAI
+              <div class="text-subtitle-1 text-right ">
+                <!-- ฝ่ายบริการลูกค้า : 088-888-8888
+                <br>
+                LINE @ USAUKJPANTOTHAI -->
+                <span v-html="contact" />
               </div>
             </div>
           </v-col>
@@ -223,10 +253,14 @@ const signOut = async () => {
       </v-app-bar>
 
       <v-main class="mx-0 bg-grey-lighten-4">
-        <div>
-          <v-carousel hide-delimiter-background>
+        <div v-show="banner.length">
+          <v-carousel v-model="slidIndex" hide-delimiter-background show-arrows="hover" cycle>
             <v-carousel-item
-              src="/images/main/slide1.png"
+              v-for="(img,inx) in banner"
+              :key="inx"
+              :value="inx"
+              :src="`${config.public.apiBase}${img}`"
+              :lazy-src="`${config.public.apiBase}${img}`"
             />
           </v-carousel>
         </div>
