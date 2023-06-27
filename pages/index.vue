@@ -1,15 +1,20 @@
 <script setup lang="ts">
-/* -For Set Blank Layout- */
+// import { storeToRefs } from 'pinia'
+// import { useFiltersStore } from '@/stores/count'
+
 definePageMeta({
   layout: 'guest'
 })
+
+// const inputVal = ref('')
+
+// const filtersStore = useFiltersStore()
+// const { addValueToFilterList } = filtersStore
+// const { filtersList } = storeToRefs(filtersStore)
 </script>
 
 <template>
-  <v-content>
-    <section>
-      <h2>WWF History</h2>
-      <p>The World Wide Fund for Nature (WWF) is an international organization working on issues regarding the conservation, research and restoration of the environment, formerly named the World Wildlife Fund. WWF was founded in 1961.</p>
-    </section>
-  </v-content>
+  <div>
+    <section />
+  </div>
 </template>

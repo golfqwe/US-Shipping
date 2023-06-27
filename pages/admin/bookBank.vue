@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import type { BookBank } from '@/types/bookbank/index'
+import { useCustomFetch } from '@/composables/useCustomFetch'
+
 definePageMeta({
   middleware: 'checkauth'
 })
@@ -31,7 +33,7 @@ const editedItem: BookBank = reactive({
   status: true
 })
 
-const { data: listItems, refresh } = await useFetch('/api/bookBank/', {
+const { data: listItems, refresh } = await useCustomFetch('/api/bookBank/', {
   method: 'GET'
 })
 
@@ -63,7 +65,7 @@ const save = async () => {
     return
   }
   if (editedIndex.value > -1) {
-    const { error } = await useFetch('/api/bookBank/' + editedIndex.value, {
+    const { error } = await useCustomFetch('/api/bookBank/' + editedIndex.value, {
       method: 'put',
       body: {
         ...editedItem,
@@ -79,7 +81,7 @@ const save = async () => {
     }
     snackbar.status = true
   } else {
-    const { error } = await useFetch('/api/bookBank/', {
+    const { error } = await useCustomFetch('/api/bookBank/', {
       method: 'post',
       body: {
         accountName: editedItem.accountName,

@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import ClassicEditor from '@blowstack/ckeditor5-full-free-build'
+import { useCustomFetch } from '@/composables/useCustomFetch'
 
-import ClassicEditor from '@ckeditor/ckeditor5-build-classic'
 import MyCustomUploadAdapterPlugin from '~/utils/MyCustomUploadAdapterPlugin'
 
 import type { Archive } from '@/types/archive/index'
@@ -10,7 +11,8 @@ definePageMeta({
 })
 
 const editorConfig = ref({
-  extraPlugins: [MyCustomUploadAdapterPlugin]
+  extraPlugins: [MyCustomUploadAdapterPlugin],
+  removePlugins: ['Title']
 })
 const editor = ClassicEditor
 const dialog = ref(false)
@@ -32,9 +34,10 @@ const editedItem = reactive({
   status: true
 })
 
-const { data: listItems, refresh } = await useLazyFetch('/api/archives/', {
+const { data: listItems, refresh } = await useCustomFetch('/api/archives/', {
   method: 'GET',
   params: { type: 'nextDayService' }
+
 })
 
 watch(listItems, (val) => {
@@ -65,7 +68,7 @@ const save = async () => {
     return
   }
   if (editedIndex.value > -1) {
-    const { error } = await useFetch(
+    const { error } = await useCustomFetch(
       '/api/archives/' + editedIndex.value,
       {
         method: 'put',
@@ -84,7 +87,7 @@ const save = async () => {
     }
     snackbar.status = true
   } else {
-    const { error } = await useFetch('/api/archives/', {
+    const { error } = await useCustomFetch('/api/archives/', {
       method: 'post',
       body: {
         content: editedItem.content,
@@ -147,7 +150,7 @@ const save = async () => {
                 </p>
               </td>
               <td>
-                <div v-html="item.content" />
+                <div class="customImageView" v-html="item.content" />
               </td>
 
               <td class="text-center">
@@ -235,3 +238,7 @@ const save = async () => {
     </v-snackbar>
   </div>
 </template>
+
+<style>
+
+</style>

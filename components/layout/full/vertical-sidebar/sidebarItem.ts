@@ -1,14 +1,18 @@
 import {
   TicketIcon,
   FileInvoiceIcon,
-  LayoutDashboardIcon,
   MapPinIcon,
   TruckIcon,
   BuildingBankIcon,
   CalendarIcon,
   QuestionMarkIcon,
   HeadsetIcon,
-  ShoppingCartIcon
+  ShoppingCartIcon,
+  UserPlusIcon,
+  CurrencyDollarIcon,
+  BadgeIcon,
+  RectangleIcon,
+  AddressBookIcon
 } from 'vue-tabler-icons'
 
 export interface menu {
@@ -27,22 +31,17 @@ export interface menu {
 }
 
 const sidebarItem: menu[] = [
-  { header: 'Home' },
-  {
-    title: 'Dashboard',
-    icon: LayoutDashboardIcon,
-    to: '/admin/'
-  },
   { header: 'Customer' },
   {
-    title: 'Tracking',
-    icon: TicketIcon,
-    to: '/admin/trackings'
+    title: 'จัดการผู้ใช้งาน',
+    icon: UserPlusIcon,
+    to: '/admin/'
   },
+  { header: 'Trackings' },
   {
-    title: 'แจ้งชำระบิล',
+    title: 'บิลค่าขนส่ง',
     icon: FileInvoiceIcon,
-    to: '/admin/payment'
+    to: '/admin/createBill'
   },
   {
     title: 'บันทึกรูปสินค้า',
@@ -66,7 +65,12 @@ const sidebarItem: menu[] = [
     icon: BuildingBankIcon,
     to: '/admin/bookBank'
   },
-  { header: 'utilities' },
+  { header: 'pages' },
+  {
+    title: 'ค่านำเข้าสินค้า',
+    icon: CurrencyDollarIcon,
+    to: '/admin/freight'
+  },
   {
     title: 'ตารางรอบนำเข้า',
     icon: CalendarIcon,
@@ -86,18 +90,23 @@ const sidebarItem: menu[] = [
     title: 'ติดต่อเจ้าหน้าที่',
     icon: HeadsetIcon,
     to: '/admin/customService'
+  },
+  { header: 'utilities' },
+  {
+    title: 'Logo',
+    icon: BadgeIcon,
+    to: '/admin/logo'
+  },
+  {
+    title: 'Banner',
+    icon: RectangleIcon,
+    to: '/admin/banner'
+  },
+  {
+    title: 'Contact',
+    icon: AddressBookIcon,
+    to: '/admin/contact'
   }
-//   { header: 'utilities' },
-//   {
-//     title: 'Typography',
-//     icon: TypographyIcon,
-//     to: '/admin/ui/typography'
-//   },
-//   {
-//     title: 'Shadow',
-//     icon: CopyIcon,
-//     to: '/admin/ui/shadow'
-//   },
 //   { header: 'auth' },
 //   {
 //     title: 'Login',

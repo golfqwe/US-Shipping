@@ -18,3 +18,9 @@ html {
 .border {
     border-color: rgba(var(--v-border-color), 1) !important;
 }
+.customImage img {
+    width: 100% !important;
+}
+.customImageView img {
+width: 30% !important;
+}

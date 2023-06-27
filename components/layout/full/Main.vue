@@ -10,7 +10,7 @@ const sDrawer = ref(true)
   <!------Sidebar-------->
   <v-navigation-drawer v-model="sDrawer" left elevation="0" app class="leftSidebar">
     <!---Logo part -->
-    <div class="pa-5">
+    <div class="px-5">
       <LayoutFullLogo />
     </div>
     <!-- ---------------------------------------------- -->

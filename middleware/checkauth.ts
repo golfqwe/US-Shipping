@@ -1,7 +1,11 @@
-// file: ~/middleware/authentication.global.ts
+import { storeToRefs } from 'pinia'
+import { useUserStore } from '@/stores/user'
+
 export default defineNuxtRouteMiddleware((to) => {
-  const { status, data } = useSession()
-  if (status.value === 'unauthenticated') {
+  const userStore = useUserStore()
+  const { userInfo } = storeToRefs(userStore)
+
+  if (!userInfo) {
     return navigateTo('/login')
   }
 
@@ -9,9 +13,8 @@ export default defineNuxtRouteMiddleware((to) => {
   const regex = /\/admin\b/g
 
   if (regex.test(path)) {
-    if (data.value?.user?.role !== 'admin') {
+    if (userInfo?.value?.role !== 'admin') {
       throw createError({ statusCode: 403, statusMessage: 'You don\'t have permisstion to access to this pages.' })
     }
-    // return navigateTo('/error')
   }
 })

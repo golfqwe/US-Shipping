@@ -1,9 +1,12 @@
 <script setup lang="ts">
+import { useCustomFetch } from '@/composables/useCustomFetch'
 import type { tracking } from '@/types/tracking/index'
-// import { invoiceItem } from '@/types/invoiceItem/index'
+
 definePageMeta({
   middleware: 'checkauth'
 })
+
+const config = useRuntimeConfig()
 
 const dialog = ref(false)
 const snackbar = reactive({
@@ -16,14 +19,15 @@ const items: tracking[] = reactive([])
 const editedItem = reactive({})
 const peyment = reactive({})
 
-const { data: listItems, refresh } = await useLazyFetch('/api/trackings/', {
+const { data: listItems, refresh } = await useCustomFetch('/api/trackings', {
   method: 'GET',
   query: { status: 'waitpayment,paymented' }
+
 })
 
 watch(listItems, (val) => {
   items.length = 0
-  Object.assign(items, val)
+  Object.assign(items, val?.rows)
 })
 
 watch(dialog, (val) => {
@@ -31,7 +35,7 @@ watch(dialog, (val) => {
 })
 
 const editItem = async (item: any) => {
-  const { data } = await useFetch(`/api/payment/${item.id}`, {
+  const { data } = await useCustomFetch(`/api/payments/${item.id}`, {
     method: 'get'
   })
 
@@ -46,16 +50,14 @@ const close = async () => {
   })
 }
 const save = async () => {
-  const { error } = await useFetch(`/api/trackings/${editedItem.id}`, {
+  const { data } = await useCustomFetch(`/api/trackings/${editedItem.id}`, {
     method: 'put',
     body: {
       status: 'waiting'
     }
+
   })
-  if (error.value) {
-    snackbar.text = 'Save data failed'
-    snackbar.color = 'error'
-  } else {
+  if (data.value) {
     snackbar.text = 'Save data successfully'
     snackbar.color = 'success'
   }
@@ -124,9 +126,7 @@ const save = async () => {
               <td>
                 <h6 class="text-body-1 text-muted">
                   {{
-                    new Date(item?.createdAt).toLocaleString("en-US", {
-                      timeZone: "UTC",
-                    })
+                    new Date(item?.createdAt).toLocaleString("en-US")
                   }}
                 </h6>
               </td>
@@ -231,9 +231,7 @@ const save = async () => {
                 </v-col>
                 <v-col cols="7">
                   {{
-                    peyment?.payDate ? new Date(peyment?.payDate).toLocaleString("th-TH", {
-                      timeZone: "UTC",
-                    }) : '-'
+                    peyment?.payDate ? new Date(peyment?.payDate).toLocaleString("th-TH") : '-'
                   }}
                 </v-col>
               </v-row>
@@ -248,8 +246,8 @@ const save = async () => {
                 <v-img
                   class="bg-white"
                   :aspect-ratio="1"
-                  :src="peyment.slipImage"
-                  :lazy-src="peyment.slipImage"
+                  :src="`${config.public.apiBase}${peyment.slipImage}`"
+                  :lazy-src="`${config.public.apiBase}${peyment.slipImage}`"
                   cover
                 />
               </div>
@@ -258,7 +256,7 @@ const save = async () => {
         </v-card-text>
         <v-card-actions>
           <v-spacer />
-          <v-btn color="error" variant="text" @click="dialog = false">
+          <v-btn color="error" variant="text" @click="close">
             Close
           </v-btn>
           <v-btn color="success" variant="text" @click="save">

@@ -1,14 +1,21 @@
 <script lang="ts" setup>
-const { signIn } = useSession()
+import { useUserStore } from '@/stores/user'
+import { useCustomFetch } from '@/composables/useCustomFetch'
+
+const userStore = useUserStore()
 definePageMeta({
   layout: 'guest'
 })
 
+const showPassword = ref(false)
 const snackbar = reactive({
   status: false,
   text: '',
   color: 'success'
 })
+const router = useRouter()
+
+const loading = ref(false)
 const formLogin = ref()
 const rmCheck = ref(false)
 const formData = reactive({
@@ -23,17 +30,32 @@ const mySignInHandler = async () => {
     return
   }
   rememberMe()
-  const { error } = await signIn('credentials', { ...formData, redirect: false })
+  // const { error } = await signIn('credentials', { ...formData, redirect: false })
+  loading.value = true
+  const { data } = await useCustomFetch('/api/auth/signIn', {
+    method: 'post',
+    body: {
+      ...formData
+    }
+  })
 
-  if (error) {
+  loading.value = false
+  if (!data.value) {
     // Do your custom error handling here
     snackbar.text = 'You have made a terrible mistake while entering your credentials'
     snackbar.color = 'error'
 
     snackbar.status = true
   } else {
+    // if (process.client) {
+    //   localStorage.setItem('userInfo', JSON.stringify(data?.value?.data))
+    // }
+
+    userStore.setUserInfo(data?.value?.data)
     // No error, continue with the sign in, e.g., by following the returned redirect:
-    return navigateTo('/')
+
+    // return navigateTo('/')
+    router.push({ path: '/' })
   }
 }
 const rememberMe = () => {
@@ -78,6 +100,7 @@ if (localStorage.getItem('email')) {
                 variant="outlined"
                 hide-details="auto"
                 color="primary"
+                density="compact"
               />
             </v-col>
             <v-col cols="12">
@@ -92,10 +115,20 @@ if (localStorage.getItem('email')) {
                     v.length >= 8 || 'Password must be less than 8 characters',
                 ]"
                 variant="outlined"
-                type="password"
+                :type="showPassword ? 'text' : 'password'"
                 hide-details="auto"
                 color="primary"
-              />
+                density="compact"
+              >
+                <template #append-inner>
+                  <v-icon v-if="showPassword" class="pt-1" small @click="showPassword = !showPassword">
+                    mdi-eye
+                  </v-icon>
+                  <v-icon v-else small class="pt-1" @click="showPassword = !showPassword">
+                    mdi-eye-off
+                  </v-icon>
+                </template>
+              </v-text-field>
             </v-col>
             <v-col cols="12" class="pt-0">
               <div class="d-flex flex-wrap align-center ml-n2">
@@ -115,7 +148,14 @@ if (localStorage.getItem('email')) {
               </div>
             </v-col>
             <v-col cols="12" class="pt-0">
-              <v-btn color="primary" size="large" block flat @click="mySignInHandler">
+              <v-btn
+                color="primary"
+                :loading="loading"
+                size="large"
+                block
+                flat
+                @click="mySignInHandler"
+              >
                 Sign in
               </v-btn>
             </v-col>

@@ -1,20 +1,24 @@
 <script setup lang="ts">
 import type { Archive } from '@/types/archive/index'
+import { useCustomFetch } from '@/composables/useCustomFetch'
+
 definePageMeta({
   layout: 'guest'
 })
-
 const items: Archive[] = reactive([])
 
-const { data: listAddress } = await useFetch('/api/archives/', {
+const { data: listAddress } = await useCustomFetch('/api/archives', {
   method: 'GET',
   params: { type: 'nextDayService' }
 })
-Object.assign(items, listAddress.value)
+watch(listAddress, (val) => {
+  items.length = 0
+  Object.assign(items, val)
+})
 </script>
 
 <template>
-  <v-content>
+  <div>
     <v-sheet class="pa-6" color="white" rounded>
       <h5 class="text-h5 font-weight-bold mb-4 text-darkprimary">
         รอบนำเข้าสินค้า
@@ -25,12 +29,9 @@ Object.assign(items, listAddress.value)
         </v-col>
       </v-row>
     </v-sheet>
-  </v-content>
+  </div>
 </template>
 
 <style>
-.customImage img {
-  width: 100% !important;
-}
 
 </style>

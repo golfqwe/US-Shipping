@@ -1,9 +1,13 @@
 <script lang="ts" setup>
 import type { user } from '@/types/user/index'
+import { useCustomFetch } from '@/composables/useCustomFetch'
+
 definePageMeta({
   layout: 'guest'
 })
 
+const showPassword = ref(false)
+const showConfirmPassword = ref(false)
 const snackbar = reactive({
   status: false,
   text: '',
@@ -15,6 +19,7 @@ const editedItem: user = reactive({
   email: '',
   phone: '',
   password: '',
+  confirmPassword: '',
   role: 'user',
   status: true
 })
@@ -26,7 +31,7 @@ const save = async () => {
     return
   }
 
-  const { error } = await useFetch('/api/auth/register/', {
+  const { error } = await useCustomFetch('/api/auth/signUp', {
     method: 'post',
     body: {
       ...editedItem,
@@ -35,7 +40,7 @@ const save = async () => {
   })
 
   if (error.value) {
-    snackbar.text = 'Save data failed'
+    snackbar.text = error.value.response?._data.message || 'Save data failed'
     snackbar.color = 'error'
   } else {
     snackbar.text = 'Save data successfully'
@@ -59,33 +64,7 @@ const save = async () => {
           <v-row class="d-flex mb-3">
             <v-col cols="12">
               <v-label class="font-weight-bold mb-1">
-                Name
-              </v-label>
-              <v-text-field
-                v-model="editedItem.name"
-                variant="outlined"
-                hide-details="auto"
-                :rules="[(v) => !!v || 'Name is required']"
-                color="primary"
-              />
-            </v-col>
-            <v-col cols="12">
-              <v-label class="font-weight-bold mb-1">
-                Telephone
-              </v-label>
-              <v-text-field
-                v-model="editedItem.phone"
-                variant="outlined"
-                :rules="[(v) => !!v || 'Telephone is required',
-                         v => (v.length > 10) || 'Telephone must be less than 10 characters']"
-                type="tel"
-                hide-details="auto"
-                color="primary"
-              />
-            </v-col>
-            <v-col cols="12">
-              <v-label class="font-weight-bold mb-1">
-                Email Address
+                อีเมล์ (ใช้ล็อคอิน) *
               </v-label>
               <v-text-field
                 v-model="editedItem.email"
@@ -95,22 +74,84 @@ const save = async () => {
                 type="email"
                 hide-details="auto"
                 color="primary"
+                persistent-hint
+                hint="กรุณากรอกอีเมล์จริงที่ตรวจสอบได้ เพื่อใช้ยืนยันการสมัครสมาชิก"
               />
             </v-col>
             <v-col cols="12">
               <v-label class="font-weight-bold mb-1">
-                Password
+                รหัสผ่าน *
               </v-label>
               <v-text-field
                 v-model="editedItem.password"
                 :rules="[(v) => !!v || 'Password is required',
                          v => ( v.length >= 8) || 'Password must be less than 8 characters',]"
                 variant="outlined"
-                type="password"
+                hide-details="auto"
+                color="primary"
+                :type="showPassword ? 'text' : 'password'"
+              >
+                <template #append-inner>
+                  <v-icon v-if="showPassword" class="pt-1" small @click="showPassword = !showPassword">
+                    mdi-eye
+                  </v-icon>
+                  <v-icon v-else small class="pt-1" @click="showPassword = !showPassword">
+                    mdi-eye-off
+                  </v-icon>
+                </template>
+              </v-text-field>
+            </v-col>
+            <v-col cols="12">
+              <v-label class="font-weight-bold mb-1">
+                ยืนยันรหัสผ่าน *
+              </v-label>
+              <v-text-field
+                v-model="editedItem.confirmPassword"
+                :rules="[(v) => !!v || 'Password is required',
+                         v => ( v.length >= 8) || 'Password must be less than 8 characters',
+                         v=> (v === editedItem.password) || 'Passwords do NOT match!']"
+                variant="outlined"
+                hide-details="auto"
+                color="primary"
+                :type="showConfirmPassword ? 'text' : 'password'"
+              >
+                <template #append-inner>
+                  <v-icon v-if="showConfirmPassword" class="pt-1" small @click="showConfirmPassword = !showConfirmPassword">
+                    mdi-eye
+                  </v-icon>
+                  <v-icon v-else small class="pt-1" @click="showConfirmPassword = !showConfirmPassword">
+                    mdi-eye-off
+                  </v-icon>
+                </template>
+              </v-text-field>
+            </v-col>
+
+            <v-col cols="12">
+              <v-label class="font-weight-bold mb-1">
+                ชื่อ - สกุล (English Only)
+              </v-label>
+              <v-text-field
+                v-model="editedItem.name"
+                variant="outlined"
+                hide-details="auto"
+                :rules="[(v) => !!v ? /^[a-zA-Z0-9 .!?-]+$/.test(v) || 'Full Name has Englist Only' : true]"
+                color="primary"
+              />
+            </v-col>
+            <v-col cols="12">
+              <v-label class="font-weight-bold mb-1">
+                เบอร์โทร
+              </v-label>
+              <v-text-field
+                v-model="editedItem.phone"
+                variant="outlined"
+                :rules="[(v) => !!v ? (v.length > 10) || 'Telephone must be less than 10 characters' : true]"
+                type="tel"
                 hide-details="auto"
                 color="primary"
               />
             </v-col>
+
             <v-col cols="12">
               <v-btn
                 color="primary"

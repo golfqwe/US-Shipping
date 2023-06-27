@@ -1,11 +1,11 @@
 <script setup lang="ts">
-const title = ref('Us-shipping - Admin')
+const title = ref('usaukjapantothai - Admin')
 useHead({
   meta: [{ content: title }],
   titleTemplate: (titleChunk) => {
     return titleChunk
       ? `${titleChunk} - Admin`
-      : 'Us-shipping - Admin manage'
+      : 'usaukjapantothai - Admin manage'
   }
 })
 

@@ -1,6 +1,27 @@
 <script setup lang="ts">
-// import { UserIcon, MailIcon, ListCheckIcon } from 'vue-tabler-icons'
-const { signOut } = useSession()
+import { storeToRefs } from 'pinia'
+import { useUserStore } from '@/stores/user'
+
+const router = useRouter()
+const config = useRuntimeConfig()
+
+const userStore = useUserStore()
+const { clearUserInfo } = userStore
+
+const signOut = async () => {
+  const { data } = await useFetch('/api/auth/signOut', {
+    baseURL: config.public.apiBase,
+    method: 'post'
+  })
+
+  if (!data.value) {
+    console.log(' :>> error ')
+  } else {
+    clearUserInfo()
+    // return navigateTo('/login')
+    router.push({ path: '/login' })
+  }
+}
 </script>
 
 <template>
@@ -43,7 +64,7 @@ const { signOut } = useSession()
         </v-list-item>
       </v-list> -->
       <div class="pt-4 pb-4 px-5 text-center">
-        <v-btn color="primary" variant="outlined" block @click="signOut({ callbackUrl: '/login' })">
+        <v-btn color="primary" variant="outlined" block @click="signOut">
           Logout
         </v-btn>
       </div>

@@ -1,5 +1,7 @@
 <script setup lang="ts">
+import { useCustomFetch } from '@/composables/useCustomFetch'
 import type { localCarrier } from '@/types/localCarrier/index'
+
 definePageMeta({
   middleware: 'checkauth'
 })
@@ -23,7 +25,7 @@ const editedItem = reactive({
   status: true
 })
 
-const { data: listItems, refresh } = await useLazyFetch('/api/localcarriers/', {
+const { data: listItems, refresh } = await useCustomFetch('/api/localcarriers', {
   method: 'GET'
 })
 
@@ -55,7 +57,7 @@ const save = async () => {
     return
   }
   if (editedIndex.value > -1) {
-    const { error } = await useFetch(
+    const { error } = await useCustomFetch(
       '/api/localcarriers/' + editedIndex.value,
       {
         method: 'put',
@@ -74,7 +76,7 @@ const save = async () => {
     }
     snackbar.status = true
   } else {
-    const { error } = await useFetch('/api/localcarriers/', {
+    const { error } = await useCustomFetch('/api/localcarriers/', {
       method: 'post',
       body: {
         name: editedItem.name,

@@ -1,10 +1,16 @@
 <script lang="ts" setup>
+import { storeToRefs } from 'pinia'
 import type { MyAddress } from '@/types/myAddress/index'
+import { useUserStore } from '@/stores/user'
+import { useCustomFetch } from '@/composables/useCustomFetch'
+
 definePageMeta({
   layout: 'guest',
   middleware: 'checkauth'
 })
-const { data } = useSession()
+
+const userStore = useUserStore()
+const { userInfo } = storeToRefs(userStore)
 
 const dialog = ref(false)
 const snackbar = reactive({
@@ -34,13 +40,14 @@ const editedItem: MyAddress = reactive({
   status: true
 })
 
-const { data: listAddress, refresh } = await useFetch('/api/myAddress/', {
-  method: 'GET'
+const { data: listAddress, refresh } = await useCustomFetch('/api/myaddress', {
+  method: 'GET',
+  query: { createBy: userInfo?.value?.id }
 })
-Object.assign(items, listAddress.value)
 
-watch(listAddress, () => {
-  Object.assign(items, listAddress.value)
+watch(listAddress, (val) => {
+  items.length = 0
+  Object.assign(items, val)
 })
 watch(dialog, (val) => {
   val || close()
@@ -65,7 +72,7 @@ const save = async () => {
     return
   }
   if (editedIndex.value > -1) {
-    const { error } = await useFetch('/api/myAddress/' + editedIndex.value, {
+    const { error } = await useCustomFetch('/api/myAddress/' + editedIndex.value, {
       method: 'put',
       body: {
         ...editedItem,
@@ -82,14 +89,14 @@ const save = async () => {
     }
     snackbar.status = true
   } else {
-    const { error } = await useFetch('/api/myAddress/', {
+    const { error } = await useCustomFetch('/api/myAddress/', {
       method: 'post',
       body: {
         contact: editedItem.contact,
         email: editedItem.email,
         phone: editedItem.phone,
         address: editedItem.address,
-        createBy: data.value?.user?.id,
+        createBy: userInfo?.value?.id, // data.value?.user?.id,
         status: editedItem.status ? 'active' : 'inactive'
       }
     })
