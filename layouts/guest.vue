@@ -8,7 +8,8 @@ const title = ref('Us-shipping ')
 const { xs } = useDisplay()
 
 useHead({
-  meta: [{ content: title }],
+  meta: [{ content: title },
+    { 'http-equiv': 'Content-Security-Policy', content: 'upgrade-insecure-requests' }],
   titleTemplate: (titleChunk) => {
     return titleChunk
       ? `${titleChunk}`

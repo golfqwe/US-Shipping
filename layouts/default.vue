@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const title = ref('usaukjapantothai - Admin')
 useHead({
-  meta: [{ content: title }],
+  meta: [{ content: title }, { 'http-equiv': 'Content-Security-Policy', content: 'upgrade-insecure-requests' }],
   titleTemplate: (titleChunk) => {
     return titleChunk
       ? `${titleChunk} - Admin`

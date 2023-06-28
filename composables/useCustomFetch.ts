@@ -18,7 +18,7 @@ export function useCustomFetch<T> (url: string, options: UseFetchOptions<T> = {}
 
     // set user token if connected
     headers: userInfo?.value.token
-      ? { Authorization: `Bearer ${userInfo?.value.token}` }
+      ? { Authorization: `Bearer ${userInfo?.value.token}`, 'Access-Control-Allow-Origin': '*' }
       : {},
 
     onResponse (_ctx) {
