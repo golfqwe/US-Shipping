@@ -145,7 +145,7 @@ const save = async () => {
               <v-text-field
                 v-model="editedItem.phone"
                 variant="outlined"
-                :rules="[(v) => !!v ? (v.length > 10) || 'Telephone must be less than 10 characters' : true]"
+                :rules="[(v) => !!v ? (v.length >= 10) || 'Telephone must be less than 10 characters' : true]"
                 type="tel"
                 hide-details="auto"
                 color="primary"
