@@ -44,6 +44,11 @@ watch(bookbankData, (val) => {
   bookbankList.length = 0
   Object.assign(bookbankList, val)
 })
+watch(dialogPayment, (val) => {
+  if (val) {
+    paymentData.amount = parseFloat(sumTotal(billDetail.value.invoiceItems || [], 'total').toLocaleString().replace(/,/g, ''))
+  }
+})
 
 const calculateTotal = (it) => {
   return (it.fee * +(it.weight || 1))
