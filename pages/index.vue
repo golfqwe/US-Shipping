@@ -14,7 +14,7 @@ definePageMeta({
 </script>
 
 <template>
-  <div>
+  <div id="content">
     <section />
   </div>
 </template>

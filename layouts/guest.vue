@@ -280,7 +280,7 @@ watch(dataBanner, (val) => {
                       class="d-flex pa-2 justify-center"
                       style="min-width: 50px; max-width: 150px;"
                     >
-                      <NuxtLink :to="it.link" class="text-decoration-none text-darkprimary">
+                      <NuxtLink :to="{ path: it.link, hash: '#content' }" class="text-decoration-none text-darkprimary">
                         <div class="d-flex flex-column">
                           <img
                             :src="useAsset(`images/icons/${it.icon}`)"
@@ -311,7 +311,7 @@ watch(dataBanner, (val) => {
                       class="d-flex pa-2 justify-center"
                       style="min-width: 50px; max-width: 150px;"
                     >
-                      <NuxtLink :to="it.link" class="text-decoration-none text-darkprimary">
+                      <NuxtLink :to="{ path: it.link, hash: '#content' }" class="text-decoration-none text-darkprimary">
                         <div class="d-flex flex-column">
                           <img
                             :src="useAsset(`images/icons/${it.icon}`)"

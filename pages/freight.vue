@@ -19,7 +19,7 @@ watch(listAddress, (val) => {
 </script>
 
 <template>
-  <div>
+  <div id="content">
     <v-sheet class="pa-6" color="white" rounded>
       <h5 class="text-h5 font-weight-bold mb-4 text-darkprimary">
         ค่านำเข้าสินค้า

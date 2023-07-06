@@ -175,7 +175,7 @@ watch(itemsTrack, (val) => {
 <template>
   <v-sheet class="pa-6" color="white" rounded>
     <v-row justify="center">
-      <v-col cols="11">
+      <v-col id="content" cols="11">
         <v-alert variant="outlined" type="warning" icon="mdi-alert" border>
           ลงทะเบียน REGISTER TRACKING
           ถ้าไม่ลงทะเบียนรูปสินค้าอาจจะไม่ขึ้นแสดงในระบบ

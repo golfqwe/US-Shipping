@@ -36,7 +36,7 @@ const selectItem = (item: any) => {
 
 <template>
   <v-sheet class="pa-6" color="white" rounded>
-    <h5 class="text-h5 font-weight-bold mb-4 text-darkprimary">
+    <h5 id="content" class="text-h5 font-weight-bold mb-4 text-darkprimary">
       ระบบเช็ครูปสินค้า
     </h5>
 
