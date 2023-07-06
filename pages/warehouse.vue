@@ -12,6 +12,12 @@ definePageMeta({
   middleware: 'checkauth'
 })
 
+const snackbar = reactive({
+  status: false,
+  text: '',
+  color: 'success'
+})
+
 const items:wareHouse[] = reactive([])
 const currentItem = ref(0)
 
@@ -24,6 +30,34 @@ watch(listWarehouse, (val) => {
   Object.assign(items, val)
 })
 
+const copyText = (item) => {
+  // Creating textarea element
+  const textarea = document.createElement('textarea')
+  // Settings its value to the thing you want to copy
+  textarea.value = `
+  ${item?.name}
+  ${userInfo?.value?.name}
+  ${item?.address}
+  ${item?.city}
+  ${item?.state}
+  ${item?.zip}
+  ${item?.phone}
+  `
+
+  // Appending the textarea to body
+  document.body.appendChild(textarea)
+  // Selecting its content
+  textarea.focus()
+  textarea.select()
+  // Copying the selected content to clipboard
+  document.execCommand('copy')
+  // Removing the textarea
+  document.body.removeChild(textarea)
+
+  snackbar.text = 'copied'
+  snackbar.color = 'success'
+  snackbar.status = true
+}
 </script>
 
 <template>
@@ -47,7 +81,7 @@ watch(listWarehouse, (val) => {
       </v-tabs>
     </v-row>
     <v-container>
-      <v-window v-model="currentItem">
+      <v-window v-model="currentItem" class="py-2">
         <v-window-item
           v-for="(it,ind) in items"
           :key="ind"
@@ -58,7 +92,7 @@ watch(listWarehouse, (val) => {
           </v-list-subheader>
 
           <v-row no-gutters align="end">
-            <v-col cols="2">
+            <v-col cols="4" sm="4" md="2">
               <h4 class=" text-grey">
                 Name :
               </h4>
@@ -70,7 +104,7 @@ watch(listWarehouse, (val) => {
             </v-col>
           </v-row>
           <v-row no-gutters align="end">
-            <v-col cols="2">
+            <v-col cols="4" sm="4" md="2">
               <h4 class=" text-grey">
                 Last Name :
               </h4>
@@ -82,7 +116,7 @@ watch(listWarehouse, (val) => {
             </v-col>
           </v-row>
           <v-row no-gutters align="end">
-            <v-col cols="2">
+            <v-col cols="4" sm="4" md="2">
               <h4 class=" text-grey">
                 Address :
               </h4>
@@ -94,7 +128,7 @@ watch(listWarehouse, (val) => {
             </v-col>
           </v-row>
           <v-row no-gutters align="end">
-            <v-col cols="2">
+            <v-col cols="4" sm="4" md="2">
               <h4 class=" text-grey">
                 City :
               </h4>
@@ -106,7 +140,7 @@ watch(listWarehouse, (val) => {
             </v-col>
           </v-row>
           <v-row no-gutters align="end">
-            <v-col cols="2">
+            <v-col cols="4" sm="4" md="2">
               <h4 class=" text-grey">
                 State :
               </h4>
@@ -118,7 +152,7 @@ watch(listWarehouse, (val) => {
             </v-col>
           </v-row>
           <v-row no-gutters align="end">
-            <v-col cols="2">
+            <v-col cols="4" sm="4" md="2">
               <h4 class=" text-grey">
                 Zip :
               </h4>
@@ -130,7 +164,7 @@ watch(listWarehouse, (val) => {
             </v-col>
           </v-row>
           <v-row no-gutters align="end">
-            <v-col cols="2">
+            <v-col cols="4" sm="4" md="2">
               <h4 class=" text-grey">
                 Tel :
               </h4>
@@ -142,24 +176,25 @@ watch(listWarehouse, (val) => {
             </v-col>
           </v-row>
 
-          <!-- <v-list lines="two">
-            <v-list-item
-              v-for="(dataWarehouse, inW) in it"
-              :key="inW"
-              :title="dataWarehouse.address"
-            >
-              <template #prepend>
-                <v-avatar size="60" :color="`${dataWarehouse.carrier === 'Air'? 'green' :'blue'}-lighten-1`">
-                  <v-icon color="white" size="x-large">
-                    {{ dataWarehouse.carrier === 'Air'? 'mdi-airplane': 'mdi-sail-boat' }} {{}}
-                  </v-icon>
-                </v-avatar>
-              </template>
-            </v-list-item>
-          </v-list> -->
+          <v-row no-gutters justify="center">
+            <v-col cols="4">
+              <v-btn block color="primary" @click="copyText(it)">
+                คัดลอก
+              </v-btn>
+            </v-col>
+          </v-row>
         </v-window-item>
       </v-window>
     </v-container>
+
+    <v-snackbar
+      v-model="snackbar.status"
+      :timeout="2000"
+      :color="snackbar.color"
+      location="top right"
+    >
+      {{ snackbar.text }}
+    </v-snackbar>
   </v-sheet>
 </template>
 
