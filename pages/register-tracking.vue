@@ -184,12 +184,12 @@ watch(itemsTrack, (val) => {
     </v-row>
     <v-form ref="formRegisterTracking">
       <v-row align="center">
-        <v-col cols="3">
+        <v-col cols="12" sm="3">
           <v-label class="font-weight-bold mb-1">
             Local Carrier
           </v-label>
         </v-col>
-        <v-col cols="4">
+        <v-col cols="12" sm="4">
           <v-select
             v-model="editedItem.carrierId"
             :items="itemsLocalCarrier"
@@ -204,12 +204,12 @@ watch(itemsTrack, (val) => {
         </v-col>
       </v-row>
       <v-row align="center">
-        <v-col cols="3">
+        <v-col cols="12" sm="3">
           <v-label class="font-weight-bold mb-1">
             Traking Number #
           </v-label>
         </v-col>
-        <v-col cols="4">
+        <v-col cols="12" sm="4">
           <v-text-field
             v-model="editedItem.trackingNumber"
             :rules="[(v) => !!v || 'Traking Number is required']"
@@ -221,12 +221,12 @@ watch(itemsTrack, (val) => {
         </v-col>
       </v-row>
       <v-row align="center">
-        <v-col cols="3">
+        <v-col cols="12" sm="3">
           <v-label class="font-weight-bold mb-1">
             Website (ถ้ามี)
           </v-label>
         </v-col>
-        <v-col>
+        <v-col cols="12" sm="4">
           <v-text-field
             v-model="editedItem.website"
             variant="outlined"
@@ -240,12 +240,12 @@ watch(itemsTrack, (val) => {
         </v-col>
       </v-row>
       <v-row align="center">
-        <v-col cols="3">
+        <v-col cols="12" sm="3">
           <v-label class="font-weight-bold mb-1">
             Description (ถ้ามี)
           </v-label>
         </v-col>
-        <v-col cols="6">
+        <v-col cols="12" sm="6">
           <v-textarea
             v-model="editedItem.description"
             hide-details="auto"
@@ -258,12 +258,12 @@ watch(itemsTrack, (val) => {
         </v-col>
       </v-row>
       <v-row align="center">
-        <v-col cols="3">
+        <v-col cols="12" sm="3">
           <v-label class="font-weight-bold mb-1">
             Carrier
           </v-label>
         </v-col>
-        <v-col cols="6">
+        <v-col cols="12" sm="6">
           <v-radio-group
             v-model="editedItem.carrier"
             inline
@@ -293,12 +293,12 @@ watch(itemsTrack, (val) => {
         </v-col>
       </v-row>
       <v-row align="center">
-        <v-col cols="3">
+        <v-col cols="12" sm="3">
           <v-label class="font-weight-bold mb-1">
             Warehouse (โกดังต้นทาง)
           </v-label>
         </v-col>
-        <v-col cols="4">
+        <v-col cols="12" sm="4">
           <v-select
             v-model="editedItem.wareHouseId"
             density="compact"
