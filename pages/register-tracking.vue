@@ -313,7 +313,7 @@ watch(itemsTrack, (val) => {
         </v-col>
       </v-row>
       <v-row justify="end">
-        <v-col cols="9">
+        <v-col cols="12" sm="9">
           <v-btn color="primary" size="large" block @click="save">
             Register Tracking
           </v-btn>

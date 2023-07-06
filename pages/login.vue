@@ -143,12 +143,12 @@ if (localStorage.getItem('email')) {
                   </template>
                 </v-checkbox>
                 <div class="ml-sm-auto">
-                  <!-- <NuxtLink
-                    to="/"
+                  <NuxtLink
+                    to="/register"
                     class="text-primary text-decoration-none text-body-1 opacity-1 font-weight-medium"
                   >
-                    Forgot Password ?
-                  </NuxtLink> -->
+                    สมัครสมาชิก
+                  </NuxtLink>
                 </div>
               </div>
             </v-col>
