@@ -163,19 +163,7 @@ watch(dataBanner, (val) => {
                   max-width="250"
                 />
               </div>
-              <div class="d-none d-sm-flex">
-                <!-- <div class="d-flex flex-column ">
-                  <p class="text-left">
-                    บริการขนส่งสินค้าจากประเทศสหรัฐอเมริกากลับ
-                  </p>
-                  <p class="text-left">
-                    ประเทศไทยและประเทศลาว : บริการรวดเร็ว
-                  </p>
-                  <p class="text-left">
-                    ซื่อสัตย์ ราคาประหยัด ตรวจสอบออนไลน์ได้ 24 ชั่วโมง
-                  </p>
-                </div> -->
-              </div>
+              <div class="d-none d-sm-flex" />
             </div>
           </v-col>
 
@@ -228,28 +216,6 @@ watch(dataBanner, (val) => {
               </div>
             </div>
           </v-col>
-
-          <!-- <v-col class=" hidden-md-and-up">
-            <v-row no-gutters justify="center" align="center">
-              <v-sheet
-                class="d-flex flex-column  align-center "
-              >
-                <div class="d-inline-flex align-center  mx-4">
-                  <img
-                    src="/images/main/logo.png"
-                    style="height: 65px; object-fit: contain"
-                  >
-                </div>
-                <div>
-                  <NuxtLink to="login" class="text-decoration-none text-darkprimary font-weight-bold">
-                    เข้าสู่ระบบ
-                  </NuxtLink>|<NuxtLink to="register" class="text-decoration-none text-darkprimary font-weight-bold">
-                    สมัครสมาชิก
-                  </NuxtLink>
-                </div>
-              </v-sheet>
-            </v-row>
-          </v-col> -->
         </v-row>
       </v-app-bar>
 

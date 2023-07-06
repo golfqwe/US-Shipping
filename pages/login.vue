@@ -77,12 +77,16 @@ if (localStorage.getItem('email')) {
 </script>
 
 <template>
-  <v-sheet class="pa-6" color="white" rounded>
+  <v-sheet
+    id="content"
+    class="pa-6"
+    color="white"
+    rounded
+  >
     <v-form ref="formLogin">
       <v-row justify="center">
         <v-col sm="6" md="6" lg="4">
           <h3
-            id="content"
             class="text-h3 text-center font-weight-bold mb-4 text-darkprimary"
           >
             เข้าสู่ระบบ
