@@ -179,24 +179,47 @@ const checkSlip = async (item) => {
   dialogSlip.value = true
 }
 
-const saveSlip = async () => {
-  const { data } = await useCustomFetch(`/api/payments/${peyment.id}`, {
-    method: 'put',
-    body: {
-      invoiceId: selectInvId.value,
-      status: 'success'
+const saveSlip = async (flag) => {
+  try {
+    if (flag === 'accept') {
+      await useCustomFetch(`/api/payments/${peyment.id}`, {
+        method: 'put',
+        body: {
+          invoiceId: selectInvId.value,
+          status: 'success'
+        }
+      })
+    } else {
+      await useCustomFetch(`/api/utils/${peyment.id}`, {
+        method: 'delete',
+        body: {
+          path: peyment.slipImage
+        }
+      })
+      await useCustomFetch(`/api/payments/${peyment.id}`, {
+        method: 'delete'
+      })
+
+      await useCustomFetch(`/api/invoices/${selectInvId.value}`, {
+        method: 'put',
+        body: {
+          status: 'pending'
+        }
+      })
     }
 
-  })
-  if (data.value) {
     snackbar.text = 'Save data successfully'
     snackbar.color = 'success'
-  }
-  snackbar.status = true
+    snackbar.status = true
 
-  dialogSlip.value = false
-  selectInvId.value = 0
-  fetchData()
+    dialogSlip.value = false
+    selectInvId.value = 0
+    fetchData()
+  } catch (error) {
+    snackbar.text = 'Save data failed'
+    snackbar.color = 'error'
+    snackbar.status = true
+  }
 }
 const fetchData = async () => {
   const { data: listBills } = await useCustomFetch('/api/invoices', {
@@ -804,6 +827,7 @@ fetchData()
                 <v-img
                   class="bg-white"
                   :aspect-ratio="1"
+                  width="200"
                   :src="`${config.public.apiBase}${peyment.slipImage}`"
                   :lazy-src="`${config.public.apiBase}${peyment.slipImage}`"
                   cover
@@ -812,15 +836,16 @@ fetchData()
             </v-col>
           </v-row>
         </v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn color="error" variant="text" @click="dialogSlip = false">
-            Close
-          </v-btn>
-          <v-btn color="success" variant="text" @click="saveSlip">
-            ข้อมูลถูกต้อง
-          </v-btn>
-        </v-card-actions>
+        <v-card-text>
+          <v-row justify="end" no-gutters>
+            <v-btn color="success" @click="saveSlip('accept')">
+              ข้อมูลถูกต้อง
+            </v-btn>
+            <v-btn color="error" variant="text" @click="saveSlip('reject')">
+              สลิปไม่ถูกต้อง
+            </v-btn>
+          </v-row>
+        </v-card-text>
       </v-card>
     </v-dialog>
     <v-dialog v-model="dialogDelete" max-width="500px">

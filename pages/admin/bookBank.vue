@@ -6,6 +6,8 @@ definePageMeta({
   middleware: 'checkauth'
 })
 
+const config = useRuntimeConfig()
+
 const dialog = ref(false)
 const snackbar = reactive({
   status: false,
@@ -32,6 +34,7 @@ const editedItem: BookBank = reactive({
   accountNumber: '',
   status: true
 })
+const files = ref([])
 
 const { data: listItems, refresh } = await useCustomFetch('/api/bookBank/', {
   method: 'GET'
@@ -64,11 +67,28 @@ const save = async () => {
   if (!valid) {
     return
   }
+
+  const formData = new FormData()
+  formData.append('path', 'boobank')
+  files.value.forEach((it, inx) => {
+    formData.append('photo' + inx, it, it.name)
+  })
+
+  let pathFile = ref()
+  if (files.value.length) {
+    const { data: resFile } = await useCustomFetch('/api/upload/utils/', {
+      method: 'post',
+      body: formData
+    })
+    pathFile = resFile?.value?.pathFile
+  }
+  console.log('pathFile :>> ', pathFile)
   if (editedIndex.value > -1) {
     const { error } = await useCustomFetch('/api/bookBank/' + editedIndex.value, {
       method: 'put',
       body: {
         ...editedItem,
+        image: pathFile ?? editedItem.image,
         status: editedItem.status ? 'active' : 'inactive'
       }
     })
@@ -89,6 +109,7 @@ const save = async () => {
         branch: editedItem.branch,
         accountType: editedItem.accountType,
         accountNumber: editedItem.accountNumber,
+        image: pathFile,
         status: editedItem.status ? 'active' : 'inactive'
       }
     })
@@ -139,6 +160,9 @@ const save = async () => {
               <th class="text-subtitle-1 font-weight-bold">
                 Account Number
               </th>
+              <th class="text-subtitle-1 font-weight-bold">
+                Image
+              </th>
 
               <th class="text-subtitle-1 font-weight-bold text-center">
                 status
@@ -179,6 +203,19 @@ const save = async () => {
                 <h6 class="text-subtitle-1 font-weight-bold">
                   {{ item.accountNumber }}
                 </h6>
+              </td>
+              <td>
+                <v-row justify="center">
+                  <v-col cols="6">
+                    <v-img
+                      class="bg-white"
+                      width="250"
+                      :aspect-ratio="1"
+                      :src="`${config.public.apiBase}${item.image}`"
+                      :lazy-src="`${config.public.apiBase}${item.image}`"
+                    />
+                  </v-col>
+                </v-row>
               </td>
 
               <td class="text-center">
@@ -283,6 +320,16 @@ const save = async () => {
                     variant="outlined"
                     :items="['ออมทรัพย์','ออมทรัพย์พิเศษ','ฝากประจำ']"
                     color="primary"
+                  />
+                </v-col>
+                <v-col cols="6">
+                  <v-label class="font-weight-bold mb-1">
+                    Image
+                  </v-label>
+                  <v-file-input
+                    v-model="files"
+                    variant="outlined"
+                    accept="image/*"
                   />
                 </v-col>
                 <v-col v-show="editedIndex > -1" cols="4">
