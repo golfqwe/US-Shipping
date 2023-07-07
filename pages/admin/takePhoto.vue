@@ -34,7 +34,7 @@ let deleteTracking = reactive({})
 const fetchData = async () => {
   const { data: listItems } = await useCustomFetch('/api/trackings/', {
     method: 'GET',
-    query: { status: 'pending,waiting,waitpayment', page: page.value, pageSize: pageSize.value, search: search.value }
+    query: { status: 'pending,waiting,waitpayment,success', page: page.value, pageSize: pageSize.value, search: search.value }
 
   })
 
@@ -122,7 +122,7 @@ const save = async () => {
     formData.append('photo' + inx, it, it.name)
   })
 
-  const { error } = await useCustomFetch('/api/upload/trackings', {
+  const { error } = await useCustomFetch('/api/upload/trackings/', {
 
     method: 'post',
     body: formData

@@ -12,7 +12,8 @@ import {
   CurrencyDollarIcon,
   BadgeIcon,
   RectangleIcon,
-  AddressBookIcon
+  AddressBookIcon,
+  MailIcon
 } from 'vue-tabler-icons'
 
 export interface menu {
@@ -92,6 +93,11 @@ const sidebarItem: menu[] = [
     to: '/admin/customService'
   },
   { header: 'utilities' },
+  {
+    title: 'Mailer',
+    icon: MailIcon,
+    to: '/admin/mailer'
+  },
   {
     title: 'Logo',
     icon: BadgeIcon,

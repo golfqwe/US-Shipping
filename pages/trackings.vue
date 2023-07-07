@@ -19,7 +19,7 @@ let editedTracking = reactive({})
 
 const { data: listTracking } = await useCustomFetch('/api/trackings', {
   method: 'GET',
-  query: { status: 'pending,waiting,waitpayment', userId: userInfo?.value.id }
+  query: { status: 'pending,waiting,waitpayment,success', userId: userInfo?.value.id }
 
 })
 

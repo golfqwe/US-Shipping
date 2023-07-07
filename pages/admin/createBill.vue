@@ -42,6 +42,7 @@ const selectUser = reactive({
 const userAddress = ref({})
 const maxInvoice = ref(0)
 const selectInvId = ref(0)
+const selectUserID = ref(0)
 const peyment = reactive({})
 
 const editedIndex = ref(-1)
@@ -170,7 +171,10 @@ const save = async () => {
 }
 
 const checkSlip = async (item) => {
+  console.log('🚀 ~ file: createBill.vue:173 ~ checkSlip ~ item:', item)
   selectInvId.value = item?.id
+  selectUserID.value = item?.userId
+
   const { data } = await useCustomFetch(`/api/payments/${item.id}`, {
     method: 'get'
   })
@@ -186,6 +190,7 @@ const saveSlip = async (flag) => {
         method: 'put',
         body: {
           invoiceId: selectInvId.value,
+          userId: selectUserID.value,
           status: 'success'
         }
       })
@@ -214,6 +219,7 @@ const saveSlip = async (flag) => {
 
     dialogSlip.value = false
     selectInvId.value = 0
+    selectUserID.value = 0
     fetchData()
   } catch (error) {
     snackbar.text = 'Save data failed'
