@@ -202,9 +202,9 @@ watch(dataBanner, (val) => {
                 </v-menu>
               </div>
               <div v-else>
-                <NuxtLink to="login" class="text-decoration-none text-darkprimary font-weight-bold">
+                <NuxtLink :to="{ path: 'login', hash: '#content' }" class="text-decoration-none text-darkprimary font-weight-bold">
                   เข้าสู่ระบบ
-                </NuxtLink>|<NuxtLink to="register" class="text-decoration-none text-darkprimary font-weight-bold">
+                </NuxtLink>|<NuxtLink :to="{ path: 'register', hash: '#content' }" class="text-decoration-none text-darkprimary font-weight-bold">
                   สมัครสมาชิก
                 </NuxtLink>
               </div>
