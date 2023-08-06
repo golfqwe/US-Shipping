@@ -25,7 +25,7 @@ watch(listAddress, (val) => {
       </h5>
       <v-row v-for="(item, inx) in items" :key="inx">
         <v-col>
-          <span class="customImage" v-html="item.content" />
+          <span class="ck-content" v-html="item.content" />
         </v-col>
       </v-row>
     </v-sheet>

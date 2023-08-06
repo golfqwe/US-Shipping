@@ -25,7 +25,7 @@ watch(listAddress, (val) => {
         บริการรับกดสั่งสินค้า ประมูลสินค้า
       </h5>
       <section v-for="(item, inx) in items" :key="inx">
-        <span class="customImage" v-html="item.content" />
+        <span class="ck-content" v-html="item.content" />
       </section>
     </v-sheet>
   </div>

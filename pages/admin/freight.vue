@@ -11,6 +11,32 @@ definePageMeta({
 })
 
 const editorConfig = ref({
+  toolbar: {
+    shouldNotGroupWhenFull: true
+  },
+  // table: {
+  //   tableProperties: {
+  //     // The default styles for tables in the editor.
+  //     // They should be synchronized with the content styles.
+  //     defaultProperties: {
+  //       borderStyle: 'dashed',
+  //       borderColor: 'hsl(90, 75%, 60%)',
+  //       borderWidth: '3px',
+  //       alignment: 'left',
+  //       width: '550px',
+  //       height: '450px'
+  //     },
+  //     // The default styles for table cells in the editor.
+  //     // They should be synchronized with the content styles.
+  //     tableCellProperties: {
+  //       defaultProperties: {
+  //         horizontalAlignment: 'center',
+  //         verticalAlignment: 'bottom',
+  //         padding: '10px'
+  //       }
+  //     }
+  //   }
+  // },
   extraPlugins: [MyCustomUploadAdapterPlugin],
   removePlugins: ['Title']
 })
@@ -183,7 +209,7 @@ const save = async () => {
       </v-card-item>
     </v-card>
 
-    <v-dialog v-model="dialog" persistent width="800">
+    <v-dialog v-model="dialog" persistent>
       <v-card>
         <v-card-title>
           <span class="text-h5">{{ editedIndex > -1 ? "แก้ไข" : "เพิ่ม" }}ค่านำเข้าสินค้า</span>
@@ -191,12 +217,16 @@ const save = async () => {
         <v-card-text>
           <v-container>
             <v-form ref="formInput">
-              <v-row>
+              <v-row class="h-50">
                 <v-col cols="12">
                   <v-label class="font-weight-bold mb-1">
                     Content<span class="text-red">*</span>
                   </v-label>
-                  <ckeditor v-model="editedItem.content" :editor="editor" :config="editorConfig" />
+                  <ckeditor
+                    v-model="editedItem.content"
+                    :editor="editor"
+                    :config="editorConfig"
+                  />
                 </v-col>
                 <v-col v-show="editedIndex > -1" cols="4">
                   <v-label class="font-weight-bold mb-1">
@@ -237,3 +267,6 @@ const save = async () => {
     </v-snackbar>
   </div>
 </template>
+
+<style>
+</style>
