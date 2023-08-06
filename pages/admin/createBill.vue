@@ -299,7 +299,7 @@ fetchData()
                     v-model="search"
                     :loading="loading"
                     density="compact"
-                    variant="solo"
+                    variant="outlined"
                     label="Search ..."
                     append-inner-icon="mdi-magnify"
                     single-line
@@ -354,7 +354,7 @@ fetchData()
             >
               <td>
                 <p class="text-15 font-weight-medium">
-                  {{ item?.id }}
+                  {{ 'INV' + `${item?.id }`.padStart(8, '0') }}
                 </p>
               </td>
               <td>

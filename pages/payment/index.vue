@@ -176,7 +176,7 @@ const savePayment = async () => {
             >
               <td>
                 <p class="text-15 font-weight-medium">
-                  {{ item?.id }}
+                  {{ 'INV' + `${item?.id }`.padStart(8, '0') }}
                 </p>
               </td>
               <td>

@@ -27,6 +27,11 @@ export default defineNuxtConfig({
   },
   modules: [
     '@pinia/nuxt'
-  ]
+  ],
+  router: {
+    options: {
+      hashMode: false
+    }
+  }
 
 })

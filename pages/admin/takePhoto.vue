@@ -173,7 +173,7 @@ fetchData()
                 v-model="search"
                 :loading="loading"
                 density="compact"
-                variant="solo"
+                variant="outlined"
                 label="Search ..."
                 append-inner-icon="mdi-magnify"
                 single-line
@@ -221,9 +221,17 @@ fetchData()
                 </p>
               </td>
               <td>
-                <p class="text-15 font-weight-medium">
+                <!-- <p class="text-15 font-weight-medium">
                   {{ item.trackingNumber }}
-                </p>
+                </p> -->
+                <div class="">
+                  <h6 class="text-subtitle-1 font-weight-bold">
+                    {{ item?.trackingNumber }}
+                  </h6>
+                  <div class="text-13 mt-1 text-muted">
+                    {{ item?.user?.name }} ( {{ item?.warehouse?.country }} )
+                  </div>
+                </div>
               </td>
               <td>
                 <h6 class="text-subtitle-1 font-weight-bold text-center">

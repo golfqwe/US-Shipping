@@ -4,7 +4,7 @@ import { storeToRefs } from 'pinia'
 import { useUserStore } from '@/stores/user'
 import { useCustomFetch } from '@/composables/useCustomFetch'
 
-const title = ref('Us-shipping ')
+const title = ref('ยูเอสเอยูเคเจแปนทูไทย')
 const { xs } = useDisplay()
 
 useHead({
@@ -13,7 +13,7 @@ useHead({
   titleTemplate: (titleChunk) => {
     return titleChunk
       ? `${titleChunk}`
-      : 'Us-shipping '
+      : 'ยูเอสเอยูเคเจแปนทูไทย'
   }
 })
 
@@ -31,27 +31,27 @@ const menuMain = reactive([
   {
     text: 'ค่านำเข้าสินค้า',
     icon: '1_1.png',
-    link: '/freight'
+    link: '/freight/'
   },
   {
     text: 'ที่อยู่โกดังสินค้า',
     icon: '1_2.png',
-    link: '/warehouse'
+    link: '/warehouse/'
   },
   {
     text: 'Register Tracking',
     icon: '1_3.png',
-    link: '/register-tracking'
+    link: '/register-tracking/'
   },
   {
     text: 'เช็ครูปสินค้า',
     icon: '1_4.png',
-    link: '/trackings'
+    link: '/trackings/'
   },
   {
     text: 'บิลค่าขนส่ง',
     icon: '1_5.png',
-    link: '/payment'
+    link: '/payment/'
   }
 ])
 
@@ -60,28 +60,28 @@ const menuSub = reactive([
   {
     text: 'ที่อยู่ของฉัน',
     icon: '2_2.png',
-    link: '/myAddress'
+    link: '/myAddress/'
   },
   {
     text: 'รอบนำเข้าสินค้า',
     icon: '2_1.png',
-    link: '/nextDayService'
+    link: '/nextDayService/'
   },
 
   {
     text: 'บริการรับกดสั่งสินค้า ประมูลสินค้า',
     icon: '2_3.png',
-    link: '/auction'
+    link: '/auction/'
   },
   {
     text: 'คำถามที่พบบ่อย สินค้าต้องห้าม',
     icon: '2_4.png',
-    link: '/faq'
+    link: '/faq/'
   },
   {
     text: 'ติดต่อเจ้าหน้าที่',
     icon: '2_5.png',
-    link: '/customService'
+    link: '/customService/'
   }
 ])
 
@@ -202,16 +202,13 @@ watch(dataBanner, (val) => {
                 </v-menu>
               </div>
               <div v-else>
-                <NuxtLink :to="{ path: 'login', hash: '#content' }" class="text-decoration-none text-darkprimary font-weight-bold">
+                <NuxtLink :to="{ path: '/login', hash: '#content' }" class="text-decoration-none text-darkprimary font-weight-bold">
                   เข้าสู่ระบบ
-                </NuxtLink>|<NuxtLink :to="{ path: 'register', hash: '#content' }" class="text-decoration-none text-darkprimary font-weight-bold">
+                </NuxtLink>|<NuxtLink :to="{ path: '/register', hash: '#content' }" class="text-decoration-none text-darkprimary font-weight-bold">
                   สมัครสมาชิก
                 </NuxtLink>
               </div>
               <div class="text-subtitle-1 text-right ">
-                <!-- ฝ่ายบริการลูกค้า : 088-888-8888
-                <br>
-                LINE @ USAUKJPANTOTHAI -->
                 <span v-html="contact" />
               </div>
             </div>
