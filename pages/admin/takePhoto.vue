@@ -34,8 +34,12 @@ let deleteTracking = reactive({})
 const fetchData = async () => {
   const { data: listItems } = await useCustomFetch('/api/trackings/', {
     method: 'GET',
-    query: { status: 'pending,waiting,waitpayment,success', page: page.value, pageSize: pageSize.value, search: search.value }
-
+    query: {
+      status: 'pending,waiting,waitpayment,success',
+      page: page.value,
+      pageSize: pageSize.value,
+      search: search.value
+    }
   })
 
   watch(listItems, (val) => {
@@ -81,7 +85,9 @@ const deleteItemConfirm = async () => {
     tempfiles.value.splice(ind, 1)
     files.value.splice(ind, 1)
   } else {
-    const dataUpdate = editedTracking?.images ? editedTracking?.images.split(',') : []
+    const dataUpdate = editedTracking?.images
+      ? editedTracking?.images.split(',')
+      : []
     const ind = dataUpdate.indexOf(deleteTracking)
     dataUpdate.splice(ind, 1)
     const { error } = await useCustomFetch('/api/upload/', {
@@ -118,15 +124,20 @@ const save = async () => {
   const formData = new FormData()
   formData.append('trackingNumber', editedTracking.trackingNumber)
   formData.append('trackingId', editedTracking.id)
-  files.value.forEach((it, inx) => {
-    formData.append('photo' + inx, it, it.name)
-  })
+
+  // files.value.forEach((it, inx) => {
+  //   formData.append('photo' + inx, it, it.name)
+  // })
+
+  let inx = 0
+  for (const file of files.value) {
+    const fileCompessed = await compressFile(file)
+    formData.append('photo' + inx++, fileCompessed, 'upload.web')
+  }
 
   const { error } = await useCustomFetch('/api/upload/trackings/', {
-
     method: 'post',
     body: formData
-
   })
 
   if (error.value) {
@@ -159,7 +170,6 @@ const readFlie = (file: any) => {
 }
 
 fetchData()
-
 </script>
 <template>
   <div>
@@ -178,8 +188,8 @@ fetchData()
                 append-inner-icon="mdi-magnify"
                 single-line
                 hide-details
-                @keypress.prevent.enter=" fetchData"
-                @click:append-inner=" fetchData"
+                @keypress.prevent.enter="fetchData"
+                @click:append-inner="fetchData"
               />
             </v-col>
           </v-row>
@@ -240,15 +250,15 @@ fetchData()
               </td>
               <td>
                 <h6 class="text-body-1 text-muted">
-                  {{
-                    new Date(item?.createdAt).toLocaleString("th-TH")
-                  }}
+                  {{ new Date(item?.createdAt).toLocaleString("th-TH") }}
                 </h6>
               </td>
               <td>
                 <h6 class="text-body-1 text-muted">
                   {{
-                    item?.receiveDate ? new Date(item?.receiveDate).toLocaleString("th-TH") : '-'
+                    item?.receiveDate
+                      ? new Date(item?.receiveDate).toLocaleString("th-TH")
+                      : "-"
                   }}
                 </h6>
               </td>
@@ -311,11 +321,7 @@ fetchData()
         />
       </v-col>
       <v-col cols="auto">
-        <v-pagination
-          v-model="page"
-          :length="totalCount"
-          :total-visible="7"
-        />
+        <v-pagination v-model="page" :length="totalCount" :total-visible="7" />
       </v-col>
     </v-row>
 
@@ -336,11 +342,7 @@ fetchData()
           >
             <template #selection="{ fileNames }">
               <template v-for="fileName in fileNames" :key="fileName">
-                <v-chip
-                  size="small"
-                  label
-                  class="me-2"
-                >
+                <v-chip size="small" label class="me-2">
                   {{ fileName }}
                 </v-chip>
               </template>
@@ -349,16 +351,14 @@ fetchData()
 
           <v-row>
             <v-col
-              v-for="(item,inx) in editedTracking?.images ? editedTracking?.images.split(',') : []"
+              v-for="(item, inx) in editedTracking?.images
+                ? editedTracking?.images.split(',')
+                : []"
               :key="inx"
               cols="3"
             >
               <v-hover v-slot="{ isHovering, props }">
-                <v-card
-                  class="mx-auto"
-                  max-width="344"
-                  v-bind="props"
-                >
+                <v-card class="mx-auto" max-width="344" v-bind="props">
                   <v-img
                     :src="`${config.public.apiBase}${item}`"
                     :lazy-src="`${config.public.apiBase}${item}`"
@@ -395,17 +395,9 @@ fetchData()
                 </v-card>
               </v-hover>
             </v-col>
-            <v-col
-              v-for="(item,inx) in tempfiles"
-              :key="inx"
-              cols="3"
-            >
+            <v-col v-for="(item, inx) in tempfiles" :key="inx" cols="3">
               <v-hover v-slot="{ isHovering, props }">
-                <v-card
-                  class="mx-auto"
-                  max-width="344"
-                  v-bind="props"
-                >
+                <v-card class="mx-auto" max-width="344" v-bind="props">
                   <v-img
                     :src="item"
                     :lazy-src="item"

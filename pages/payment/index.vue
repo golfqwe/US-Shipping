@@ -90,9 +90,14 @@ const savePayment = async () => {
 
   const formData = new FormData()
   formData.append('invId', paymentData?.invoiceId)
-  paymentData.slipImage.forEach((it) => {
-    formData.append('photo', it, it.name)
-  })
+  // paymentData.slipImage.forEach((it) => {
+  //   formData.append('photo', it, it.name)
+  // })
+  let inx = 0
+  for (const file of paymentData.slipImage) {
+    const fileCompessed = await compressFile(file)
+    formData.append('photo' + inx++, fileCompessed, 'upload.web')
+  }
 
   try {
     const { data: resFile } = await useCustomFetch('/api/upload/slip/', {
