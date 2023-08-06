@@ -13,7 +13,7 @@ useHead({
     },
     {
       name: 'viewport',
-      content: 'width=initial'
+      content: 'width=device-width, initial-scale=0.8'
     }
   ]
 })

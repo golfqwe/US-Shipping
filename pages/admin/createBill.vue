@@ -278,7 +278,7 @@ const { data: listUsers } = await useCustomFetch('/api/users', {
   method: 'GET'
 })
 watch(listUsers, (val) => {
-  listUsers.length = 0
+  itemsUsers.length = 0
   Object.assign(itemsUsers, val?.rows)
 })
 

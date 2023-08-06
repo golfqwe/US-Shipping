@@ -358,7 +358,7 @@ watch(itemsTrack, (val) => {
             >
               <td>
                 <p class="text-15 font-weight-medium">
-                  {{ item?.id }}
+                  {{ id + 1 }}
                 </p>
               </td>
               <td>

@@ -1,5 +1,6 @@
 import {
   TicketIcon,
+  PhotoIcon,
   FileInvoiceIcon,
   MapPinIcon,
   TruckIcon,
@@ -46,8 +47,13 @@ const sidebarItem: menu[] = [
   },
   {
     title: 'บันทึกรูปสินค้า',
-    icon: TicketIcon,
+    icon: PhotoIcon,
     to: '/admin/takePhoto'
+  },
+  {
+    title: 'Register Tracking',
+    icon: TicketIcon,
+    to: '/admin/registerTracking'
   },
   { header: 'Warehouse' },
   {
