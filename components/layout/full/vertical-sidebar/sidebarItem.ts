@@ -68,6 +68,11 @@ const sidebarItem: menu[] = [
   },
   { header: 'pages' },
   {
+    title: 'หน้าแรก',
+    icon: CurrencyDollarIcon,
+    to: '/admin/home/'
+  },
+  {
     title: 'ค่านำเข้าสินค้า',
     icon: CurrencyDollarIcon,
     to: '/admin/freight'

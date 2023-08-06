@@ -156,12 +156,14 @@ watch(dataBanner, (val) => {
           <v-col xs="12" sm="6" md="3" class="pa-2  ">
             <div class="d-flex flex-row justify-center">
               <div class="d-inline-flex align-center  mx-4">
-                <v-img
-                  :src="`${config.public.apiBase}${imageLogo}`"
-                  :lazy-src="`${config.public.apiBase}${imageLogo}`"
-                  width="230"
-                  max-width="250"
-                />
+                <NuxtLink to="/">
+                  <v-img
+                    :src="`${config.public.apiBase}${imageLogo}`"
+                    :lazy-src="`${config.public.apiBase}${imageLogo}`"
+                    width="230"
+                    max-width="250"
+                  />
+                </NuxtLink>
               </div>
               <div class="d-none d-sm-flex" />
             </div>

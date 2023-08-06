@@ -11,6 +11,9 @@ definePageMeta({
 })
 
 const editorConfig = ref({
+  toolbar: {
+    shouldNotGroupWhenFull: true
+  },
   extraPlugins: [MyCustomUploadAdapterPlugin],
   removePlugins: ['Title']
 
@@ -189,7 +192,7 @@ const save = async () => {
       </v-card-item>
     </v-card>
 
-    <v-dialog v-model="dialog" persistent width="800">
+    <v-dialog v-model="dialog" persistent>
       <v-card>
         <v-card-title>
           <span class="text-h5">{{ editedIndex > -1 ? "แก้ไข" : "เพิ่ม" }}คำถามที่พบบ่อย สินค้าต้องห้าม</span>
