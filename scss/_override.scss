@@ -482,3 +482,13 @@ width: 30% !important;
         display: none;
     }
 }
+
+.ck-editor__editable_inline {
+    min-height: 250px;
+}
+.ck.ck-block-toolbar-button {
+    transform: translateX( -10px );
+}
+.ck.ck-balloon-panel {
+    z-index: 10000 !important;
+  }

@@ -121,6 +121,7 @@ const close = async () => {
   })
 }
 const save = async () => {
+  loading.value = true
   const formData = new FormData()
   formData.append('trackingNumber', editedTracking.trackingNumber)
   formData.append('trackingId', editedTracking.id)
@@ -148,6 +149,7 @@ const save = async () => {
     snackbar.color = 'success'
   }
   snackbar.status = true
+  loading.value = false
 
   close()
   fetchData()
@@ -441,7 +443,7 @@ fetchData()
           <v-btn color="error" variant="text" @click="dialog = false">
             Close
           </v-btn>
-          <v-btn color="blue-darken-1" variant="text" @click="save">
+          <v-btn color="blue-darken-1" variant="text" :loading="loading" @click="save">
             Save
           </v-btn>
         </v-card-actions>

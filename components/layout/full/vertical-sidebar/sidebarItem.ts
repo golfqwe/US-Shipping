@@ -1,4 +1,5 @@
 import {
+  HomeIcon,
   TicketIcon,
   PhotoIcon,
   FileInvoiceIcon,
@@ -75,7 +76,7 @@ const sidebarItem: menu[] = [
   { header: 'pages' },
   {
     title: 'หน้าแรก',
-    icon: CurrencyDollarIcon,
+    icon: HomeIcon,
     to: '/admin/home/'
   },
   {
@@ -102,6 +103,11 @@ const sidebarItem: menu[] = [
     title: 'ติดต่อเจ้าหน้าที่',
     icon: HeadsetIcon,
     to: '/admin/customService'
+  },
+  {
+    title: 'เนื่อหาใน E-mail',
+    icon: MailIcon,
+    to: '/admin/email'
   },
   { header: 'utilities' },
   {
