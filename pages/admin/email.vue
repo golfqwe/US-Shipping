@@ -14,6 +14,9 @@ const editorConfig = ref({
   toolbar: {
     shouldNotGroupWhenFull: true
   },
+  link: {
+    addTargetToExternalLinks: true
+  },
   extraPlugins: [MyCustomUploadAdapterPlugin],
   removePlugins: ['Title']
 })
@@ -34,12 +37,12 @@ const defaultItem = reactive({
 const editedIndex = ref(-1)
 const editedItem = reactive({
   content: '',
+  type: '',
   status: true
 })
 
-const { data: listItems, refresh } = await useCustomFetch('/api/archives/', {
-  method: 'GET',
-  params: { type: 'faq' }
+const { data: listItems, refresh } = await useCustomFetch('/api/email/', {
+  method: 'GET'
 })
 
 watch(listItems, (val) => {
@@ -93,7 +96,7 @@ const save = async () => {
       method: 'post',
       body: {
         content: editedItem.content,
-        type: 'faq',
+        type: 'home',
         status: editedItem.status ? 'active' : 'inactive'
       }
     })
@@ -116,7 +119,7 @@ const save = async () => {
       <v-card-item class="pa-6">
         <v-card-title class="text-h5 pt-sm-2 pb-7">
           <v-row justify="space-between">
-            <v-col> คำถามที่พบบ่อย สินค้าต้องห้าม </v-col>
+            <v-col> เนื้อหาใน E-mail </v-col>
             <v-col cols="auto">
               <v-btn color="info" @click="dialog = true">
                 <v-icon start>
@@ -131,6 +134,9 @@ const save = async () => {
             <tr>
               <th class="text-subtitle-1 font-weight-bold">
                 ::
+              </th>
+              <th class="text-subtitle-1 font-weight-bold">
+                Type
               </th>
               <th class="text-subtitle-1 font-weight-bold">
                 Content
@@ -150,6 +156,9 @@ const save = async () => {
                 <p class="text-15 font-weight-medium">
                   {{ item.id }}
                 </p>
+              </td>
+              <td>
+                {{ item.type }}
               </td>
               <td>
                 <div class="customImageView" v-html="item.content" />
@@ -189,7 +198,8 @@ const save = async () => {
     <v-dialog v-model="dialog" persistent>
       <v-card>
         <v-card-title>
-          <span class="text-h5">{{ editedIndex > -1 ? "แก้ไข" : "เพิ่ม" }}คำถามที่พบบ่อย สินค้าต้องห้าม</span>
+          <span class="text-h5">{{ editedIndex > -1 ? "แก้ไข" : "เพิ่ม" }}เนื้อหาใน E-mail
+          </span>
         </v-card-title>
         <v-card-text>
           <v-container>
@@ -197,9 +207,26 @@ const save = async () => {
               <v-row>
                 <v-col cols="12">
                   <v-label class="font-weight-bold mb-1">
+                    Type<span class="text-red">*</span>
+                  </v-label>
+                  <v-select
+                    v-model="editedItem.type"
+                    :items="['header', 'signup', 'takephoto', 'bill']"
+                    hide-details="auto"
+                    variant="outlined"
+                    density="compact"
+                  />
+                </v-col>
+                <v-col cols="12">
+                  <v-label class="font-weight-bold mb-1">
                     Content<span class="text-red">*</span>
                   </v-label>
-                  <ckeditor v-model="editedItem.content" :editor="editor" :config="editorConfig" />
+
+                  <ckeditor
+                    v-model="editedItem.content"
+                    :editor="editor"
+                    :config="editorConfig"
+                  />
                 </v-col>
                 <v-col v-show="editedIndex > -1" cols="4">
                   <v-label class="font-weight-bold mb-1">
@@ -240,3 +267,7 @@ const save = async () => {
     </v-snackbar>
   </div>
 </template>
+
+<style>
+
+</style>

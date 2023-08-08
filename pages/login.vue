@@ -77,7 +77,12 @@ if (localStorage.getItem('email')) {
 </script>
 
 <template>
-  <v-sheet class="pa-6" color="white" rounded>
+  <v-sheet
+    id="content"
+    class="pa-6"
+    color="white"
+    rounded
+  >
     <v-form ref="formLogin">
       <v-row justify="center">
         <v-col sm="6" md="6" lg="4">
@@ -138,12 +143,12 @@ if (localStorage.getItem('email')) {
                   </template>
                 </v-checkbox>
                 <div class="ml-sm-auto">
-                  <!-- <NuxtLink
-                    to="/"
+                  <NuxtLink
+                    to="/register"
                     class="text-primary text-decoration-none text-body-1 opacity-1 font-weight-medium"
                   >
-                    Forgot Password ?
-                  </NuxtLink> -->
+                    สมัครสมาชิก
+                  </NuxtLink>
                 </div>
               </div>
             </v-col>

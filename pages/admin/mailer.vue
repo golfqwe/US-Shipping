@@ -1,12 +1,10 @@
 <script setup lang="ts">
-import type { BookBank } from '@/types/bookbank/index'
+import type { mailer } from '@/types/mailer/index'
 import { useCustomFetch } from '@/composables/useCustomFetch'
 
 definePageMeta({
   middleware: 'checkauth'
 })
-
-const config = useRuntimeConfig()
 
 const dialog = ref(false)
 const snackbar = reactive({
@@ -15,28 +13,27 @@ const snackbar = reactive({
   color: 'success'
 })
 const formInput = ref()
-const items: BookBank[] = reactive([])
+const showPassword = ref()
+const items: mailer[] = reactive([])
 
+const loading = ref(false)
+const mailChack = ref(false)
+const mailStatus = ref(false)
 const editedIndex = ref(-1)
-const defaultItem: BookBank = reactive({
-  accountName: '',
-  bankName: '',
-  branch: '',
-  accountType: '',
-  accountNumber: '',
+const defaultItem: mailer = reactive({
+  email: '',
+  password: '',
+  type: '',
   status: true
 })
-const editedItem: BookBank = reactive({
-  accountName: '',
-  bankName: '',
-  branch: '',
-  accountType: '',
-  accountNumber: '',
+const editedItem: mailer = reactive({
+  email: '',
+  password: '',
+  type: '',
   status: true
 })
-const files = ref([])
 
-const { data: listItems, refresh } = await useCustomFetch('/api/bookBank/', {
+const { data: listItems, refresh } = await useCustomFetch('/api/mailer/', {
   method: 'GET'
 })
 
@@ -55,6 +52,8 @@ const editItem = (item: any) => {
   dialog.value = true
 }
 const close = async () => {
+  mailChack.value = false
+  mailStatus.value = false
   dialog.value = false
   await nextTick(() => {
     Object.assign(editedItem, defaultItem)
@@ -68,33 +67,11 @@ const save = async () => {
     return
   }
 
-  const formData = new FormData()
-  formData.append('path', 'boobank')
-  // files.value.forEach((it, inx) => {
-  //   formData.append('photo' + inx, it, it.name)
-  // })
-
-  let inx = 0
-  for (const file of files.value) {
-    const fileCompessed = await compressFile(file)
-    formData.append('photo' + inx++, fileCompessed, 'upload.web')
-  }
-
-  let pathFile = ref()
-  if (files.value.length) {
-    const { data: resFile } = await useCustomFetch('/api/upload/utils/', {
-      method: 'post',
-      body: formData
-    })
-    pathFile = resFile?.value?.pathFile
-  }
-  console.log('pathFile :>> ', pathFile)
   if (editedIndex.value > -1) {
-    const { error } = await useCustomFetch('/api/bookBank/' + editedIndex.value, {
+    const { error } = await useCustomFetch('/api/mailer/' + editedIndex.value, {
       method: 'put',
       body: {
         ...editedItem,
-        image: pathFile ?? editedItem.image,
         status: editedItem.status ? 'active' : 'inactive'
       }
     })
@@ -107,15 +84,11 @@ const save = async () => {
     }
     snackbar.status = true
   } else {
-    const { error } = await useCustomFetch('/api/bookBank/', {
+    const { error } = await useCustomFetch('/api/mailer/', {
       method: 'post',
       body: {
-        accountName: editedItem.accountName,
-        bankName: editedItem.bankName,
-        branch: editedItem.branch,
-        accountType: editedItem.accountType,
-        accountNumber: editedItem.accountNumber,
-        image: pathFile,
+
+        ...editedItem,
         status: editedItem.status ? 'active' : 'inactive'
       }
     })
@@ -130,6 +103,33 @@ const save = async () => {
   }
   close()
   refresh()
+}
+const verify = async () => {
+  loading.value = true
+
+  try {
+    const { data } = await useCustomFetch('/api/mailer/verify/', {
+      method: 'post',
+      body: {
+        type: editedItem.type,
+        email: editedItem.email,
+        password: editedItem.password
+      }
+    })
+    console.log('data.value :>> ', data.value)
+    if (data.value) {
+      mailStatus.value = true
+    } else {
+      mailStatus.value = false
+    }
+    mailChack.value = true
+  } catch (error) {
+    console.log('🚀 ~ file: mailer.vue:114 ~ verify ~ error:', error)
+    mailChack.value = true
+    mailStatus.value = false
+  } finally {
+    loading.value = false
+  }
 }
 </script>
 <template>
@@ -155,19 +155,13 @@ const save = async () => {
                 ::
               </th>
               <th class="text-subtitle-1 font-weight-bold">
-                Account Name
+                Email
               </th>
               <th class="text-subtitle-1 font-weight-bold">
-                Bank Name
+                Password
               </th>
               <th class="text-subtitle-1 font-weight-bold">
-                Account Type
-              </th>
-              <th class="text-subtitle-1 font-weight-bold">
-                Account Number
-              </th>
-              <th class="text-subtitle-1 font-weight-bold">
-                Image
+                Type
               </th>
 
               <th class="text-subtitle-1 font-weight-bold text-center">
@@ -187,41 +181,18 @@ const save = async () => {
               </td>
               <td>
                 <h6 class="text-subtitle-1 font-weight-bold">
-                  {{ item.accountName }}
-                </h6>
-              </td>
-              <td>
-                <div class="">
-                  <h6 class="text-subtitle-1 font-weight-bold">
-                    {{ item.bankName }}
-                  </h6>
-                  <div class="text-13 mt-1 text-muted">
-                    {{ item.branch }}
-                  </div>
-                </div>
-              </td>
-              <td>
-                <h6 class="text-subtitle-1 font-weight-bold">
-                  {{ item.accountType }}
+                  {{ item.email }}
                 </h6>
               </td>
               <td>
                 <h6 class="text-subtitle-1 font-weight-bold">
-                  {{ item.accountNumber }}
+                  {{ item.password?.replaceAll(/\w/ig,'*') }}
                 </h6>
               </td>
               <td>
-                <v-row justify="center">
-                  <v-col cols="6">
-                    <v-img
-                      class="bg-white"
-                      width="250"
-                      :aspect-ratio="1"
-                      :src="`${config.public.apiBase}${item.image}`"
-                      :lazy-src="`${config.public.apiBase}${item.image}`"
-                    />
-                  </v-col>
-                </v-row>
+                <h6 class="text-subtitle-1 font-weight-bold">
+                  {{ item.type }}
+                </h6>
               </td>
 
               <td class="text-center">
@@ -268,76 +239,79 @@ const save = async () => {
               <v-row>
                 <v-col cols="12">
                   <v-label class="font-weight-bold mb-1">
-                    Account Name<span class="text-red">*</span>
+                    อีเมล์ (ใช้ล็อคอิน) *
                   </v-label>
                   <v-text-field
-                    v-model="editedItem.accountName"
-                    :rules="[(v: string) => !!v || 'Account Name is required']"
-                    hide-details
+                    v-model="editedItem.email"
+                    :rules="[ v => !!v || 'E-mail is required',
+                              v => /.+@.+\..+/.test(v) || 'E-mail must be valid',]"
                     variant="outlined"
+                    type="email"
+                    hide-details="auto"
                     color="primary"
+                    density="compact"
+                    persistent-hint
+                    hint="กรุณากรอกอีเมล์จริงที่ตรวจสอบได้ เพื่อใช้ยืนยันการสมัครสมาชิก"
                   />
+                </v-col>
+                <v-col cols="12">
+                  <v-label class="font-weight-bold mb-1">
+                    รหัสผ่าน *
+                  </v-label>
+                  <v-text-field
+                    v-model="editedItem.password"
+                    :rules="[v => !!v ? ( v.length >= 8) || 'Password must be less than 8 characters' : true]"
+                    variant="outlined"
+                    hide-details="auto"
+                    color="primary"
+                    density="compact"
+                    :type="showPassword ? 'text' : 'password'"
+                  >
+                    <template #append-inner>
+                      <v-icon v-if="showPassword" class="pt-1" small @click="showPassword = !showPassword">
+                        mdi-eye
+                      </v-icon>
+                      <v-icon v-else small class="pt-1" @click="showPassword = !showPassword">
+                        mdi-eye-off
+                      </v-icon>
+                    </template>
+                  </v-text-field>
+                </v-col>
+                <v-col cols="12">
+                  <v-btn
+                    :loading="loading"
+                    height="48"
+                    variant="tonal"
+                    color="warning"
+                    @click="verify"
+                  >
+                    ตรวจสอบ Email
+                  </v-btn>
+                  <v-chip
+                    v-show="mailChack"
+                    class="ma-2"
+                    :color="mailStatus ? 'success' : 'error'"
+                    text-color="white"
+                    :prepend-icon="mailStatus ? 'mdi-checkbox-marked-circle' : 'mdi-close'"
+                  >
+                    {{ mailStatus ? 'ใช้งานได้' : 'ไม่สามารถใช้งานได้' }}
+                  </v-chip>
                 </v-col>
                 <v-col cols="6">
                   <v-label class="font-weight-bold mb-1">
-                    Bank Name<span class="text-red">*</span>
+                    Type<span class="text-red">*</span>
                   </v-label>
-                  <v-text-field
-                    v-model="editedItem.bankName"
-                    :rules="[(v: string) => !!v || ' Bank Name is required']"
+                  <v-select
+                    v-model="editedItem.type"
+                    :rules="[(v: string) => !!v || 'Account Type is required']"
                     hide-details
                     variant="outlined"
-                    color="primary"
-                  />
-                </v-col>
-                <v-col cols="6">
-                  <v-label class="font-weight-bold mb-1">
-                    Branch<span class="text-red">*</span>
-                  </v-label>
-                  <v-text-field
-                    v-model="editedItem.branch"
-                    :rules="[(v: string) => !!v || 'Branch is required']"
-                    hide-details
-                    variant="outlined"
+                    density="compact"
+                    :items="['hotmail','gmail']"
                     color="primary"
                   />
                 </v-col>
 
-                <v-col cols="6">
-                  <v-label class="font-weight-bold mb-1">
-                    Account Number<span class="text-red">*</span>
-                  </v-label>
-                  <v-text-field
-                    v-model="editedItem.accountNumber"
-                    :rules="[(v: string) => !!v || 'Account Number is required']"
-                    hide-details
-                    variant="outlined"
-                    color="primary"
-                  />
-                </v-col>
-                <v-col cols="6">
-                  <v-label class="font-weight-bold mb-1">
-                    Account Type<span class="text-red">*</span>
-                  </v-label>
-                  <v-select
-                    v-model="editedItem.accountType"
-                    :rules="[(v: string) => !!v || 'Account Type is required']"
-                    hide-details
-                    variant="outlined"
-                    :items="['ออมทรัพย์','ออมทรัพย์พิเศษ','ฝากประจำ']"
-                    color="primary"
-                  />
-                </v-col>
-                <v-col cols="6">
-                  <v-label class="font-weight-bold mb-1">
-                    Image
-                  </v-label>
-                  <v-file-input
-                    v-model="files"
-                    variant="outlined"
-                    accept="image/*"
-                  />
-                </v-col>
                 <v-col v-show="editedIndex > -1" cols="4">
                   <v-label class="font-weight-bold mb-1">
                     Status

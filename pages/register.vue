@@ -52,7 +52,7 @@ const save = async () => {
 </script>
 
 <template>
-  <v-sheet class="pa-6" color="white" rounded>
+  <v-sheet id="content" class="pa-6" color="white" rounded>
     <v-form ref="formRegister">
       <v-row justify="center">
         <v-col sm="6" md="6" lg="4">
@@ -145,7 +145,7 @@ const save = async () => {
               <v-text-field
                 v-model="editedItem.phone"
                 variant="outlined"
-                :rules="[(v) => !!v ? (v.length > 10) || 'Telephone must be less than 10 characters' : true]"
+                :rules="[(v) => !!v ? (v.length >= 10) || 'Telephone must be less than 10 characters' : true]"
                 type="tel"
                 hide-details="auto"
                 color="primary"

@@ -42,6 +42,7 @@ const selectUser = reactive({
 const userAddress = ref({})
 const maxInvoice = ref(0)
 const selectInvId = ref(0)
+const selectUserID = ref(0)
 const peyment = reactive({})
 
 const editedIndex = ref(-1)
@@ -170,7 +171,10 @@ const save = async () => {
 }
 
 const checkSlip = async (item) => {
+  console.log('🚀 ~ file: createBill.vue:173 ~ checkSlip ~ item:', item)
   selectInvId.value = item?.id
+  selectUserID.value = item?.userId
+
   const { data } = await useCustomFetch(`/api/payments/${item.id}`, {
     method: 'get'
   })
@@ -179,24 +183,49 @@ const checkSlip = async (item) => {
   dialogSlip.value = true
 }
 
-const saveSlip = async () => {
-  const { data } = await useCustomFetch(`/api/payments/${peyment.id}`, {
-    method: 'put',
-    body: {
-      invoiceId: selectInvId.value,
-      status: 'success'
+const saveSlip = async (flag) => {
+  try {
+    if (flag === 'accept') {
+      await useCustomFetch(`/api/payments/${peyment.id}`, {
+        method: 'put',
+        body: {
+          invoiceId: selectInvId.value,
+          userId: selectUserID.value,
+          status: 'success'
+        }
+      })
+    } else {
+      await useCustomFetch(`/api/utils/${peyment.id}`, {
+        method: 'delete',
+        body: {
+          path: peyment.slipImage
+        }
+      })
+      await useCustomFetch(`/api/payments/${peyment.id}`, {
+        method: 'delete'
+      })
+
+      await useCustomFetch(`/api/invoices/${selectInvId.value}`, {
+        method: 'put',
+        body: {
+          status: 'pending'
+        }
+      })
     }
 
-  })
-  if (data.value) {
     snackbar.text = 'Save data successfully'
     snackbar.color = 'success'
-  }
-  snackbar.status = true
+    snackbar.status = true
 
-  dialogSlip.value = false
-  selectInvId.value = 0
-  fetchData()
+    dialogSlip.value = false
+    selectInvId.value = 0
+    selectUserID.value = 0
+    fetchData()
+  } catch (error) {
+    snackbar.text = 'Save data failed'
+    snackbar.color = 'error'
+    snackbar.status = true
+  }
 }
 const fetchData = async () => {
   const { data: listBills } = await useCustomFetch('/api/invoices', {
@@ -249,7 +278,7 @@ const { data: listUsers } = await useCustomFetch('/api/users', {
   method: 'GET'
 })
 watch(listUsers, (val) => {
-  listUsers.length = 0
+  itemsUsers.length = 0
   Object.assign(itemsUsers, val?.rows)
 })
 
@@ -270,7 +299,7 @@ fetchData()
                     v-model="search"
                     :loading="loading"
                     density="compact"
-                    variant="solo"
+                    variant="outlined"
                     label="Search ..."
                     append-inner-icon="mdi-magnify"
                     single-line
@@ -325,7 +354,7 @@ fetchData()
             >
               <td>
                 <p class="text-15 font-weight-medium">
-                  {{ item?.id }}
+                  {{ 'INV' + `${item?.id }`.padStart(8, '0') }}
                 </p>
               </td>
               <td>
@@ -719,7 +748,7 @@ fetchData()
                         <td />
                         <td class="font-weight-bold text-right">
                           {{
-                            listDescriptions.reduce((acc, curr) => acc += (+curr.fee * +(curr.weight?? 1)) ,0).toLocaleString('th-TH', {
+                            listDescriptions.reduce((acc, curr) => acc += (+curr.fee * +(curr.weight || 1)) ,0).toLocaleString('th-TH', {
                               style: 'currency',
                               currency: 'THB',
                             })
@@ -804,6 +833,7 @@ fetchData()
                 <v-img
                   class="bg-white"
                   :aspect-ratio="1"
+                  width="200"
                   :src="`${config.public.apiBase}${peyment.slipImage}`"
                   :lazy-src="`${config.public.apiBase}${peyment.slipImage}`"
                   cover
@@ -812,15 +842,16 @@ fetchData()
             </v-col>
           </v-row>
         </v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn color="error" variant="text" @click="dialogSlip = false">
-            Close
-          </v-btn>
-          <v-btn color="success" variant="text" @click="saveSlip">
-            ข้อมูลถูกต้อง
-          </v-btn>
-        </v-card-actions>
+        <v-card-text>
+          <v-row justify="end" no-gutters>
+            <v-btn color="success" @click="saveSlip('accept')">
+              ข้อมูลถูกต้อง
+            </v-btn>
+            <v-btn color="error" variant="text" @click="saveSlip('reject')">
+              สลิปไม่ถูกต้อง
+            </v-btn>
+          </v-row>
+        </v-card-text>
       </v-card>
     </v-dialog>
     <v-dialog v-model="dialogDelete" max-width="500px">

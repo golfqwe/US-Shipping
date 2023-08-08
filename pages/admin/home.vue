@@ -39,7 +39,8 @@ const editedItem = reactive({
 
 const { data: listItems, refresh } = await useCustomFetch('/api/archives/', {
   method: 'GET',
-  params: { type: 'faq' }
+  params: { type: 'home' }
+
 })
 
 watch(listItems, (val) => {
@@ -93,7 +94,7 @@ const save = async () => {
       method: 'post',
       body: {
         content: editedItem.content,
-        type: 'faq',
+        type: 'home',
         status: editedItem.status ? 'active' : 'inactive'
       }
     })
@@ -116,7 +117,7 @@ const save = async () => {
       <v-card-item class="pa-6">
         <v-card-title class="text-h5 pt-sm-2 pb-7">
           <v-row justify="space-between">
-            <v-col> คำถามที่พบบ่อย สินค้าต้องห้าม </v-col>
+            <v-col> หน้าแรก </v-col>
             <v-col cols="auto">
               <v-btn color="info" @click="dialog = true">
                 <v-icon start>
@@ -189,7 +190,7 @@ const save = async () => {
     <v-dialog v-model="dialog" persistent>
       <v-card>
         <v-card-title>
-          <span class="text-h5">{{ editedIndex > -1 ? "แก้ไข" : "เพิ่ม" }}คำถามที่พบบ่อย สินค้าต้องห้าม</span>
+          <span class="text-h5">{{ editedIndex > -1 ? "แก้ไข" : "เพิ่ม" }}หน้าแรก</span>
         </v-card-title>
         <v-card-text>
           <v-container>
@@ -240,3 +241,7 @@ const save = async () => {
     </v-snackbar>
   </div>
 </template>
+
+<style>
+
+</style>

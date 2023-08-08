@@ -150,7 +150,7 @@ fetchData()
                     v-model="search"
                     :loading="loading"
                     density="compact"
-                    variant="solo"
+                    variant="outlined"
                     label="Search ..."
                     append-inner-icon="mdi-magnify"
                     single-line
@@ -198,7 +198,7 @@ fetchData()
             <tr v-for="(item, id) in items" :key="id" class="month-item">
               <td>
                 <p class="text-15 font-weight-medium">
-                  {{ item.id }}
+                  {{ 'M'+`${item.id}`.padStart(5, '0') }}
                 </p>
               </td>
               <td>

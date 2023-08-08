@@ -34,8 +34,12 @@ let deleteTracking = reactive({})
 const fetchData = async () => {
   const { data: listItems } = await useCustomFetch('/api/trackings/', {
     method: 'GET',
-    query: { status: 'pending,waiting,waitpayment', page: page.value, pageSize: pageSize.value, search: search.value }
-
+    query: {
+      status: 'pending,waiting,waitpayment,success',
+      page: page.value,
+      pageSize: pageSize.value,
+      search: search.value
+    }
   })
 
   watch(listItems, (val) => {
@@ -81,7 +85,9 @@ const deleteItemConfirm = async () => {
     tempfiles.value.splice(ind, 1)
     files.value.splice(ind, 1)
   } else {
-    const dataUpdate = editedTracking?.images ? editedTracking?.images.split(',') : []
+    const dataUpdate = editedTracking?.images
+      ? editedTracking?.images.split(',')
+      : []
     const ind = dataUpdate.indexOf(deleteTracking)
     dataUpdate.splice(ind, 1)
     const { error } = await useCustomFetch('/api/upload/', {
@@ -115,18 +121,24 @@ const close = async () => {
   })
 }
 const save = async () => {
+  loading.value = true
   const formData = new FormData()
   formData.append('trackingNumber', editedTracking.trackingNumber)
   formData.append('trackingId', editedTracking.id)
-  files.value.forEach((it, inx) => {
-    formData.append('photo' + inx, it, it.name)
-  })
 
-  const { error } = await useCustomFetch('/api/upload/trackings', {
+  // files.value.forEach((it, inx) => {
+  //   formData.append('photo' + inx, it, it.name)
+  // })
 
+  let inx = 0
+  for (const file of files.value) {
+    const fileCompessed = await compressFile(file)
+    formData.append('photo' + inx++, fileCompessed, 'upload.web')
+  }
+
+  const { error } = await useCustomFetch('/api/upload/trackings/', {
     method: 'post',
     body: formData
-
   })
 
   if (error.value) {
@@ -137,6 +149,7 @@ const save = async () => {
     snackbar.color = 'success'
   }
   snackbar.status = true
+  loading.value = false
 
   close()
   fetchData()
@@ -159,7 +172,6 @@ const readFlie = (file: any) => {
 }
 
 fetchData()
-
 </script>
 <template>
   <div>
@@ -173,13 +185,13 @@ fetchData()
                 v-model="search"
                 :loading="loading"
                 density="compact"
-                variant="solo"
+                variant="outlined"
                 label="Search ..."
                 append-inner-icon="mdi-magnify"
                 single-line
                 hide-details
-                @keypress.prevent.enter=" fetchData"
-                @click:append-inner=" fetchData"
+                @keypress.prevent.enter="fetchData"
+                @click:append-inner="fetchData"
               />
             </v-col>
           </v-row>
@@ -221,9 +233,17 @@ fetchData()
                 </p>
               </td>
               <td>
-                <p class="text-15 font-weight-medium">
+                <!-- <p class="text-15 font-weight-medium">
                   {{ item.trackingNumber }}
-                </p>
+                </p> -->
+                <div class="">
+                  <h6 class="text-subtitle-1 font-weight-bold">
+                    {{ item?.trackingNumber }}
+                  </h6>
+                  <div class="text-13 mt-1 text-muted">
+                    {{ item?.user?.name }} ( {{ item?.warehouse?.country }} )
+                  </div>
+                </div>
               </td>
               <td>
                 <h6 class="text-subtitle-1 font-weight-bold text-center">
@@ -232,15 +252,15 @@ fetchData()
               </td>
               <td>
                 <h6 class="text-body-1 text-muted">
-                  {{
-                    new Date(item?.createdAt).toLocaleString("th-TH")
-                  }}
+                  {{ new Date(item?.createdAt).toLocaleString("th-TH") }}
                 </h6>
               </td>
               <td>
                 <h6 class="text-body-1 text-muted">
                   {{
-                    item?.receiveDate ? new Date(item?.receiveDate).toLocaleString("th-TH") : '-'
+                    item?.receiveDate
+                      ? new Date(item?.receiveDate).toLocaleString("th-TH")
+                      : "-"
                   }}
                 </h6>
               </td>
@@ -303,11 +323,7 @@ fetchData()
         />
       </v-col>
       <v-col cols="auto">
-        <v-pagination
-          v-model="page"
-          :length="totalCount"
-          :total-visible="7"
-        />
+        <v-pagination v-model="page" :length="totalCount" :total-visible="7" />
       </v-col>
     </v-row>
 
@@ -328,11 +344,7 @@ fetchData()
           >
             <template #selection="{ fileNames }">
               <template v-for="fileName in fileNames" :key="fileName">
-                <v-chip
-                  size="small"
-                  label
-                  class="me-2"
-                >
+                <v-chip size="small" label class="me-2">
                   {{ fileName }}
                 </v-chip>
               </template>
@@ -341,16 +353,14 @@ fetchData()
 
           <v-row>
             <v-col
-              v-for="(item,inx) in editedTracking?.images ? editedTracking?.images.split(',') : []"
+              v-for="(item, inx) in editedTracking?.images
+                ? editedTracking?.images.split(',')
+                : []"
               :key="inx"
               cols="3"
             >
               <v-hover v-slot="{ isHovering, props }">
-                <v-card
-                  class="mx-auto"
-                  max-width="344"
-                  v-bind="props"
-                >
+                <v-card class="mx-auto" max-width="344" v-bind="props">
                   <v-img
                     :src="`${config.public.apiBase}${item}`"
                     :lazy-src="`${config.public.apiBase}${item}`"
@@ -387,17 +397,9 @@ fetchData()
                 </v-card>
               </v-hover>
             </v-col>
-            <v-col
-              v-for="(item,inx) in tempfiles"
-              :key="inx"
-              cols="3"
-            >
+            <v-col v-for="(item, inx) in tempfiles" :key="inx" cols="3">
               <v-hover v-slot="{ isHovering, props }">
-                <v-card
-                  class="mx-auto"
-                  max-width="344"
-                  v-bind="props"
-                >
+                <v-card class="mx-auto" max-width="344" v-bind="props">
                   <v-img
                     :src="item"
                     :lazy-src="item"
@@ -441,7 +443,7 @@ fetchData()
           <v-btn color="error" variant="text" @click="dialog = false">
             Close
           </v-btn>
-          <v-btn color="blue-darken-1" variant="text" @click="save">
+          <v-btn color="blue-darken-1" variant="text" :loading="loading" @click="save">
             Save
           </v-btn>
         </v-card-actions>

@@ -19,13 +19,13 @@ watch(listAddress, (val) => {
 </script>
 
 <template>
-  <div>
+  <div id="content">
     <v-sheet class="pa-6" color="white" rounded>
       <h5 class="text-h5 font-weight-bold mb-4 text-darkprimary">
         ติดต่อเจ้าหน้าที่
       </h5>
       <section v-for="(item, inx) in items" :key="inx">
-        <span class="customImage" v-html="item.content" />
+        <span class="ck-content" v-html="item.content" />
       </section>
     </v-sheet>
   </div>

@@ -70,7 +70,8 @@ class MyUploadAdapter {
     const data = new FormData()
 
     const image = await this.loader.file
-    data.append('photo', image)
+    const fileCompessed = await compressFile(image)
+    data.append('photo', fileCompessed)
 
     this.xhr.send(data)
   }

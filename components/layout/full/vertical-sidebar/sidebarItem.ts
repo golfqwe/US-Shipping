@@ -1,5 +1,7 @@
 import {
+  HomeIcon,
   TicketIcon,
+  PhotoIcon,
   FileInvoiceIcon,
   MapPinIcon,
   TruckIcon,
@@ -12,7 +14,8 @@ import {
   CurrencyDollarIcon,
   BadgeIcon,
   RectangleIcon,
-  AddressBookIcon
+  AddressBookIcon,
+  MailIcon
 } from 'vue-tabler-icons'
 
 export interface menu {
@@ -45,8 +48,13 @@ const sidebarItem: menu[] = [
   },
   {
     title: 'บันทึกรูปสินค้า',
-    icon: TicketIcon,
+    icon: PhotoIcon,
     to: '/admin/takePhoto'
+  },
+  {
+    title: 'Register Tracking',
+    icon: TicketIcon,
+    to: '/admin/registerTracking'
   },
   { header: 'Warehouse' },
   {
@@ -66,6 +74,11 @@ const sidebarItem: menu[] = [
     to: '/admin/bookBank'
   },
   { header: 'pages' },
+  {
+    title: 'หน้าแรก',
+    icon: HomeIcon,
+    to: '/admin/home/'
+  },
   {
     title: 'ค่านำเข้าสินค้า',
     icon: CurrencyDollarIcon,
@@ -91,7 +104,17 @@ const sidebarItem: menu[] = [
     icon: HeadsetIcon,
     to: '/admin/customService'
   },
+  {
+    title: 'เนื่อหาใน E-mail',
+    icon: MailIcon,
+    to: '/admin/email'
+  },
   { header: 'utilities' },
+  {
+    title: 'Mailer',
+    icon: MailIcon,
+    to: '/admin/mailer'
+  },
   {
     title: 'Logo',
     icon: BadgeIcon,

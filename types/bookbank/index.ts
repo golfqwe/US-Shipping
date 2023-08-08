@@ -6,6 +6,7 @@ type BookBank = {
   branch?: string;
   accountType?: string;
   accountNumber?: string;
+  image?: string;
   status?: boolean|string;
 };
 

@@ -44,6 +44,11 @@ watch(bookbankData, (val) => {
   bookbankList.length = 0
   Object.assign(bookbankList, val)
 })
+watch(dialogPayment, (val) => {
+  if (val) {
+    paymentData.amount = parseFloat(sumTotal(billDetail.value.invoiceItems || [], 'total').toLocaleString().replace(/,/g, ''))
+  }
+})
 
 const calculateTotal = (it) => {
   return (it.fee * +(it.weight || 1))
@@ -85,9 +90,14 @@ const savePayment = async () => {
 
   const formData = new FormData()
   formData.append('invId', paymentData?.invoiceId)
-  paymentData.slipImage.forEach((it) => {
-    formData.append('photo', it, it.name)
-  })
+  // paymentData.slipImage.forEach((it) => {
+  //   formData.append('photo', it, it.name)
+  // })
+  let inx = 0
+  for (const file of paymentData.slipImage) {
+    const fileCompessed = await compressFile(file)
+    formData.append('photo' + inx++, fileCompessed, 'upload.web')
+  }
 
   try {
     const { data: resFile } = await useCustomFetch('/api/upload/slip/', {
@@ -132,7 +142,7 @@ const savePayment = async () => {
 </script>
 
 <template>
-  <v-sheet class="pa-6" color="white" rounded>
+  <v-sheet id="content" class="pa-6" color="white" rounded>
     <h5 class="text-h5 font-weight-bold mb-4 text-darkprimary">
       บิลค่าขนส่ง
     </h5>
@@ -171,7 +181,7 @@ const savePayment = async () => {
             >
               <td>
                 <p class="text-15 font-weight-medium">
-                  {{ item?.id }}
+                  {{ 'INV' + `${item?.id }`.padStart(8, '0') }}
                 </p>
               </td>
               <td>
@@ -294,7 +304,7 @@ const savePayment = async () => {
               </v-col>
             </v-row>
             <v-row no-gutters class="text-12">
-              <v-col cols="6">
+              <v-col cols="12" sm="6">
                 <v-row no-gutters="">
                   <v-col cols="6" class="font-weight-bold">
                     Invoice Date:
@@ -345,54 +355,54 @@ const savePayment = async () => {
                   </v-col>
                 </v-row>
               </v-col>
-              <v-col cols="6">
+              <v-col cols="12" sm="6">
                 <v-row no-gutters="">
-                  <v-col cols="6" class="font-weight-bold text-right">
+                  <v-col cols="6" class="font-weight-bold text-sm-right">
                     MemberID:
                   </v-col>
-                  <v-col cols="6" class="pl-4">
+                  <v-col cols="6" class="pl-sm-4">
                     {{ billDetail?.user?.name }}
                   </v-col>
-                  <v-col cols="6" class="font-weight-bold text-right">
+                  <v-col cols="6" class="font-weight-bold text-sm-right">
                     Contact:
                   </v-col>
-                  <v-col cols="6" class="pl-4">
+                  <v-col cols="6" class="pl-sm-4">
                     {{ billDetail?.user?.name }}
                   </v-col>
-                  <v-col cols="6" class="font-weight-bold text-right">
+                  <v-col cols="6" class="font-weight-bold text-sm-right">
                     Email:
                   </v-col>
-                  <v-col cols="6" class="pl-4">
+                  <v-col cols="6" class="pl-sm-4">
                     {{ billDetail?.user?.email }}
                   </v-col>
-                  <v-col cols="6" class="font-weight-bold text-right">
+                  <v-col cols="6" class="font-weight-bold text-sm-right">
                     Phone:
                   </v-col>
-                  <v-col cols="6" class="pl-4">
+                  <v-col cols="6" class="pl-sm-4">
                     {{ billDetail?.user?.phone }}
                   </v-col>
-                  <v-col cols="6" class="font-weight-bold text-right mt-4">
+                  <v-col cols="6" class="font-weight-bold text-sm-right mt-4">
                     Receiver:
                   </v-col>
-                  <v-col cols="6" class="pl-4 mt-4">
+                  <v-col cols="6" class="pl-sm-4 mt-4">
                     {{ billDetail?.myAddress?.id }}
                   </v-col>
-                  <v-col cols="6" class="font-weight-bold text-right">
+                  <v-col cols="6" class="font-weight-bold text-sm-right">
                     Contact:
                   </v-col>
-                  <v-col cols="6" class="pl-4">
+                  <v-col cols="6" class="pl-sm-4">
                     {{ billDetail?.myAddress?.contact }}
                   </v-col>
-                  <v-col cols="6" class="font-weight-bold text-right">
+                  <v-col cols="6" class="font-weight-bold text-sm-right">
                     Email:
                   </v-col>
-                  <v-col cols="6" class="pl-4">
+                  <v-col cols="6" class="pl-sm-4">
                     {{ billDetail?.myAddress?.email }}
                   </v-col>
-                  <v-col cols="6" class="font-weight-bold text-right">
+                  <v-col cols="6" class="font-weight-bold text-sm-right">
                     Phone:
                   </v-col>
-                  <v-col cols="6" class="pl-4">
+                  <v-col cols="6" class="pl-sm-4">
                     {{ billDetail?.myAddress?.phone }}
                   </v-col>
                 </v-row>
@@ -498,10 +508,10 @@ const savePayment = async () => {
               </v-col>
             </v-row>
             <v-row justify="center">
-              <v-col cols="auto">
+              <v-col cols="4" sm="2">
                 <v-btn variant="text" text="Cancel" color="error" @click="dialogBill = false" />
               </v-col>
-              <v-col cols="2">
+              <v-col cols="4" sm="2">
                 <v-btn block text="ชำระบิล" color="info" @click="dialogPayment = true" />
               </v-col>
             </v-row>
@@ -520,7 +530,7 @@ const savePayment = async () => {
             <v-form ref="formPayment">
               <v-row align="center">
                 <v-col cols="auto">
-                  <v-label class="font-weight-bold mb-1">
+                  <v-label class="font-weight-bold ">
                     Inovice No
                   </v-label>
                 </v-col>
@@ -530,41 +540,13 @@ const savePayment = async () => {
                   </div>
                 </v-col>
               </v-row>
-              <!-- <v-row align="center">
-            <v-col cols="auto">
-              <v-label class="font-weight-bold mb-1">
-                Receiver
-              </v-label>
-            </v-col>
-            <v-col>
-              <v-select
-                v-model="paymentData.receiverId"
-                :rules="[(v) => !!v || 'Receiver is required']"
-                :items="addressList"
-                variant="outlined"
-                hide-details="auto"
-                color="primary"
-              >
-                <template #selection="{ item }">
-                  <span>{{ item.value?.contact }}</span>
-                </template>
-                <template #item="{ props, item: {value} }">
-                  <v-list-item
-                    v-bind="props"
-                    :title="value?.contact"
-                    :subtitle="value?.address"
-                  />
-                </template>
-              </v-select>
-            </v-col>
-          </v-row> -->
               <v-row align="center">
-                <v-col cols="auto">
-                  <v-label class="font-weight-bold mb-1">
+                <v-col cols="12" sm="3" class="py-0">
+                  <v-label class="font-weight-bold ">
                     ชำระเงินเข้าบัญชี
                   </v-label>
                 </v-col>
-                <v-col>
+                <v-col cols="12" sm="8">
                   <v-select
                     v-model="paymentData.bankId"
                     :rules="[(v) => !!v || 'Bank is required']"
@@ -586,13 +568,24 @@ const savePayment = async () => {
                   </v-select>
                 </v-col>
               </v-row>
+              <v-row v-show="paymentData.bankId" justify="center">
+                <v-col cols="6">
+                  <v-img
+                    class="bg-white"
+                    width="200"
+                    :aspect-ratio="1"
+                    :src="`${config.public.apiBase}${paymentData.bankId?.image}`"
+                    :lazy-src="`${config.public.apiBase}${paymentData.bankId?.image}`"
+                  />
+                </v-col>
+              </v-row>
               <v-row align="center">
-                <v-col cols="auto">
-                  <v-label class="font-weight-bold mb-1">
+                <v-col cols="12" sm="3" class="py-0">
+                  <v-label class="font-weight-bold ">
                     Amount Paid <span class="text-red">*</span>
                   </v-label>
                 </v-col>
-                <v-col cols="auto">
+                <v-col cols="12" sm="8">
                   <v-text-field
                     v-model="paymentData.amount"
                     :rules="[(v) => !!v || 'Amount Paid is required']"
@@ -604,12 +597,12 @@ const savePayment = async () => {
                 </v-col>
               </v-row>
               <v-row align="center">
-                <v-col cols="auto">
-                  <v-label class="font-weight-bold mb-1">
+                <v-col cols="12" sm="3" class="py-0">
+                  <v-label class="font-weight-bold ">
                     วันเวลาที่ชำระเงิน
                   </v-label>
                 </v-col>
-                <v-col>
+                <v-col cols="12" sm="8">
                   <v-text-field
                     v-model="paymentData.payDate"
                     :rules="[(v) => !!v || 'Date Paid is required']"
@@ -621,12 +614,12 @@ const savePayment = async () => {
                 </v-col>
               </v-row>
               <v-row align="center">
-                <v-col cols="auto">
-                  <v-label class="font-weight-bold mb-1">
+                <v-col cols="12" sm="3" class="py-0">
+                  <v-label class="font-weight-bold ">
                     หลักฐานการโอนเงิน
                   </v-label>
                 </v-col>
-                <v-col>
+                <v-col cols="12" sm="8">
                   <v-file-input
                     v-model="paymentData.slipImage"
                     variant="outlined"

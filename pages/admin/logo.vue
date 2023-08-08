@@ -104,10 +104,14 @@ const save = async () => {
   }
   const formData = new FormData()
   formData.append('path', 'logo')
-  files.value.forEach((it, inx) => {
-    formData.append('photo' + inx, it, it.name)
-  })
-
+  // files.value.forEach((it, inx) => {
+  //   formData.append('photo' + inx, it, it.name)
+  // })
+  let inx = 0
+  for (const file of files.value) {
+    const fileCompessed = await compressFile(file)
+    formData.append('photo' + inx++, fileCompessed, 'upload.web')
+  }
   if (editedIndex.value > -1) {
     try {
       let buffer = {

@@ -116,7 +116,7 @@ const save = async () => {
 </script>
 
 <template>
-  <v-sheet class="pa-6" color="white" rounded>
+  <v-sheet id="content" class="pa-6" color="white" rounded>
     <v-row justify="space-between">
       <v-col>
         <h5 class="text-h5 font-weight-bold mb-4 text-darkprimary">

@@ -4,15 +4,16 @@ import { storeToRefs } from 'pinia'
 import { useUserStore } from '@/stores/user'
 import { useCustomFetch } from '@/composables/useCustomFetch'
 
-const title = ref('Us-shipping ')
+const title = ref('ยูเอสเอยูเคเจแปนทูไทย')
 const { xs } = useDisplay()
 
 useHead({
-  meta: [{ content: title }],
+  meta: [{ content: title },
+    { 'http-equiv': 'Content-Security-Policy', content: 'upgrade-insecure-requests' }],
   titleTemplate: (titleChunk) => {
     return titleChunk
       ? `${titleChunk}`
-      : 'Us-shipping '
+      : 'ยูเอสเอยูเคเจแปนทูไทย'
   }
 })
 
@@ -30,27 +31,27 @@ const menuMain = reactive([
   {
     text: 'ค่านำเข้าสินค้า',
     icon: '1_1.png',
-    link: '/freight'
+    link: '/freight/'
   },
   {
     text: 'ที่อยู่โกดังสินค้า',
     icon: '1_2.png',
-    link: '/warehouse'
+    link: '/warehouse/'
   },
   {
     text: 'Register Tracking',
     icon: '1_3.png',
-    link: '/register-tracking'
+    link: '/register-tracking/'
   },
   {
     text: 'เช็ครูปสินค้า',
     icon: '1_4.png',
-    link: '/trackings'
+    link: '/trackings/'
   },
   {
     text: 'บิลค่าขนส่ง',
     icon: '1_5.png',
-    link: '/payment'
+    link: '/payment/'
   }
 ])
 
@@ -59,28 +60,28 @@ const menuSub = reactive([
   {
     text: 'ที่อยู่ของฉัน',
     icon: '2_2.png',
-    link: '/myAddress'
+    link: '/myAddress/'
   },
   {
     text: 'รอบนำเข้าสินค้า',
     icon: '2_1.png',
-    link: '/nextDayService'
+    link: '/nextDayService/'
   },
 
   {
     text: 'บริการรับกดสั่งสินค้า ประมูลสินค้า',
     icon: '2_3.png',
-    link: '/auction'
+    link: '/auction/'
   },
   {
     text: 'คำถามที่พบบ่อย สินค้าต้องห้าม',
     icon: '2_4.png',
-    link: '/faq'
+    link: '/faq/'
   },
   {
     text: 'ติดต่อเจ้าหน้าที่',
     icon: '2_5.png',
-    link: '/customService'
+    link: '/customService/'
   }
 ])
 
@@ -155,26 +156,16 @@ watch(dataBanner, (val) => {
           <v-col xs="12" sm="6" md="3" class="pa-2  ">
             <div class="d-flex flex-row justify-center">
               <div class="d-inline-flex align-center  mx-4">
-                <v-img
-                  :src="`${config.public.apiBase}${imageLogo}`"
-                  :lazy-src="`${config.public.apiBase}${imageLogo}`"
-                  width="230"
-                  max-width="250"
-                />
+                <NuxtLink to="/">
+                  <v-img
+                    :src="`${config.public.apiBase}${imageLogo}`"
+                    :lazy-src="`${config.public.apiBase}${imageLogo}`"
+                    width="230"
+                    max-width="250"
+                  />
+                </NuxtLink>
               </div>
-              <div class="d-none d-sm-flex">
-                <!-- <div class="d-flex flex-column ">
-                  <p class="text-left">
-                    บริการขนส่งสินค้าจากประเทศสหรัฐอเมริกากลับ
-                  </p>
-                  <p class="text-left">
-                    ประเทศไทยและประเทศลาว : บริการรวดเร็ว
-                  </p>
-                  <p class="text-left">
-                    ซื่อสัตย์ ราคาประหยัด ตรวจสอบออนไลน์ได้ 24 ชั่วโมง
-                  </p>
-                </div> -->
-              </div>
+              <div class="d-none d-sm-flex" />
             </div>
           </v-col>
 
@@ -213,42 +204,17 @@ watch(dataBanner, (val) => {
                 </v-menu>
               </div>
               <div v-else>
-                <NuxtLink to="login" class="text-decoration-none text-darkprimary font-weight-bold">
+                <NuxtLink :to="{ path: '/login', hash: '#content' }" class="text-decoration-none text-darkprimary font-weight-bold">
                   เข้าสู่ระบบ
-                </NuxtLink>|<NuxtLink to="register" class="text-decoration-none text-darkprimary font-weight-bold">
+                </NuxtLink>|<NuxtLink :to="{ path: '/register', hash: '#content' }" class="text-decoration-none text-darkprimary font-weight-bold">
                   สมัครสมาชิก
                 </NuxtLink>
               </div>
               <div class="text-subtitle-1 text-right ">
-                <!-- ฝ่ายบริการลูกค้า : 088-888-8888
-                <br>
-                LINE @ USAUKJPANTOTHAI -->
                 <span v-html="contact" />
               </div>
             </div>
           </v-col>
-
-          <!-- <v-col class=" hidden-md-and-up">
-            <v-row no-gutters justify="center" align="center">
-              <v-sheet
-                class="d-flex flex-column  align-center "
-              >
-                <div class="d-inline-flex align-center  mx-4">
-                  <img
-                    src="/images/main/logo.png"
-                    style="height: 65px; object-fit: contain"
-                  >
-                </div>
-                <div>
-                  <NuxtLink to="login" class="text-decoration-none text-darkprimary font-weight-bold">
-                    เข้าสู่ระบบ
-                  </NuxtLink>|<NuxtLink to="register" class="text-decoration-none text-darkprimary font-weight-bold">
-                    สมัครสมาชิก
-                  </NuxtLink>
-                </div>
-              </v-sheet>
-            </v-row>
-          </v-col> -->
         </v-row>
       </v-app-bar>
 
@@ -279,7 +245,7 @@ watch(dataBanner, (val) => {
                       class="d-flex pa-2 justify-center"
                       style="min-width: 50px; max-width: 150px;"
                     >
-                      <NuxtLink :to="it.link" class="text-decoration-none text-darkprimary">
+                      <NuxtLink :to="{ path: it.link, hash: '#content' }" class="text-decoration-none text-darkprimary">
                         <div class="d-flex flex-column">
                           <img
                             :src="useAsset(`images/icons/${it.icon}`)"
@@ -310,7 +276,7 @@ watch(dataBanner, (val) => {
                       class="d-flex pa-2 justify-center"
                       style="min-width: 50px; max-width: 150px;"
                     >
-                      <NuxtLink :to="it.link" class="text-decoration-none text-darkprimary">
+                      <NuxtLink :to="{ path: it.link, hash: '#content' }" class="text-decoration-none text-darkprimary">
                         <div class="d-flex flex-column">
                           <img
                             :src="useAsset(`images/icons/${it.icon}`)"

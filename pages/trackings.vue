@@ -19,7 +19,7 @@ let editedTracking = reactive({})
 
 const { data: listTracking } = await useCustomFetch('/api/trackings', {
   method: 'GET',
-  query: { status: 'pending,waiting,waitpayment', userId: userInfo?.value.id }
+  query: { status: 'pending,waiting,waitpayment,success', userId: userInfo?.value.id }
 
 })
 
@@ -35,7 +35,7 @@ const selectItem = (item: any) => {
 </script>
 
 <template>
-  <v-sheet class="pa-6" color="white" rounded>
+  <v-sheet id="content" class="pa-6" color="white" rounded>
     <h5 class="text-h5 font-weight-bold mb-4 text-darkprimary">
       ระบบเช็ครูปสินค้า
     </h5>
