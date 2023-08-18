@@ -271,7 +271,7 @@ fetchData()
       </v-col>
     </v-row>
 
-    <v-dialog v-model="dialog" persistent width="800">
+    <v-dialog v-model="dialog" persistent width="800" :retain-focus="false">
       <v-card>
         <v-card-title>
           <span class="text-h5">{{
@@ -342,7 +342,7 @@ fetchData()
                 <v-text-field
                   v-model="editedItem.phone"
                   variant="outlined"
-                  :rules="[(v) => !!v ? (v.length > 10) || 'Telephone must be less than 10 characters' : true]"
+                  :rules="[(v) => !!v ? (v.length == 10) || 'Telephone must be less than 10 characters' : true]"
                   type="tel"
                   hide-details="auto"
                   density="compact"

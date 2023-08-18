@@ -204,9 +204,9 @@ watch(dataBanner, (val) => {
                 </v-menu>
               </div>
               <div v-else>
-                <NuxtLink :to="{ path: '/login', hash: '#content' }" class="text-decoration-none text-darkprimary font-weight-bold">
+                <NuxtLink :to="{ path: '/login/', hash: '#content' }" class="text-decoration-none text-darkprimary font-weight-bold">
                   เข้าสู่ระบบ
-                </NuxtLink>|<NuxtLink :to="{ path: '/register', hash: '#content' }" class="text-decoration-none text-darkprimary font-weight-bold">
+                </NuxtLink>|<NuxtLink :to="{ path: '/register/', hash: '#content' }" class="text-decoration-none text-darkprimary font-weight-bold">
                   สมัครสมาชิก
                 </NuxtLink>
               </div>
@@ -232,6 +232,18 @@ watch(dataBanner, (val) => {
         </div>
         <v-container>
           <!-- <v-sheet rounded color="accent" height="60" /> -->
+          <v-row>
+            <v-col>
+              <!-- <NuxtLink :to="{ path: '/', hash: '#content' }"> -->
+              <v-btn color="primary" size="small" rounded="xl" @click="$router.push({ path: '/', hash: '#content' })">
+                <v-icon left>
+                  mdi-home
+                </v-icon>
+                หน้าแรก
+              </v-btn>
+              <!-- </NuxtLink> -->
+            </v-col>
+          </v-row>
           <v-row justify="center">
             <v-col>
               <v-sheet class="" color="white" rounded border>

@@ -14,6 +14,20 @@ const editorConfig = ref({
   toolbar: {
     shouldNotGroupWhenFull: true
   },
+  image: {
+    // You need to configure the image toolbar, too, so it uses the new style buttons.
+    toolbar: ['imageStyle:alignLeft', 'imageStyle:full', 'imageStyle:alignRight'],
+    styles: [
+      // This option is equal to a situation where no style is applied.
+      'full',
+
+      // This represents an image aligned to the left.
+      'alignLeft',
+
+      // This represents an image aligned to the right.
+      'alignRight'
+    ]
+  },
   extraPlugins: [MyCustomUploadAdapterPlugin],
   removePlugins: ['Title']
 
@@ -192,7 +206,7 @@ const save = async () => {
       </v-card-item>
     </v-card>
 
-    <v-dialog v-model="dialog" persistent>
+    <v-dialog v-model="dialog" persistent :retain-focus="false">
       <v-card>
         <v-card-title>
           <span class="text-h5">{{ editedIndex > -1 ? "แก้ไข" : "เพิ่ม" }}คำถามที่พบบ่อย สินค้าต้องห้าม</span>

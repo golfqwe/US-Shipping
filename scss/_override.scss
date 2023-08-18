@@ -45,6 +45,8 @@ width: 30% !important;
     --ck-image-style-spacing: 1.5em;
     --ck-inline-image-style-spacing: calc(var(--ck-image-style-spacing) / 2);
     --ck-todo-list-checkmark-size: 16px;
+    --ck-z-default: 3100;
+    --ck-z-modal: calc( var(--ck-z-default) + 3999 );
 }
 
 /* @ckeditor/ckeditor5-table/theme/tablecolumnresize.css */

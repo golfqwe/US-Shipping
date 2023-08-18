@@ -94,7 +94,7 @@ const update = async () => {
 
 const editItem = (item: tracking) => {
   editedIndex.value = Number(item.id)
-  Object.assign(editedItem, item)
+  Object.assign(editedItem, { ...item, status: item?.status?.code })
   dialogEdit.value = true
 }
 const close = () => {

@@ -128,7 +128,7 @@ const save = async () => {
 
             <v-col cols="12">
               <v-label class="font-weight-bold mb-1">
-                ชื่อ - สกุล (English Only)
+                ชื่อ - นามสกุล (English Only)
               </v-label>
               <v-text-field
                 v-model="editedItem.name"
@@ -145,7 +145,7 @@ const save = async () => {
               <v-text-field
                 v-model="editedItem.phone"
                 variant="outlined"
-                :rules="[(v) => !!v ? (v.length >= 10) || 'Telephone must be less than 10 characters' : true]"
+                :rules="[(v) => !!v ? (v.length == 10) || 'Telephone must be less than 10 characters' : true]"
                 type="tel"
                 hide-details="auto"
                 color="primary"
